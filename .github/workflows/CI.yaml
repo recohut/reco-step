@@ -44,22 +44,6 @@ jobs:
         do
           claat export "$file"
         done
-    # - name: Add Redirect Patch
-    #   run: |
-    #     cd ./site/codelabs/
-    #     for dir in ./*/
-    #     do
-    #       echo "$dir"
-    #       mkdir "$dir"scripts
-    #       cp ../../codelab-elements/extras/codelab-elements.js "$dir"scripts
-    #     done
-    #     grep -rl "<a href=\"'+hc(mc(a))+'\" id=\"arrow-back\">" ./ | xargs -r sed -i "s/<a href=\"'+hc(mc(a))+'\" id=\"arrow-back\">/<a href=\"'+hc(mc(a))+'\/\/\/\/"${{ github.actor }}".github.io\/"${{ github.event.repository.name }}"\/\" id=\"arrow-back\">/g"
-    #     grep -rl "<a href=\"'+hc(mc(a))+'\" id=\"done\"" ./ | xargs -r sed -i "s/<a href=\"'+hc(mc(a))+'\" id=\"done\"/<a href=\"'+hc(mc(a))+'\/\/\/\/"${{ github.actor }}".github.io\/"${{ github.event.repository.name }}"\/\" id=\"done\"/g"
-    #     grep -rl "https:\/\/storage.googleapis.com\/codelab-elements\/codelab-elements.js" ./ | xargs -r sed -i "s/https:\/\/storage.googleapis.com\/codelab-elements\/codelab-elements.js/scripts\/codelab-elements.js/g"
-    # - name: Add Image Path Patch
-    #   run: |
-    #     cd ./site/
-    #     grep -rl '"\/images/' ./ | xargs -r sed -i 's/"\/images\//"\/'${{ github.event.repository.name }}'\/images\//g'
     - uses: actions/setup-node@v2
       with:
         node-version: '14'
@@ -73,9 +57,6 @@ jobs:
       run: |
         cd ./site/
         gulp dist
-    - name: Add Site Path Patch
-      run: |
-        cd ./site/
         rm -rf ./stage
         mkdir ./stage
         cp -r ./dist/ ./stage
