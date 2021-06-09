@@ -1,0 +1,10 @@
+{
+  "title": "pytorch",
+  "description": "PyTorch is an optimized tensor library primarily used for Deep Learning applications using GPUs and CPUs. It is an open-source machine learning library for Python, mainly developed by the Facebook AI Research team. It is one of the widely used Machine learning libraries, others being TensorFlow and Keras.",
+  "logoUrl": "/pytorch/pytorch.svg",
+  "tags": ["pytorch"],
+  "exclude": [
+    ".*-about$",
+    "^lang-.*"
+  ]
+}

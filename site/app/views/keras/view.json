@@ -1,0 +1,10 @@
+{
+  "title": "keras",
+  "description": "Keras is an open-source software library that provides a Python interface for artificial neural networks",
+  "logoUrl": "/keras/keras.svg",
+  "tags": ["keras"],
+  "exclude": [
+    ".*-about$",
+    "^lang-.*"
+  ]
+}

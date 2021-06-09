@@ -1,0 +1,13 @@
+{
+  "title": "RecoStep",
+  "description": "RecoStep provides a guided, hands-on learning experience in a well-defined steps. Each lab has its own well-defined objective related to any particular process in recommender system.",
+  "tags": [],
+  "categories": [],
+  "exclude": [
+    "^lang-.*"
+  ],
+  "logoUrl": "/images/my-logo.svg",
+  "toolbarBgColor": "#37474F",
+  "sort": "mainCategory",
+  "pins": []
+}

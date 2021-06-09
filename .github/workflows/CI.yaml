@@ -1,0 +1,91 @@
+name: CI
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+jobs:     
+  build-site:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Copy Repository Contents
+      uses: actions/checkout@v2
+    - name: Install Claat CLI
+      run: |
+        sudo add-apt-repository ppa:longsleep/golang-backports -y
+        sudo apt update
+        sudo apt install golang-go
+        sudo env GOPATH=/root/go
+        sudo go get github.com/googlecodelabs/tools/claat
+        sudo cp /root/go/bin/claat /usr/bin/
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+    - name: Install python libraries
+      run: |
+        python -m pip install --upgrade pip
+        pip install nbconvert
+    - name: Convert to Codelabs
+      run: |
+        wget -O ./_markdowns/raw/data.zip ${{ secrets.NOTION_RECOSTEP }}
+        python convert.py
+        cp -r ./_notebooks/img ./site/codelabs 2>/dev/null || :
+        for file in ./_notebooks/*.ipynb
+        do
+          jupyter nbconvert --output-dir="./site/codelabs" --to markdown "$file"
+        done
+        cp -r ./_markdowns/img/* ./site/codelabs/img 2>/dev/null || :
+        cp -r ./_markdowns/*.md ./site/codelabs 2>/dev/null || :
+        cd ./site/codelabs/
+        for file in ./*.md
+        do
+          claat export "$file"
+        done
+    - name: Add Redirect Patch
+      run: |
+        cd ./site/codelabs/
+        for dir in ./*/
+        do
+          echo "$dir"
+          mkdir "$dir"scripts
+          cp ../../codelab-elements/extras/codelab-elements.js "$dir"scripts
+        done
+        grep -rl "<a href=\"'+hc(mc(a))+'\" id=\"arrow-back\">" ./ | xargs -r sed -i "s/<a href=\"'+hc(mc(a))+'\" id=\"arrow-back\">/<a href=\"'+hc(mc(a))+'\/\/\/\/"${{ github.actor }}".github.io\/"${{ github.event.repository.name }}"\/\" id=\"arrow-back\">/g"
+        grep -rl "<a href=\"'+hc(mc(a))+'\" id=\"done\"" ./ | xargs -r sed -i "s/<a href=\"'+hc(mc(a))+'\" id=\"done\"/<a href=\"'+hc(mc(a))+'\/\/\/\/"${{ github.actor }}".github.io\/"${{ github.event.repository.name }}"\/\" id=\"done\"/g"
+        grep -rl "https:\/\/storage.googleapis.com\/codelab-elements\/codelab-elements.js" ./ | xargs -r sed -i "s/https:\/\/storage.googleapis.com\/codelab-elements\/codelab-elements.js/scripts\/codelab-elements.js/g"
+    - name: Add Image Path Patch
+      run: |
+        cd ./site/
+        grep -rl '"\/images/' ./ | xargs -r sed -i 's/"\/images\//"\/'${{ github.event.repository.name }}'\/images\//g'
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+    - name: Install npm
+      run: |
+        cd ./site/
+        npm install
+        npm install -g npm
+        npm install -g gulp-cli
+    - name: Build Site
+      run: |
+        cd ./site/
+        gulp dist
+    - name: Add Site Path Patch
+      run: |
+        cd ./site/
+        rm -rf ./stage
+        mkdir ./stage
+        cp -r ./dist/ ./stage
+        rm ./stage/dist/codelabs
+        grep -rl '"\/[a-zA-Z0-9]' ./stage/dist/ | xargs sed -i 's/"\//"\/'${{ github.event.repository.name }}'\//g'
+        grep -rl '\/'${{ github.event.repository.name }}'\/'${{ github.event.repository.name }}'\/' ./stage/dist/ | xargs sed -i 's/\/'${{ github.event.repository.name }}'\/'${{ github.event.repository.name }}'/\/'${{ github.event.repository.name }}'/g'
+        cp -r ./codelabs ./stage/dist
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./site/stage/dist
+        publish_branch: gh-pages
