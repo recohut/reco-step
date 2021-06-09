@@ -1,0 +1,320 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>How to build multi-armed bandit based product recommender</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="multi-armed-bandit-product-recommender"
+                  title="How to build multi-armed bandit based product recommender"
+                  environment="web"
+                  feedback-link="https://github.com/recohut/reco-step/issues">
+    
+      <google-codelab-step label="Introduction" duration="5">
+        <p>In e-commerce and other digital domains, companies frequently want to offer personalised product recommendations to users. This is hard when you don&#39;t yet know a lot about the customer, or you don&#39;t understand what features of a product are pertinent. Thinking about it as a multi-armed bandit problem is a useful way to get around this. In this tutorial, we will learn how multi-armed bandit algorithms can be applied to the challenge of product recommendation and then explain how to solve it in code.</p>
+<p>Multi-armed bandit algorithms can:</p>
+<ul>
+<li>recommend products with the highest expected value while still exploring other products.</li>
+<li>do not suffer from the cold-start problem and therefore don&#39;t require customer preferences or information about products.</li>
+<li>take into account the limitations of how much data you have as well as the cost of gathering data (the opportunity cost of sub-optimal recommendations).</li>
+</ul>
+<h2 is-upgraded>What you&#39;ll learn?</h2>
+<ul>
+<li>Build multi-armed bandit models in python</li>
+<li>Compare the model performance</li>
+</ul>
+<h2 is-upgraded>Why is this important?</h2>
+<ul>
+<li>Infuse intelligence in recommender models</li>
+<li>Automatically adapt to the changing environment</li>
+</ul>
+<h2 is-upgraded>How it will work?</h2>
+<h2 is-upgraded>Who is this for?</h2>
+<ul>
+<li>People who are interested in applying reinforcement learning techniques in recommender systems</li>
+</ul>
+<h2 is-upgraded>Important resources</h2>
+<ul>
+<li><a href="https://colab.research.google.com/gist/sparsh-ai/86c0daeeb4449c1325577fcbae4c4342/recostep-tutorial-multi-armed-bandit-product-recommender.ipynb" target="_blank">Colab notebook</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Bandit class" duration="2">
+        <p>First of all, we define the base class. In this, we initialize with pay-off probabilities in a list format and define a sample method that will provide the reward for the action taken. The agent do not know these pay-off values and the goal for that agent is to find these pay-offs by exploring and exploiting the environment. For example, if pay-off probability is 90%, we will get a reward of 1 most often and in this manner, the agent will get an idea of this secret pay-off.</p>
+<pre><code language="language-python" class="language-python">class Bandit:
+    &#34;&#34;&#34;A useful class containing the multi-armed bandit and all its actions.
+    
+    Attributes:
+        actions The actions that can be performed, numbered automatically 0, 1, 2...
+        payoff_probs    The underlying pay-off probabilities for each action.
+    &#34;&#34;&#34;
+
+    def __init__(self, payoff_probs):
+        self.actions = range(len(payoff_probs))
+        self.pay_offs = payoff_probs
+
+    def sample(self, action):
+        &#34;&#34;&#34;Sample from the multi-armed by performing an action.
+        
+        Args:
+            action (int): The action performed on the multi-armed bandit.
+
+        Returns:
+            int: It returns a reward based on that arm&#39;s pay-off probability.
+        &#34;&#34;&#34;
+        selector = random.random()
+        return 1 if selector &lt;= self.pay_offs[action] else 0
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Random agent" duration="2">
+        <p>Random agent is our baseline. This agnt will randomly pick an action and get the reward for that action. Our hypothesis is that, this will be the worst performing agent.</p>
+<pre><code language="language-python" class="language-python">def random_agent(bandit, iterations):
+    &#34;&#34;&#34;Randomly select an action and reward.&#34;&#34;&#34;
+
+    for i in range(iterations):
+        a = random.choice(bandit.actions)
+        r = bandit.sample(a)
+        yield a, r
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Optimal agent" duration="2">
+        <p>This one is out benchmark. In this, we will expose the hidden pay-off values so that the agent will always take the best possible action and get the maximum probable reward.</p>
+<pre><code language="language-python" class="language-python">def optimal_agent(bandit, iterations):
+    &#34;&#34;&#34;Select the best action by taking a sneak-peek at the bandit&#39;s probabilities.&#34;&#34;&#34;
+
+    for i in range(iterations):
+        a = bandit.pay_offs.index(max(bandit.pay_offs))
+        r = bandit.sample(a)
+        yield a, r
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Explore than exploit agent" duration="2">
+        <p>This agent first explore the environment for N rounds and then start taking the action which gave maximum reward during exploration.</p>
+<pre><code language="language-python" class="language-python">def initial_explore_agent(bandit, iterations, initial_rounds = 10):
+    &#34;&#34;&#34;Initially explore initial_rounds times and then stick to the best action.&#34;&#34;&#34;
+    pay_offs = dict()
+    best_action = -1
+
+    for i in range(iterations):
+        # for the initial rounds pick a random action
+        if i &lt; initial_rounds:
+            a = random.choice(bandit.actions)
+            r = bandit.sample(a)
+
+            #update rewards
+            if a in pay_offs:
+                pay_offs[a].append(r)
+            else:
+                pay_offs[a] = [r]
+        # otherwise pick the best one thus far
+        else:
+            if (best_action == -1):
+                # check for the lever with the best average payoff
+                mean_dict = {}
+                for key,val in pay_offs.items():
+                    mean_dict[key] = np.mean(val) 
+                best_action = max(mean_dict, key=mean_dict.get)
+            a = best_action
+
+            r = bandit.sample(a)
+        
+        yield a, r
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Epsilon greedy agent" duration="2">
+        <p>This agent always explore the environment with a probability of epsilon, which is 20% in our case. This means, out of 5, this agent will recommend the highest-probability reward product 4 times and recommend a random product 1 time.</p>
+<pre><code language="language-python" class="language-python">def epsilon_greedy_agent(bandit, iterations, epsilon = 0.2, initial_rounds = 1):
+    &#34;&#34;&#34;Use the epsilon-greedy algorithm by performing the action with the best average
+    pay-off with the probability (1-epsilon), otherwise pick a random action to keep exploring.&#34;&#34;&#34;
+
+    pay_offs = dict()
+
+    for i in range(iterations):
+        # sometimes randomly pick an action to explore
+        if random.random() &lt; epsilon or i &lt; initial_rounds:
+            a = random.choice(bandit.actions)
+        # otherwise pick the best one thus far
+        else:
+            # check for the lever with the best average payoff
+            new_dict = {}
+            for key,val in pay_offs.items():
+                new_dict[key] = np.mean(val) 
+            a = max(new_dict, key=new_dict.get)
+
+        r = bandit.sample(a)
+
+        #update rewards
+        if a in pay_offs:
+            pay_offs[a].append(r)
+        else:
+            pay_offs[a] = [r]
+        
+        yield a, r
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Decaying epsilon greedy agent" duration="2">
+        <p>This agent will initially take random actions with epsilon probability but this epsilon keep decaying so that, at the begininng, agent wil recommend 1 random product out of 5, but over time, this will ultimately become zero, and agent will recommend all 5 products with highest possible reward probability.</p>
+<pre><code language="language-python" class="language-python">def decaying_epsilon_greedy_agent(bandit, iterations, epsilon = 0.2, initial_rounds = 1, decay = 0.999):
+
+    pay_offs = dict()
+
+    for i in range(iterations):
+        # sometimes randomly pick an action
+        if random.random() &lt; epsilon or i &lt; initial_rounds:
+            a = random.choice(bandit.actions)
+        # otherwise pick the best one thus far
+        else:
+            # check for the lever with the best average payoff
+            new_dict = {}
+            for key,val in pay_offs.items():
+                new_dict[key] = np.mean(val) 
+            a = max(new_dict, key=new_dict.get)
+
+        r = bandit.sample(a)
+
+        #update rewards
+        if a in pay_offs:
+            pay_offs[a].append(r)
+        else:
+            pay_offs[a] = [r]
+        
+        epsilon *= decay
+
+        yield a, r
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Simulation" duration="2">
+        <p>We are creating 7 arms. These arms can be compared to 7 products in recommendation domain. These pay-offs represent the buying probability let&#39;s say. That means, there is a 25% probability that custom will buy first product and 50% probability of buying third product. And interestingly, no chance of buying last product.</p>
+<p>1000 trials is just to smoothen-out the results. 200 iterations means we will recommend the given 7 items to that customer 200 times. The selection of this item-to-be-recommended would depend on the agent.</p>
+<pre><code language="language-python" class="language-python">random.seed(200) #used for reproducibility
+
+pay_offs = [0.25, 0.3, 0.5, 0.1, 0.3, 0.25, 0]
+bandit = Bandit(pay_offs)
+
+methods = [random_agent, initial_explore_agent, epsilon_greedy_agent, decaying_epsilon_greedy_agent, optimal_agent]
+
+number_of_iterations = 200
+number_of_trials = 1000
+
+for m in range(len(methods)):
+    method = methods[m]
+    total_rewards = []
+
+    list_of_cumulative_rewards = []
+    fan = []
+
+    for trial in range(number_of_trials):
+        total_reward = 0
+        cumulative_reward = []
+
+        for a, r in method(bandit, number_of_iterations):
+            total_reward += r
+            cumulative_reward.append(total_reward)
+
+        #plt.plot(cumulative_reward, alpha=.02, color=colors[m])
+        total_rewards.append(total_reward)
+
+        if trial == 0:
+            fan = pd.DataFrame(cumulative_reward, columns=[&#39;y&#39;])
+            fan[&#39;x&#39;] = fan.index+1
+        else:
+            fan2 = pd.DataFrame(cumulative_reward, columns=[&#39;y&#39;])
+            fan2[&#39;x&#39;] = fan2.index+1
+
+            fan = fan.append(fan2, ignore_index=True)
+
+        list_of_cumulative_rewards.append(cumulative_reward)
+
+    sns.lineplot(x=&#39;x&#39;, y=&#39;y&#39;, data=fan)  #default is to use bootstrap to calculate confidence interval     
+    
+    print(method.__name__, &#34;:&#34;, np.mean(total_rewards))
+
+plt.title(&#34;Cumulative reward for each algorithm over {} iterations with {} trials.&#34;.format(number_of_iterations, number_of_trials))
+plt.ylabel(&#34;Cumulative reward&#34;)
+plt.xlabel(&#34;Iterations&#34;)
+plt.legend([method.__name__ for method in methods])
+
+f.savefig(&#34;Iterations.pdf&#34;, bbox_inches=&#39;tight&#39;)
+f.savefig(&#34;Iterations.svg&#34;, bbox_inches=&#39;tight&#39;)
+
+plt.show()
+</code></pre>
+<p>As expected, random agent performed worst and optimal agent performed best. Epsilon greedy and its decaying version performed equally well and it is better than explore-than-exploit method.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-build-a-product-recommender-using-multi-armed-band-untitled.png" src="img/f40b772a0fd6b5a7.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusion" duration="2">
+        <p>Congratulations!</p>
+<h2 class="checklist" is-upgraded>What we&#39;ve covered</h2>
+<ul>
+<li>Built various MAB models: random, optimal, explore-than-exploit, epsilon-greedy, decaying-epsilon-greedy</li>
+<li>Simulation and plotting</li>
+</ul>
+<h2 is-upgraded>Next steps</h2>
+<ul>
+<li>Learn the methods in depth</li>
+<li>Tune hyperparameters</li>
+<li>Thompson sampling method</li>
+</ul>
+<h2 is-upgraded>Links and References</h2>
+<ul>
+<li><a href="https://www.offerzen.com/blog/how-to-build-a-product-recommender-using-multi-armed-bandit-algorithms" target="_blank">How to Build a Product Recommender Using Multi-Armed Bandit Algorithms</a></li>
+</ul>
+<h2 is-upgraded>Have a Question?</h2>
+<ul>
+<li><a href="https://form.jotform.com/211377288388469" target="_blank">Fill out this form</a></li>
+<li><a href="https://github.com/recohut/reco-step/issues" target="_blank">Raise issue on Github</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="scripts/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>

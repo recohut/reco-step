@@ -1,0 +1,354 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>A Brief History of Netflix Personalization</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="netflix-personalization-story"
+                  title="A Brief History of Netflix Personalization"
+                  environment="web"
+                  feedback-link="https://github.com/recohut/reco-step/issues">
+    
+      <google-codelab-step label="Introduction" duration="5">
+        <p>This story details Netflix&#39;s progress from its launch in 1998 to the recent launch of its &#34;I feel lucky&#34; button — a merchandising tactic where Netflix members rely totally on Netflix&#39;s personalization algorithms. It&#39;s a messy journey, with an evolving personalization strategy propelled by Netflix&#39;s ability to execute high-cadence experiments using its homegrown A/B test system.</p>
+<p>In 20 years, Netflix has gone from members choosing 2% of the movies the merchandising system suggests to 80% today. In the early days, a member would explore hundreds of titles before finding something they liked. Today most members look at forty choices before they hit the &#34;play&#34; button. Twenty years from now, Netflix hopes to play that one choice that&#39;s &#34;just right&#34; for you with no browsing or choice required.</p>
+<p>Here&#39;s one minute of reading for each year of Netflix&#39;s 20-year history! I hope you enjoy it.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="1998: A DVD-by-mail startup is born" duration="1">
+        <p>Netflix began as a DVD-by-mail startup, following the invention of the DVD player in 1996. In 1998, Netflix launched its website with less than 1,000 DVDs. Here&#39;s what the site looked like its first few years:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-a-brief-history-of-netflix-personalization-untitled.png" src="img/1b3ccdbf18ae53bc.png"></p>
+<p>In 1999, Netflix had 2,600 DVDs to choose from but intended to grow its library to 100,000 titles. To make it easier for members to find movies, Netflix developed a personalized merchandising system.</p>
+<p>In 2000, when Netflix transitioned from an a la carte business to an all-you-can-eat subscription service, the service added a queue, a list of movies each household created by hitting the &#34;Add&#34; button to add a title to an ordered list of movies. Each time a member returned a DVD, Netflix would send the title at the top of each member&#39;s Netflix Queue directly to their mailbox.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2000: Cinematch" duration="1">
+        <p>Netflix introduced a personalized movie recommendation system, using member ratings to predict how much a member would like a movie. The algorithm was called Cinematch, and it&#39;s a collaborative filtering algorithm.</p>
+<p>Here&#39;s an easy way to understand collaborative filtering. Imagine I like *Batman Begins* and <em>Breaking Bad</em>, and you like both, too. Because I like <em>Casino</em>, the algorithm suggests you&#39;ll like <em>Casino</em>. Now, apply this approach across millions of members and titles.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2001: The five-star rating system" duration="1">
+        <p>Netflix created a five-star rating system and eventually collected billions of ratings from its members. Netflix experimented with multiple &#34;star bars,&#34; at times stacking the stars to indicate expected rating, average rating, and friends&#39; rating. It was a mess.</p>
+<p>The stars represented how much a member would like a movie. If a member had watched the movie already, they could rate it.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-a-brief-history-of-netflix-personalization-untitled-1.png" src="img/86e0e2b927b75558.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2002: Multiple algorithms" duration="1">
+        <p>Beyond Cinematch, three other algorithms worked together to help merchandise movies:</p>
+<ol type="1">
+<li><strong>Dynamic store:</strong> This algorithm indicated if the DVD was available. Late in the DVD era, the algorithm even determined if a DVD was available in a member&#39;s local hub. By 2008, Netflix only merchandised locally available titles to increase the likelihood of next-day DVD delivery.</li>
+<li><strong>Metasims:</strong> This algorithm incorporated all movie data available for each title — plot synopsis, director, actors, year, awards, language, etc.</li>
+<li><strong>Search:</strong> In the early days, there was little investment in search as the team assumed members searched for expensive new release DVDs, making the company&#39;s economics more challenging. But the team discovered that the titles members chose included lots of older, less expensive, long-tail titles, so they eventually ramped up investment in search.</li>
+</ol>
+<p>In time, Netflix blended lots of other algorithms to execute its personalized merchandising system.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2004: Profiles" duration="1">
+        <p>Recognizing multiple family members used a shared account, Netflix launched &#34;profiles.&#34; This feature enabled each family member to generate its own movie list. Profiles were a highly requested feature, but only 2% of members used it despite aggressive promotion. It was a lot of work to manage an ordered list of DVDs, and only one person in each household was willing to do this.</p>
+<p>Given the low adoption, Netflix announced its plan to kill Profiles but capitulated in the face of member backlash. A small set of users cared deeply about the feature — they were afraid that losing Profiles would ruin their marriages. As an example of &#34;all members are not created equal,&#34; half the Netflix board used the feature.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2004: Netflix launches &#34;Friends&#34;" duration="1">
+        <p>The hypothesis: If you create a network of friends within Netflix, they&#39;ll suggest great movie ideas to each other and won&#39;t quit the service because they don&#39;t want to leave their friends. At launch, 2% of Netflix members connected with at least one friend, but this metric never moved beyond 5%.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-a-brief-history-of-netflix-personalization-untitled-2.png" src="img/3640c58cd9562a97.png"></p>
+<p>Netflix killed the feature in 2010 as part of its discipline of &#34;scraping the barnacles&#34; — removing features that members didn&#39;t value. Unlike Profiles, there was no user revolt.</p>
+<p>Two insights on social in the context of movies:</p>
+<ol type="1">
+<li>Your friends have bad taste.</li>
+<li>You don&#39;t want your friends to know all the movies you&#39;re watching.</li>
+</ol>
+<p>These are surprising insights during a decade when Facebook successfully applied its social strategy to many product categories.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2006: The Netflix personalization strategy" duration="2">
+        <p>Here&#39;s what the personalization strategy looked like in 2006. It&#39;s organized in the strategy/metrics/tactics format, with a proxy metric for each strategy, as well as tactics (projects) against each strategy:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-a-brief-history-of-netflix-personalization-untitled-3.png" src="img/a2f5df1c5cc0f007.png"></p>
+<p>The intent was to gather explicit and implicit data, then use various algorithms and presentation tactics to connect members with movies they&#39;d love. The team focused on four main strategies:</p>
+<ol type="1">
+<li><strong>Gather explicit taste data,</strong> including movie and TV show ratings, genre ratings, and demographic data.</li>
+<li><strong>Explore implicit taste data,</strong> like DVDs members added to their movie list or later, which movies members streamed.</li>
+<li><strong>Create algorithms and presentation-layer tactics to connect members with movies they&#39;ll love.</strong> This strategy focused on using the explicit/implicit taste data, along with lots of data about movies and TV shows (ratings, genres, synopsis, lead actors, directors, etc.), to create algorithms that connected members with titles. The expectation was that Netflix would also create a simple user interface that provided visual support for personalized choices.</li>
+<li><strong>Improve average movie ratings for each member</strong> by connecting them with better movies and TV shows. The assumption was that if Netflix connected its members with higher quality movies and TV shows, they would retain better.</li>
+</ol>
+<p>The high-level hypothesis: Personalization would improve retention by making it easy for members to find movies they&#39;ll love.</p>
+<p>The high-level engagement metric was retention. It takes years to affect this metric, however. So Netflix had a more sensitive, short-term proxy metric: The percentage of members who rated at least 50 movies during their first two months with the service.</p>
+<p>The theory was that members would rate lots of movies to get better recommendations. These ratings signaled that members appreciated the personalized recommendations they received in return for their ratings. More ratings were a signal that members appreciated Netflix&#39;s personalized merchandising algorithms.</p>
+<p>Here&#39;s a very rough snapshot of the improvement in this proxy metric over time:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-a-brief-history-of-netflix-personalization-untitled-4.png" src="img/338fb3434fa4cd95.png"></p>
+<p>Why the 2011 dip in the metric? By this time, most members streamed movies, and Netflix had a strong implicit signal about member taste. Once you hit the &#34;Play&#34; button, you either kept watching or stopped. Netflix no longer needed to collect as many star ratings.</p>
+<p>It took Netflix more than a decade to demonstrate that a personalized experience improved retention. But consistent growth in this proxy metric convinced the company to keep doubling down on personalization.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2006: The ratings wizard" duration="1">
+        <p>The original petri dish for personalization was an area on the site with a &#34;Recommendations&#34; tab. But testing revealed that members preferred less prescriptive language. The new tab read &#34;Movies You&#39;ll Heart&#34; and that generated lots of clicks. The design team thought the tab was &#34;fugly,&#34; but it worked.</p>
+<p>When members arrived at the &#34;Movies You&#39;ll Heart&#34; area, the site introduced them to the &#34;Ratings Wizard&#34;:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-a-brief-history-of-netflix-personalization-untitled-5.png" src="img/fe9535e9fbc481a0.png"></p>
+<p>Members &#34;binge-rated&#34; while they waited for their DVDs to arrive. The Ratings Wizard was critical in moving the &#34;percentage of members who rate at least 50 movies in their first two months&#34; proxy metric. While members rated lots of movies using the &#34;star bar&#34; throughout the site, the Ratings Wizard was the major source of taste input.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2006: Demographic data" duration="1">
+        <p>Netflix collected age and gender data from its members, but when the team used demographics to inform predictions about a member&#39;s movie taste, the algorithms did not improve predictive power. Huh?</p>
+<p>How did Netflix measure predictive power? The proxy metric for the personalization algorithms was RMSE (Root Mean Square Error) — a calculation that measures the delta between the algorithm&#39;s predicted rating and a member&#39;s actual rating. If Netflix predicted you would like *Friends* and <em>Seinfeld</em>, four and five stars respectively, and you rated these shows four and five stars, the prediction was perfect. RMSE is a &#34;down and to the right&#34; metric that improved over time, mainly through improvements in the collaborative filtering algorithm. You can see the improvements in the rough graph below:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-a-brief-history-of-netflix-personalization-untitled-6.png" src="img/d8dae5e672be8384.png"></p>
+<p>Unfortunately, age and gender data did not improve predictions — there was no improvement in RMSE. Movie tastes are hard to predict as they are idiosyncratic — they are very peculiar and vary radically from one individual to another. Knowing my age and gender doesn&#39;t help predict my movie tastes. It&#39;s much more helpful to know just a few movies or TV shows I like.</p>
+<p>To see this insight in action today, create a new profile on your Netflix account. Netflix asks for a few titles you like to kickstart the personalization system. That&#39;s all they need to seed the system.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2006: Collaborative filtering in the QUACL" duration="1">
+        <p>The QUACL is the Queue Add Confirmation Layer. Once a member added a title to their Queue, a confirmation layer would pop up suggesting similar titles. Below, a member has added Eiken to their movie list, and the collaborative filtering algorithm suggests six similar titles:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-a-brief-history-of-netflix-personalization-untitled-7.png" src="img/d5dff3b15c05f34f.png"></p>
+<p>Over time, Netflix got better at suggesting similar titles for members to add to their queue. This drove the QUACL as a merchandising source from 10% to 15% of total queue adds over a few years. The QUACL was a great test environment for algorithm testing. In fact, Netflix executed some of its first machine-learning tests within the QUACL.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2006: The $1 million Netflix Prize" duration="1">
+        <p>Like any startup, Netflix had limited resources. They had proven the value of Cinematch but had only one engineer focused on the algorithm. The solution: Outsource algorithm development via the Netflix Prize.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-a-brief-history-of-netflix-personalization-untitled-8.png" src="img/d9b7e0a796f8fe59.png"></p>
+<p>Netflix offered a million-dollar prize to any team that improved RMSE for their Cinematch algorithm by 10%. The personalization team provided anonymized data from Netflix members as training data for the teams, along with a second dataset that included members&#39; actual ratings so teams could test their algorithms&#39; predictive power. It took two years for teams to win the money — more on that in a moment.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2007: Netflix streaming launch" duration="1">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-a-brief-history-of-netflix-personalization-untitled-9.png" src="img/9d70e1904fb734e7.png"></p>
+<p>Netflix launched streaming in January 2007. For the first time, the Netflix team had real-time data about what movies members watched, where before, they only had DVD-rental activity. Over time, this implicit data became more important in predicting members&#39; movie tastes than the explicit data Netflix collected via its five-star rating system.</p>
+<p>At the time of streaming launch in 2007, Netflix had nearly 100,000 DVDs to choose from, so the DVD merchandising challenge was to help members find &#34;hidden gems&#34; from its huge DVD library. However, with streaming, the challenge was to help members identify a few movies they&#39;d find worthwhile among the 300 fairly mediocre titles available at launch.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2007: Netflix Prize" duration="1">
+        <p>The Netflix Prize offered $1 million to any team that could improve the predictive power of Netflix&#39;s collaborative filtering algorithm by 10%, as measured by RMSE, the delta between expected and actual rating for each movie. Two years later, &#34;Bellkor&#39;s Pragmatic Chaos&#34; won the contest, beating 5,000 other teams.</p>
+<p>There were two insights from the contest:</p>
+<ul>
+<li><strong>All ratings are not created equal.</strong> Contestants discovered that the ratings members provided for recent movies provided more predictive power than older ratings.</li>
+<li><strong>The more algorithms, the better.</strong> At the end of each year, Netflix paid a $50,000 progress prize to the leading team. On the final day of the year, the teams in second and third place combined their algorithms and vaulted to the top of the leaderboard to take the annual progress prize. That&#39;s how teams learned the importance of combining lots of algorithms. That&#39;s also why the team names were so strange — when teams combined their work, they created &#34;mashup&#34; names.</li>
+</ul>
+<p>After two years, the top team delivered a 10.06% increase in RMSE to win the million-dollar prize. &#34;BellKor&#39;s Pragmatic Chaos&#34; submitted its winning algorithm 24 minutes before the second-place team, &#34;The Ensemble.&#34; The two teams had identical scores, but &#34;BellKor&#34; submitted their entry first. Here&#39;s the final leaderboard:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-a-brief-history-of-netflix-personalization-untitled-10.png" src="img/c83d1e64be068746.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2009: The next big Netflix prize" duration="1">
+        <p>When Netflix announced the winners of its first competition, it launched a second round. The new challenge was to use demographics and rental behavior to make better predictions. The algorithms could consider a member&#39;s age, gender, zip code, and full rental history.</p>
+<p>When Netflix released anonymized customer information to start the second round, the Federal Trade Commission (FTC) stepped in with a lawsuit arguing that the data wasn&#39;t sufficiently anonymized. As part of the March 2010 settlement for that suit, Netflix canceled the second round.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2010: Testing the new &#34;Netflix Prize&#34; algorithm" duration="1">
+        <p>Netflix launched the Netflix Prize contest to provide better movie choices for members, which the team hoped would translate into retention improvement. But when Netflix executed the new algorithm in a large-scale A/B test, there was no measurable retention difference. It was a disappointing result.</p>
+<p>A new hypothesis emerged. To improve retention, you needed better algorithms plus presentation-layer tactics that provided context for why Netflix chose a specific title for each member, as follows:</p>
+<ul>
+<li>Better algorithms + UI/design support/context = improved retention.</li>
+</ul>
+<p>Was it worth $1 million to execute the contest? Absolutely. The recruiting benefit alone made it worthwhile. Before the Netflix Prize, engineers considered Netflix just another e-commerce company. After the prize, they regarded Netflix as a highly innovative company.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2010: Popularity matters" duration="1">
+        <p>Netflix published all of its learnings from the Netflix Prize, and other companies studied the results. The music streaming service Pandora, whose personalization efforts focused on its &#34;Music Genome Project,&#34; was wary of weighting its algorithms with popularity. Instead, Pandora had 40 &#34;musicologists&#34; who tagged each song with hundreds of attributes to explain why a listener would like a song. For example, musicologists tagged Jack Johnson&#39;s songs as &#34;optimistic, folksy, acoustic music with surfing, outdoor adventure, and coming-of-age themes.&#34;</p>
+<p>But as Pandora evaluated the results of the Netflix Prize (which weighted popularity highly), they began to execute collaborative filtering algorithms, too. These changes improved Pandora&#39;s listening metrics. Pandora&#39;s conclusion: popularity matters.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2011: Netflix&#39;s movie genome project" duration="1">
+        <p>While admiring Pandora&#39;s work and knowing that the more algorithms, the better, Netflix began to develop its own &#34;movie genome&#34; project. They hired 30 &#34;moviecologists&#34; to tag various attributes of movies and TV shows.</p>
+<p>As a reminder, Netflix&#39;s collaborative filtering algorithm predicts you&#39;ll like a movie, but the algorithm can&#39;t provide context for why you&#39;ll like it. The Cinematch collaborative filtering algorithm leads to statements like, &#34;Because you like *Batman Begins* and <em>Breaking Bad</em>, we think you&#39;ll like <em>Sesame Street</em>.&#34; Wait, what?</p>
+<p>Netflix&#39;s new movie genome algorithm is called &#34;Category Interest.&#34; Now, for the first time, Netflix would suggest a movie and give context for why a member might like it. In the example below, Netflix knows I like *Airplane* and <em>Heathers</em>, so suggests *Ferris Bueller&#39;s Day Off* and *The Breakfast Club* because I like &#34;Cult Comedies from the 1980s&#34;:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-a-brief-history-of-netflix-personalization-untitled-11.png" src="img/a97bdd0b983c401f.png"></p>
+<p>The &#34;Category Interest&#34; algorithm improved Netflix&#39;s watching metrics — the percentage of members who watched at least 40 hours a month — but the team did not execute an A/B test to see if it improved retention.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2011: How the personalization algorithms work" duration="1">
+        <p>In simplest terms, Netflix creates a forced rank list of movies for each user — from the content most likely to please to the least. Then this list is filtered, sliced and diced according to attributes of the movies, TV shows, and the member&#39;s tastes. For instance, a filter teases out a sub-list of movies and presents it in a row called &#34;quirky dramas with strong female heroines&#34; or &#34;witty, irreverent TV shows.&#34; Other row titles might include &#34;Because You Watched <em>Stranger Things</em>, We Think You&#39;ll Enjoy... &#34; or &#34;Top 10 for You.&#34;</p>
+<p>Netflix&#39;s personalization approach has three components:</p>
+<ol type="1">
+<li>A forced-rank list of titles for each member.</li>
+<li>An understanding of the most relevant filters for each member so the algorithms can present a subset of movies and TV shows from the list above.</li>
+<li>The ability to understand the most relevant rows for each member, depending on the platform, time of day, and lots of explicit/implicit movie taste data.</li>
+</ol>
+<p>The beauty of this approach is that these rows, with appropriate context, can be displayed on any device or screen. It&#39;s easy to display the same row structure on all browsers and devices.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2011: Netflix proves personalization improved retention" duration="1">
+        <p>Finally, In 2011, Netflix demonstrated a retention improvement in a large A/B test. However, the results were controversial, as the test compared the default personalized experience at the time to a dumbed-down experience with no personalization. Netflix engineers complained the test was a waste of time. Most of the team had already accepted that personalization created a better experience for Netflix members.</p>
+<p>Recognize that Netflix had made a very long-term, 13-year, &#34;leap of faith&#34; investment in personalization until they finally had &#34;proof&#34; of retention improvement in 2011. But improvements in the proxy metric — the percentage of members who rated at least 50 movies in their first two months with the service — gave Netflix the confidence to consistently double down on personalization.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2012: Profiles reinvented" duration="1">
+        <p>As Netflix moved beyond DVDs, it no longer required members to create an ordered list of movies. Instead, members hit the &#34;Play&#34; button to begin watching a movie or TV show.</p>
+<p>Netflix had a profile feature during the DVD era, but only 2% of members used the feature, mainly because managing this forced-rank list of movies was time consuming. But now, there&#39;s nothing to manage. You provide Netflix with your name, three movies, or TV shows you enjoy, and Netflix creates a personalized experience for each user associated with that account.</p>
+<p>Today, more than half of Netflix accounts have multiple profiles. Netflix knows the movie tastes for 200 million accounts, translating into an understanding of the movie tastes of 500 million separate movie-watchers tied to the 200 million accounts.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2013: &#34;House of Cards&#34; original content launch" duration="1">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-a-brief-history-of-netflix-personalization-untitled-12.png" src="img/d35db4b0fa8a0b0.png"></p>
+<p>In 2007, during the DVD era, Netflix&#39;s first original content effort, Red Envelope Studios, failed. Despite this failure, Netflix tried again during the streaming era.</p>
+<p>Knowing that millions of members liked Kevin Spacey and <em>The West Wing</em>, Netflix made an initial $100-million bet on <em>House of Cards</em>, which paid off. Over six seasons, Netflix invested more than $500 million in the series. *House of Cards* was the first of many successful original movies and television series that Netflix invested in.</p>
+<p>By this time in Netflix&#39;s history, it&#39;s clear that personalization delights customers in hard-to-copy, margin-enhancing ways. By making movies easier to find, Netflix improves retention, which increases lifetime value (LTV). And Netflix&#39;s personalization technology is tough to copy, especially at scale.</p>
+<p>But there&#39;s another aspect of personalization that improves the company&#39;s margin: the ability for Netflix to &#34;right-size&#34; their content spend. Here are examples of Netflix&#39;s right-sizing with my best estimates on multiple content investments:</p>
+<ul>
+<li>Based on its knowledge of member tastes, Netflix predicts that 100 million members will watch *Stranger Things* and invests $500 million in the series.</li>
+<li>The data science team predicted 20 million watchers for the quirky adult cartoon <em>Bojack Horseman</em>, so Netflix invests $100 million in this animated TV series.</li>
+<li>Based on a prediction that one million members will watch Everest climbing documentaries, Netflix invests $5 million in this genre.</li>
+</ul>
+<p>Netflix has a huge advantage in its ability to right-size its original content investment, fueled by its ability to forecast how many members will watch a specific movie, documentary, or TV show. Note: Netflix does not bring data-driven approaches to the movie creation process — they are hands-off with creators.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2013: Netflix wins a technical Emmy" duration="1">
+        <p>In 2013, Netflix won an Emmy award for &#34;Personalized Recommendation Engines For Video Discovery.&#34; This award hints at the degree to which Netflix will eventually dominate the Oscars, Emmys, and Golden Globe Awards for its original content.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2015: Does it matter if you&#39;re French?" duration="1">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-a-brief-history-of-netflix-personalization-untitled-13.png" src="img/f25a46f2f0b848d.png"></p>
+<p>From 2015 to 2021, Netflix expanded from 20 to 40 languages, as they launched their service into 190 countries. The personalization team wondered if they should inform the personalization algorithms with each member&#39;s native language and country. The short answer, based on the results of A/B testing: No.</p>
+<p>Like the demographics test in 2006, members&#39; tastes are so idiosyncratic that language and geography don&#39;t help predict a member&#39;s movie preferences. As before, the most efficient way to seed a member&#39;s taste profile is to ask for a few TV shows or movies they love. Over time, Netflix builds from this &#34;seed&#34; as it informs its algorithms with the titles members rate, watch, stop watching, and even demonstrate an interest in a movie by clicking on the &#34;Movie Display Page&#34; or watching a preview.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2016: Netflix tests a personalized interface" duration="1">
+        <p>Three of the cultural values of Netflix are curiosity, candor, and courage. Netflix encourages new employees to challenge conventional wisdom when they join the company. Netflix appreciates the value of &#34;fresh eyes&#34; and encourages an iconoclastic culture.</p>
+<p>A newly hired product leader at Netflix suggested that the team test &#34;floating rows.&#34; The idea was that rows like &#34;Top 10 for Gib,&#34; &#34;Just Released,&#34; and &#34;Continue Watching&#34; should be different for each member and even change depending on the device, time of day, and other factors. Conventional wisdom suggested an inconsistent site design would confuse and annoy customers, so it&#39;s better to keep the interface consistent. But the &#34;old guard&#34; allowed the newbie to test it anyway.</p>
+<p>As Ralph Waldon Emerson once said, &#34;Consistency is the hobgoblin of small minds.&#34; Surprisingly, the inconsistent interface performed better in A/B tests. Today, even the user interface is personalized based on member&#39;s taste preferences.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-a-brief-history-of-netflix-personalization-untitled-14.png" src="img/d55aa03620b95b61.png"></p>
+<p>Note that row names that Netflix presents to you are wildly inconsistent. In this screen capture for me on PC, Netflix leads with a row entitled &#34;Trending Now&#34; and puts the &#34;Continue Watching&#34; row in the second position. The interface changes each time you use it, depending on your recent activity, platform, and time of day.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2017: From stars to thumbs" duration="1">
+        <p>By 2017, Netflix collected more than 5 billion star ratings. But over the last 10 years, Facebook popularized a different rating system: thumbs up and down. By 2017, Facebook had introduced this simple gesture to more than 2 billion users worldwide.</p>
+<p>Discovering which method inspires members to provide more taste data is simple: execute an A/B test of the five-star system against a thumbs up/down system. The result: The simpler thumbs system collected twice as many ratings.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-a-brief-history-of-netflix-personalization-untitled-15.png" src="img/6577d20638f379e1.png"></p>
+<p>Was this a surprising result? No. When you require a member to parse between three, four, or five stars, you force them to think too much. They become confounded and move on to the next activity without rating a movie. Clicking thumbs up or down is much easier. Here, as in many cases with user interfaces, simple trumps complete.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2017: What happens to the five-star system?" duration="1">
+        <p>If stars are gone, how do you communicate movie quality? Recall that one of Netflix&#39;s early hypotheses was that, over time, the average ratings of the movies watched would increase, leading to improved retention. While there was evidence that average ratings increased, nothing in the Netflix data sets suggested that higher average ratings improved retention.</p>
+<p>It turns out that movie ratings do not equal movie enjoyment. While you may appreciate that *Schindler&#39;s List* or *Hotel Rwanda* are five-star movies, it doesn&#39;t mean you *enjoy* them more than a three-star movie. Sometimes a &#34;leave your brains at the door&#34; comedy like *Paul Blart: Mall Cop* is all you need. This is the reason that one of Netflix&#39;s first big investments in original content was a four-picture deal with Adam Sandler, the king of sophomoric comedy. My favorite? <em>The Ridiculous Six</em>.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-a-brief-history-of-netflix-personalization-untitled-16.png" src="img/2d6d48c06c7ac233.png"></p>
+<p>This was one of the movies in Adam Sandler&#39;s $250 million-dollar, four-picture original content deal. Sometimes movie enjoyment is all about leaving your brains at the door with a good three-star movie.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2017: Percentage match" duration="1">
+        <p>So, with the loss of star ratings, and the insight that star ratings do not equal movie enjoyment, Netflix changed its system. They switched to a &#34;percentage match&#34; that indicated how much you would enjoy a movie, irrespective of its quality.</p>
+<p>Below, Netflix gives an &#34;80% Match&#34; for me for *The* <em>Irishman</em>. There&#39;s an 80% chance I will enjoy it, which is at the low-end for Netflix suggestions for me.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-a-brief-history-of-netflix-personalization-untitled-17.png" src="img/18739e9074b2d698.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2018: Personalized movie art" duration="1">
+        <p>The Netflix personalization team wants to present you with the right title at the right time with as much context as possible to encourage you to watch that title. To do this, Netflix uses personalized visuals that cater to each member&#39;s taste preferences.</p>
+<p>Here&#39;s a little more information from the Netflix tech blog:</p>
+<p>Let us consider trying to personalize the image we use to depict the movie Good Will Hunting. Here we might personalize this decision based on how much a member prefers different genres and themes. Someone who has watched many romantic movies may be interested in Good Will Hunting if we show the artwork containing Matt Damon and Minnie Driver, whereas, a member who has watched many comedies might be drawn to the movie if we use the artwork containing Robin Williams, a well-known comedian.</p>
+<p>Using the example above, the Netflix tech blog shares the titles that support each scenario, along with the unique movie art that Netflix presents to different members. The top row supports a member interested in romantic movies, with the image of Matt Damon and Minnie Driver as the hero. The bottom row is for members who enjoy watching well-known comedians. In this example, Robin Williams is featured.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-a-brief-history-of-netflix-personalization-untitled-18.png" src="img/2719a35badba76d4.png"></p>
+<p>Not only does Netflix use its knowledge of member taste to choose the right movie, but it takes member tastes into account to support these choices through highly personalized visuals.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="2021: Do you feel lucky?" duration="1">
+        <p>The ultimate personalization is you turn on your TV, and Netflix magically plays a movie you&#39;ll love. Netflix&#39;s first experiment with this concept is a feature that the company co-CEO, Reed Hastings (jokingly), called the &#34;I feel lucky&#34; button.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-a-brief-history-of-netflix-personalization-untitled-19.png" src="img/4eb3601e1ca0dd99.png"></p>
+<p>Note that when you sign onto your profile on a TV-based system, there&#39;s a new &#34;Play Something&#34; button. Think of this button as a proxy for how well Netflix algorithms connect members with movies they&#39;ll love. I&#39;d guess that 2–3% of the plays come from this button today. If this &#34;Play Something&#34; button generates 10% usage a few years from now, it&#39;s a strong indication that Netflix personalization is doing a better job connecting its members with movies they&#39;ll love.</p>
+<p>Here&#39;s the long-term personalization vision: Twenty years from now, Netflix will eliminate both the &#34;Play Something&#34; button and its personalized merchandising system, and that one special movie you&#39;re in the mood to watch at that particular moment will automatically begin to play.</p>
+<p>My guess is that Netflix will achieve this vision within 20 years. They&#39;ve come a long way in the last 20 years, so I think this is feasible.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusion" duration="2">
+        <p>Today, more than 80% of the TV shows and movies that Netflix members watch are merchandised to you by Netflix&#39;s personalization algorithms.</p>
+<p>Netflix&#39;s personalization journey has had its share of ups and downs. But eventually, personalization enabled Netflix to build a hard-to-copy technological advantage that delights customers in margin-enhancing ways.</p>
+<p>For product leaders engaged in innovative projects, Netflix&#39;s journey highlights the need for:</p>
+<ul>
+<li><strong>A plan:</strong> A product strategy with accompanying metrics and tactics.</li>
+<li><strong>A method</strong> to quickly test various hypotheses.</li>
+<li><strong>A culture</strong> that encourages risk-taking, intellectual curiosity, candor, plus the courage to say, &#34;Let&#39;s try this idea.&#34;</li>
+</ul>
+<p>The last requirement: patience. It takes decades to build a world-class product and company.</p>
+<h2 is-upgraded>Links and References</h2>
+<ul>
+<li><a href="https://marker.medium.com/a-brief-history-of-netflix-personalization-1f2debf010a1" target="_blank">Originally published as a medium blog post</a></li>
+</ul>
+<h2 is-upgraded>Have a Question?</h2>
+<ul>
+<li><a href="https://form.jotform.com/211377288388469" target="_blank">Fill out this form</a></li>
+<li><a href="https://github.com/recohut/reco-step/issues" target="_blank">Raise issue on Github</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="scripts/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
