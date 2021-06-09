@@ -83,6 +83,7 @@ jobs:
         cp -r ./codelabs ./stage/dist
     - name: Add CNAME
       run: |
+        cd ./site/stage/dist
         touch CNAME
         echo 'step.recohut.com' > CNAME
     - name: Deploy
