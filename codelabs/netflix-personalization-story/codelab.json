@@ -1,0 +1,25 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-09T17:29:35Z",
+  "id": "netflix-personalization-story",
+  "duration": 37,
+  "title": "A Brief History of Netflix Personalization",
+  "authors": "Sparsh A.",
+  "summary": "From startup in 1998 to today, a detailed history of the strategy, metrics, and experiments Netflix executes to develop a personalized experience focused on delivering its members movies they love",
+  "source": "./a-brief-history-of-netflix-personalization-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "story"
+  ],
+  "tags": [
+    "movie"
+  ],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "netflix-personalization-story"
+}

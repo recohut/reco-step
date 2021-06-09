@@ -1,0 +1,23 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-09T17:29:33Z",
+  "id": "how-to-create-your-own-codelab",
+  "duration": 21,
+  "title": "How to create your own codelab (automated)",
+  "authors": "Sparsh A.",
+  "summary": "In this tutorial, we will learn how to setup our own tutorial repositories using codelab and git actions.",
+  "source": "./how-to-create-your-own-codelab.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "tutorial"
+  ],
+  "tags": [],
+  "feedback": "https://form.jotform.com/211377288388469",
+  "url": "how-to-create-your-own-codelab"
+}

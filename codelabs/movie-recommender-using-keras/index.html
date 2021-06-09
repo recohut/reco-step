@@ -1,0 +1,351 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>How to build a movie recommender using Keras</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="movie-recommender-using-keras"
+                  title="How to build a movie recommender using Keras"
+                  environment="web"
+                  feedback-link="https://github.com/recohut/reco-step/issues">
+    
+      <google-codelab-step label="Introduction" duration="5">
+        <p>Our task is to predict the rating for a user/movie pair, with the idea that if we had a model that&#39;s good at this task then we could predict how a user would rate movies they haven&#39;t seen yet and recommend movies with the highest predicted rating.</p>
+<h2 is-upgraded>What you&#39;ll learn?</h2>
+<ul>
+<li>Tensorflow Keras basics</li>
+<li>MovieLens Latest Small dataset exploration</li>
+<li>Neural net training and testing</li>
+</ul>
+<h2 is-upgraded>Why is this important?</h2>
+<ul>
+<li>Tensorflow keras is a powerful library for building deep neural nets and we should have a good understanding of it to build advanced recommender systems</li>
+<li>Neural net based recommender models often gives superios performance over traditional models and this tutorial is a base to build your skill in this zone</li>
+</ul>
+<h2 is-upgraded>How it will work?</h2>
+<ul>
+<li>We will use Colab, an online Ipython notebook, for this tutorial</li>
+<li>Download the movielens dataset</li>
+<li>Preprocess to make it ready to be consumed by the neural model</li>
+<li>Design simple neural net model architecture</li>
+<li>Train the model</li>
+<li>Design an advanced neural net model architecture on top of the basic one</li>
+<li>Again, train this advanced model</li>
+<li>Analyze and compare the models</li>
+<li>Build a simple inference function to get top-K recommendation for the given user</li>
+</ul>
+<h2 is-upgraded>Who is this for?</h2>
+<ul>
+<li>People who are new in deep learning</li>
+<li>People looking to use tensorflow keras to build deep recommender models</li>
+</ul>
+<h2 is-upgraded>Important resources</h2>
+<ul>
+<li><a href="https://colab.research.google.com/gist/sparsh-ai/a60290ed48b0f2db6935a086cbf9a908/recohut-tutorial-stage-movielens-deep-learning-recommender-keras.ipynb" target="_blank">Colab notebook</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Download and data" duration="2">
+        <p>We will directly feed the URL into pandas, to download the csv file as Pandas dataframe.</p>
+<p>This will download the <code>ratings</code> data:</p>
+<pre><code language="language-python" class="language-python">ratings = pd.read_csv(&#39;https://github.com/sparsh-ai/reco-data/blob/master/MovieLens_LatestSmall_ratings.csv?raw=true&#39;)
+ratings.head()
+</code></pre>
+<p>In the above code snippet, first line will download the data and second line is to print the top N rows (default is 5, but we can mention any number inside those brackets). This is how the top-5 rows looks for the <code>ratings</code> data:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-how-to-build-a-movie-recommender-using-keras-untitled.png" src="img/d01b24f56b06aa7.png"></p>
+<p>and this will download the movies data:</p>
+<pre><code language="language-python" class="language-python">movies = pd.read_csv(&#39;https://github.com/sparsh-ai/reco-data/blob/master/MovieLens_LatestSmall_movies.csv?raw=true&#39;)
+movies.head()
+</code></pre>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-how-to-build-a-movie-recommender-using-keras-untitled-1.png" src="img/97bcdf5154e0f7af.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Preprocessing" duration="5">
+        <h2 is-upgraded>Pivot table</h2>
+<p>To get a better sense of what the data looks like, we can turn it into a table by selecting the top 15 users/movies from the data and joining them together. The result shows how each of the top users rated each of the top movies.</p>
+<pre><code language="language-python" class="language-python">g = ratings.groupby(&#39;userId&#39;)[&#39;rating&#39;].count()
+top_users = g.sort_values(ascending=False)[:15]
+
+g = ratings.groupby(&#39;movieId&#39;)[&#39;rating&#39;].count()
+top_movies = g.sort_values(ascending=False)[:15]
+
+top_r = ratings.join(top_users, rsuffix=&#39;_r&#39;, how=&#39;inner&#39;, on=&#39;userId&#39;)
+top_r = top_r.join(top_movies, rsuffix=&#39;_r&#39;, how=&#39;inner&#39;, on=&#39;movieId&#39;)
+
+pd.crosstab(top_r.userId, top_r.movieId, top_r.rating, aggfunc=np.sum)
+</code></pre>
+<p>In this snippet, we are using pandas <code>groupby</code> method to identify and grab the top-15 users and items from the ratings dataframe, and then using <code>crosstab</code> method to create the pivot table.</p>
+<p>This is how the table looks. In this table e.g., user 68 gave a rating of 2.5 to movie 1, and user 288 hasn&#39;t yet gave any rating to movie 50. And we are assuming that this user hasn&#39;t seen this movie. Our objective is to estimate this rating value.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-how-to-build-a-movie-recommender-using-keras-untitled-2.png" src="img/3edb9510c723140e.png"></p>
+<h2 is-upgraded>Encoding</h2>
+<p>To build our first collaborative filtering model, we need to take care of a few things first. The user/movie fields are currently non-sequential integers representing some unique ID for that entity. We need them to be sequential starting at zero to use for modeling (you&#39;ll see why later). We can use scikit-learn&#39;s LabelEncoder class to transform the fields. We&#39;ll also create variables with the total number of unique users and movies in the data, as well as the min and max ratings present in the data, for reasons that will become apparent shortly.</p>
+<pre><code language="language-python" class="language-python">user_enc = LabelEncoder()
+ratings[&#39;user&#39;] = user_enc.fit_transform(ratings[&#39;userId&#39;].values)
+n_users = ratings[&#39;user&#39;].nunique()
+
+item_enc = LabelEncoder()
+ratings[&#39;movie&#39;] = item_enc.fit_transform(ratings[&#39;movieId&#39;].values)
+n_movies = ratings[&#39;movie&#39;].nunique()
+
+ratings[&#39;rating&#39;] = ratings[&#39;rating&#39;].values.astype(np.float32)
+min_rating = min(ratings[&#39;rating&#39;])
+max_rating = max(ratings[&#39;rating&#39;])
+
+n_users, n_movies, min_rating, max_rating
+</code></pre>
+<h2 is-upgraded>Train/test split</h2>
+<pre><code language="language-python" class="language-python">X = ratings[[&#39;user&#39;, &#39;movie&#39;]].values
+y = ratings[&#39;rating&#39;].values
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42)
+
+X_train.shape, X_test.shape, y_train.shape, y_test.shape
+</code></pre>
+<p>We are using sklearn&#39;s <code>train_test_split</code> method to split the dataset into train and test set. <em>test_size=0.1</em> means 90% of the data is in train set and remaining 10% in test set. In last line of the above snippet, we are printing the shaped of datasets, which looks like this:</p>
+<p><code>((90752, 2), (10084, 2), (90752,), (10084,))</code></p>
+<p>Another constant we&#39;ll need for the model is the number of factors per user/movie. This number can be whatever we want, however for the collaborative filtering model it does need to be the same size for both users and movies. The famous prof. Jeremy Howard said he played around with different numbers and 50 seemed to work best so we&#39;ll go with that.</p>
+<p>Finally, we need to turn users and movies into separate arrays in the training and test data. This is because in Keras they&#39;ll each be defined as distinct inputs, and the way Keras works is each input needs to be fed in as its own array.</p>
+<pre><code language="language-python" class="language-python">n_factors = 50
+
+X_train_array = [X_train[:, 0], X_train[:, 1]]
+X_test_array = [X_test[:, 0], X_test[:, 1]]
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Model version 1" duration="5">
+        <p>Now we get to the model itself. The main idea here is we&#39;re going to use embeddings to represent each user and each movie in the data. These embeddings will be vectors (of size n_factors) that start out as random numbers but are fit by the model to capture the essential qualities of each user/movie. We can accomplish this by computing the dot product between a user vector and a movie vector to get a predicted rating. The code is fairly simple, there isn&#39;t even a traditional neural network layer or activation involved. I stuck some regularization on the embedding layers and used a different initializer but even that probably isn&#39;t necessary. Notice that this is where we need the number of unique users and movies, since those are required to define the size of each embedding matrix.</p>
+<pre><code language="language-python" class="language-python">def RecommenderV1(n_users, n_movies, n_factors):
+    user = Input(shape=(1,))
+    u = Embedding(n_users, n_factors, embeddings_initializer=&#39;he_normal&#39;,
+                  embeddings_regularizer=l2(1e-6))(user)
+    u = Reshape((n_factors,))(u)
+    
+    movie = Input(shape=(1,))
+    m = Embedding(n_movies, n_factors, embeddings_initializer=&#39;he_normal&#39;,
+                  embeddings_regularizer=l2(1e-6))(movie)
+    m = Reshape((n_factors,))(m)
+    
+    x = Dot(axes=1)([u, m])
+
+    model = Model(inputs=[user, movie], outputs=x)
+    opt = Adam(learning_rate=0.001)
+    model.compile(loss=&#39;mean_squared_error&#39;, optimizer=opt)
+
+    return model
+</code></pre>
+<p>This is kind of a neat example of how flexible and powerful modern computation frameworks like Keras and PyTorch are. Even though these are billed as deep learning libraries, they have the building blocks to quickly create any computation graph you want and get automatic differentiation essentially for free. Below you can see that all of the parameters are in the embedding layers, we don&#39;t have any traditional neural net components at all.</p>
+<p>The model architecture would look like this:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-how-to-build-a-movie-recommender-using-keras-untitled-3.png" src="img/27576bbd5f0a9963.png"></p>
+<p>Let&#39;s go ahead and train this for a few epochs and see what we get.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-how-to-build-a-movie-recommender-using-keras-untitled-4.png" src="img/b0526f647ee14d79.png"></p>
+<p>The training loss is low but validation loss is comparatively very high and not decreasing. This clearly indicates that the model is overfitting because it just memorized all the patterns in training set and when we ask to predict unseen ratings, which are in validation set, model didn&#39;t performed at all.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Model version 2" duration="5">
+        <p>The model we trained in previous step is not bad for a first try. We can make some improvements though. The first thing we can do is add a &#34;bias&#34; to each embedding. The concept is similar to the bias in a fully-connected layer or the intercept in a linear model. It just provides an extra degree of freedom. We can implement this idea using new embedding layers with a vector length of one. The bias embeddings get added to the result of the dot product.</p>
+<p>The second improvement we can make is running the output of the dot product through a sigmoid layer and then scaling the result using the min and max ratings in the data. This is a neat technique that introduces a non-linearity into the output and results in a modest performance bump.</p>
+<p>I also refactored the code a bit by pulling out the embedding layer and reshape operation into a separate class.</p>
+<pre><code language="language-python" class="language-python">class EmbeddingLayer:
+    def __init__(self, n_items, n_factors):
+        self.n_items = n_items
+        self.n_factors = n_factors
+    
+    def __call__(self, x):
+        x = Embedding(self.n_items, self.n_factors, embeddings_initializer=&#39;he_normal&#39;,
+                      embeddings_regularizer=l2(1e-6))(x)
+        x = Reshape((self.n_factors,))(x)
+        return x
+</code></pre>
+<p>The improved model design code is as follows:</p>
+<pre><code language="language-python" class="language-python">def RecommenderV2(n_users, n_movies, n_factors, min_rating, max_rating):
+    user = Input(shape=(1,))
+    u = EmbeddingLayer(n_users, n_factors)(user)
+    ub = EmbeddingLayer(n_users, 1)(user)
+    
+    movie = Input(shape=(1,))
+    m = EmbeddingLayer(n_movies, n_factors)(movie)
+    mb = EmbeddingLayer(n_movies, 1)(movie)
+
+    x = Dot(axes=1)([u, m])
+    x = Add()([x, ub, mb])
+    x = Activation(&#39;sigmoid&#39;)(x)
+    x = Lambda(lambda x: x * (max_rating - min_rating) + min_rating)(x)
+
+    model = Model(inputs=[user, movie], outputs=x)
+    opt = Adam(learning_rate=0.001)
+    model.compile(loss=&#39;mean_squared_error&#39;, optimizer=opt)
+
+    return model
+</code></pre>
+<p>The model summary shows the new graph. Notice the additional embedding layers with parameter numbers equal to the unique user and movie counts.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-how-to-build-a-movie-recommender-using-keras-untitled-5.png" src="img/339910cfb45e21c3.png"></p>
+<p>Let&#39;s train this one for a few epochs and see how it performs:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-how-to-build-a-movie-recommender-using-keras-untitled-6.png" src="img/7de77db51fa332b3.png"></p>
+<p>Unlike the previous model, here we can see that both train and validation loss is decreasing and the difference is not huge. Those two additions to the model resulted in a pretty sizable improvement. Validation error is now down to ~0.76 which is about as good as what Jeremy got (and I believe close to SOTA for this data set).</p>
+<p>That pretty much covers the conventional approach to solving this problem, but there&#39;s another way we can tackle this. Let&#39;s see in next step.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Model version 3" duration="5">
+        <p>Instead of taking the dot product of the embedding vectors, what if we just concatenated the embeddings together and stuck a fully-connected layer on top of them? It&#39;s still not technically &#34;deep&#34; but it would at least be a neural network! To modify the code, we can remove the bias embeddings from V2 and do a concat on the embedding layers instead. Then we can add some dropout, insert a dense layer, and stick some dropout on the dense layer as well. Finally, we&#39;ll run it through a single-unit dense layer to keep the sigmoid trick at the end.</p>
+<pre><code language="language-python" class="language-python">def RecommenderNet(n_users, n_movies, n_factors, min_rating, max_rating):
+    user = Input(shape=(1,))
+    u = EmbeddingLayer(n_users, n_factors)(user)
+    
+    movie = Input(shape=(1,))
+    m = EmbeddingLayer(n_movies, n_factors)(movie)
+    
+    x = Concatenate()([u, m])
+    x = Dropout(0.05)(x)
+    
+    x = Dense(10, kernel_initializer=&#39;he_normal&#39;)(x)
+    x = Activation(&#39;relu&#39;)(x)
+    x = Dropout(0.5)(x)
+    
+    x = Dense(1, kernel_initializer=&#39;he_normal&#39;)(x)
+    x = Activation(&#39;sigmoid&#39;)(x)
+    x = Lambda(lambda x: x * (max_rating - min_rating) + min_rating)(x)
+
+    model = Model(inputs=[user, movie], outputs=x)
+    opt = Adam(learning_rate=0.001)
+    model.compile(loss=&#39;mean_squared_error&#39;, optimizer=opt)
+
+    return model
+</code></pre>
+<p>The architecture would look like this:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-how-to-build-a-movie-recommender-using-keras-untitled-7.png" src="img/edab88e8bc14273.png"></p>
+<p>Training for a few epochs gives us pretty good results:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-how-to-build-a-movie-recommender-using-keras-untitled-8.png" src="img/73cacd03fc82b3a7.png"></p>
+<p>Without doing any tuning at all we still managed to get a result that&#39;s pretty close to the best performance we saw with the traditional approach. This technique has the added benefit that we can easily incorporate additional features into the model. For instance, we could create some date features from the timestamp or throw in the movie genres as a new embedding layer. We could tune the size of the movie and user embeddings independently since they no longer need to match. Lots of possibilities here.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Model version 4" duration="2">
+        <p>Let&#39;s build a more advanced version of the model by adding bias and regularization techniques.</p>
+<pre><code language="language-python" class="language-python">class RecommenderNetV2(Model):
+    def __init__(self, num_users, num_movies, embedding_size, **kwargs):
+        super(RecommenderNetV2, self).__init__(**kwargs)
+        self.num_users = num_users
+        self.num_movies = num_movies
+        self.embedding_size = embedding_size
+        self.user_embedding = layers.Embedding(
+            num_users,
+            embedding_size,
+            embeddings_initializer=&#34;he_normal&#34;,
+            embeddings_regularizer=keras.regularizers.l2(1e-6),
+        )
+        self.user_bias = layers.Embedding(num_users, 1)
+        self.movie_embedding = layers.Embedding(
+            num_movies,
+            embedding_size,
+            embeddings_initializer=&#34;he_normal&#34;,
+            embeddings_regularizer=keras.regularizers.l2(1e-6),
+        )
+        self.movie_bias = layers.Embedding(num_movies, 1)
+
+    def call(self, inputs):
+        user_vector = self.user_embedding(inputs[:, 0])
+        user_bias = self.user_bias(inputs[:, 0])
+        movie_vector = self.movie_embedding(inputs[:, 1])
+        movie_bias = self.movie_bias(inputs[:, 1])
+        dot_user_movie = tf.tensordot(user_vector, movie_vector, 2)
+        # Add all the components (including bias)
+        x = dot_user_movie + user_bias + movie_bias
+        # The sigmoid activation forces the rating to between 0 and 1
+        return tf.nn.sigmoid(x)
+</code></pre>
+<p>To compile and train the model, we will use the following settings:</p>
+<pre><code language="language-python" class="language-python">model = RecommenderNetV2(num_users, num_movies, EMBEDDING_SIZE)
+model.compile(
+    loss=BinaryCrossentropy(),
+    optimizer=Adam(learning_rate=0.001)
+)
+
+history = model.fit(
+    x=x_train,
+    y=y_train,
+    batch_size=64,
+    epochs=5,
+    verbose=1,
+    validation_data=(x_val, y_val),
+)
+</code></pre>
+<p>Training for a few epochs already gives us impressive results:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-how-to-build-a-movie-recommender-using-keras-untitled-9.png" src="img/342baed47f55a392.png"></p>
+<p>The loss curve plot would look like this:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-how-to-build-a-movie-recommender-using-keras-untitled-10.png" src="img/688ebf017f061659.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Inference" duration="2">
+        <p>In this step, we will build a simple method to recommend top-10 movies for the given user id. We will be using the model version 4 that we trained in last step. To test it out, let&#39;s take an example of a random user. First, print out the top movies rated by that user and then print out the top-10 predicted movies for that user.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-how-to-build-a-movie-recommender-using-keras-untitled-11.png" src="img/6b223d164d1dbca9.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusion" duration="2">
+        <p>Congratulations!</p>
+<h2 class="checklist" is-upgraded>What we&#39;ve covered</h2>
+<ul>
+<li>Loaded and preprocessed movielens dataset</li>
+<li>Trained and compared 4 versions of neural net models using tensorflow keras</li>
+</ul>
+<h2 is-upgraded>Next steps</h2>
+<ul>
+<li>Train for more epochs to see if performance improves</li>
+<li>Add more enhancements to the model</li>
+</ul>
+<h2 is-upgraded>Links and References</h2>
+<ul>
+<li><a href="https://www.johnwittenauer.net/deep-learning-with-keras-recommender-systems/" target="_blank">Deep Learning With Keras: Recommender Systems</a></li>
+<li><a href="https://keras.io/examples/structured_data/collaborative_filtering_movielens/" target="_blank">Collaborative Filtering for Movie Recommendations</a></li>
+</ul>
+<h2 is-upgraded>Have a Question?</h2>
+<ul>
+<li><a href="https://form.jotform.com/211377288388469" target="_blank">Fill out this form</a></li>
+<li><a href="https://github.com/recohut/reco-step/issues" target="_blank">Raise issue on Github</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,2510 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Movielens Exploratory Data and Graph Analysis</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="movielens-data-exploration"
+                  title="Movielens Exploratory Data and Graph Analysis"
+                  environment="web"
+                  feedback-link="https://github.com/recohut/reco-step/issues">
+    
+      <google-codelab-step label="Introduction" duration="5">
+        <h2 is-upgraded>What you&#39;ll learn?</h2>
+<ul>
+<li>How to perform EDA on recommender datasets</li>
+<li>How to explore graph patterns in the data</li>
+</ul>
+<h2 is-upgraded>Why is this important?</h2>
+<ul>
+<li>EDA is an important step to understand data, before modeling</li>
+<li>In recommender systems, EDA is often overlooked and we often jump to data preprocessing and modeling process</li>
+<li>Movielens is a good dataset for explaining EDA process</li>
+</ul>
+<h2 is-upgraded>How it will work?</h2>
+<ul>
+<li>Load the data</li>
+<li>Statistical analysis</li>
+<li>User data analysis</li>
+<li>Graph analysis</li>
+</ul>
+<h2 is-upgraded>Who is this for?</h2>
+<ul>
+<li>People who are interested in understanding the data EDA process</li>
+</ul>
+<h2 is-upgraded>Important resources</h2>
+<ul>
+<li><a href="https://colab.research.google.com/gist/sparsh-ai/d2611797f5fbebc07c82a556ae0a85cd/recograph-06-movielens-network-visualization.ipynb" target="_blank">Colab notebook</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Load the data" duration="2">
+        <p>The data file introduction is below:</p>
+<ol type="1">
+<li><strong>u.data</strong>:   The full u data set, <code>100000 ratings</code> by <code>943 users</code> on <code>1682 items</code>. Each user has rated at least 20 movies.  Users and items are numbered consecutively from 1.  The data is randomly ordered. The time stamps are unix seconds since 1/1/1970 UTC.</li>
+<li><strong>u.item</strong>: Information about the items (movies); The last <code>19 fields</code> are the genres, a 1 indicates the movie is of that genre, a 0 indicates it is not; movies can be in several genres at once.</li>
+<li><strong>u.genre</strong>: A list of the genres.</li>
+<li><strong>u.user</strong>: Demographic information about the users</li>
+<li><strong>u.occupation</strong>: A list of the occupations.</li>
+</ol>
+<pre><code language="language-python" class="language-python">!wget http://files.grouplens.org/datasets/movielens/ml-100k.zip
+!unzip ml-100k.zip
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Movie data analysis" duration="15">
+        <pre><code language="language-python" class="language-python">############################### Genre of the movies ############################### 
+genre_data= pd.read_csv(&#39;ml-100k/u.genre&#39;,sep=&#39;|&#39;,names=[&#34;movie_type&#34;, &#34;type_id&#34;])
+genre_data.head()
+</code></pre>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<table>
+<tr><td colspan="1" rowspan="1"><p>movie_type</p>
+</td><td colspan="1" rowspan="1"><p>type_id</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>unknown</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Action</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Adventure</p>
+</td><td colspan="1" rowspan="1"><p>2</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Animation</p>
+</td><td colspan="1" rowspan="1"><p>3</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>Children&#39;s</p>
+</td><td colspan="1" rowspan="1"><p>4</p>
+</td></tr>
+</table>
+<pre><code language="language-python" class="language-python">genre_cls = [&#34;unknown&#34;, &#34;Action&#34;, &#34;Adventure&#34;, &#34;Animation&#34;, \
+              &#34;Childrens&#34;, &#34;Comedy&#34;, &#34;Crime&#34;, &#34;Documentary&#34;, &#34;Drama&#34;, &#34;Fantasy&#34;, &#34;Film-Noir&#34;, &#34;Horror&#34;, &#34;Musical&#34;, &#34;Mystery&#34;, &#34;Romance&#34;, \
+              &#34;Sci-Fi&#34;, &#34;Thriller&#34;, &#34;War&#34;, &#34;Western&#34;]
+</code></pre>
+<pre><code language="language-python" class="language-python">############################### Information about the items (movies) ###############################
+column_names = [&#34;movie_id&#34;, &#34;movie_title&#34;, &#34;release_date&#34;, &#34;video_release_date&#34;, &#34;IMDb_URL&#34;, &#34;unknown&#34;, &#34;Action&#34;, &#34;Adventure&#34;, &#34;Animation&#34;, \
+              &#34;Childrens&#34;, &#34;Comedy&#34;, &#34;Crime&#34;, &#34;Documentary&#34;, &#34;Drama&#34;, &#34;Fantasy&#34;, &#34;Film-Noir&#34;, &#34;Horror&#34;, &#34;Musical&#34;, &#34;Mystery&#34;, &#34;Romance&#34;, \
+              &#34;Sci-Fi&#34;, &#34;Thriller&#34;, &#34;War&#34;, &#34;Western&#34;]
+movies_data = pd.read_csv(&#39;ml-100k/u.item&#39;,sep=&#39;|&#39;, names=column_names,encoding = &#34;ISO-8859-1&#34;)
+movies_data[&#39;release_date&#39;] = pd.to_datetime(movies_data[&#39;release_date&#39;])
+movies_data.rename(columns = {&#39;movie_id&#39;:&#39;item_id&#39;}, inplace = True) 
+movies_data
+</code></pre>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<table>
+<tr><td colspan="1" rowspan="1"><p>item_id</p>
+</td><td colspan="1" rowspan="1"><p>movie_title</p>
+</td><td colspan="1" rowspan="1"><p>release_date</p>
+</td><td colspan="1" rowspan="1"><p>video_release_date</p>
+</td><td colspan="1" rowspan="1"><p>IMDb_URL</p>
+</td><td colspan="1" rowspan="1"><p>unknown</p>
+</td><td colspan="1" rowspan="1"><p>Action</p>
+</td><td colspan="1" rowspan="1"><p>Adventure</p>
+</td><td colspan="1" rowspan="1"><p>Animation</p>
+</td><td colspan="1" rowspan="1"><p>Childrens</p>
+</td><td colspan="1" rowspan="1"><p>Comedy</p>
+</td><td colspan="1" rowspan="1"><p>Crime</p>
+</td><td colspan="1" rowspan="1"><p>Documentary</p>
+</td><td colspan="1" rowspan="1"><p>Drama</p>
+</td><td colspan="1" rowspan="1"><p>Fantasy</p>
+</td><td colspan="1" rowspan="1"><p>Film-Noir</p>
+</td><td colspan="1" rowspan="1"><p>Horror</p>
+</td><td colspan="1" rowspan="1"><p>Musical</p>
+</td><td colspan="1" rowspan="1"><p>Mystery</p>
+</td><td colspan="1" rowspan="1"><p>Romance</p>
+</td><td colspan="1" rowspan="1"><p>Sci-Fi</p>
+</td><td colspan="1" rowspan="1"><p>Thriller</p>
+</td><td colspan="1" rowspan="1"><p>War</p>
+</td><td colspan="1" rowspan="1"><p>Western</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>Toy Story (1995)</p>
+</td><td colspan="1" rowspan="1"><p>1995-01-01</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/M/title-exact?Toy%20Story%2...</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>2</p>
+</td><td colspan="1" rowspan="1"><p>GoldenEye (1995)</p>
+</td><td colspan="1" rowspan="1"><p>1995-01-01</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/M/title-exact?GoldenEye%20(...</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>3</p>
+</td><td colspan="1" rowspan="1"><p>Four Rooms (1995)</p>
+</td><td colspan="1" rowspan="1"><p>1995-01-01</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/M/title-exact?Four%20Rooms%...</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>4</p>
+</td><td colspan="1" rowspan="1"><p>Get Shorty (1995)</p>
+</td><td colspan="1" rowspan="1"><p>1995-01-01</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/M/title-exact?Get%20Shorty%...</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>5</p>
+</td><td colspan="1" rowspan="1"><p>Copycat (1995)</p>
+</td><td colspan="1" rowspan="1"><p>1995-01-01</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/M/title-exact?Copycat%20(1995)</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>1678</p>
+</td><td colspan="1" rowspan="1"><p>Mat&#39; i syn (1997)</p>
+</td><td colspan="1" rowspan="1"><p>1998-02-06</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/M/title-exact?Mat%27+i+syn+...</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>1679</p>
+</td><td colspan="1" rowspan="1"><p>B. Monkey (1998)</p>
+</td><td colspan="1" rowspan="1"><p>1998-02-06</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/M/title-exact?B%2E+Monkey+(...</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>1680</p>
+</td><td colspan="1" rowspan="1"><p>Sliding Doors (1998)</p>
+</td><td colspan="1" rowspan="1"><p>1998-01-01</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/Title?Sliding+Doors+(1998)</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>1681</p>
+</td><td colspan="1" rowspan="1"><p>You So Crazy (1994)</p>
+</td><td colspan="1" rowspan="1"><p>1994-01-01</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/M/title-exact?You%20So%20Cr...</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>1682</p>
+</td><td colspan="1" rowspan="1"><p>Scream of Stone (Schrei aus Stein) (1991)</p>
+</td><td colspan="1" rowspan="1"><p>1996-03-08</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/M/title-exact?Schrei%20aus%...</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td></tr>
+</table>
+<p>1682 rows × 24 columns</p>
+<h2 is-upgraded>Duplicated records</h2>
+<p>We found that there are movies that share exactly the same information but with different item_id (primary key). And there are exactly 18 movies that has such a duplication so in total 36 records that are not unique. We deal with these duplications later on, after checking if the original and the duplicate are both rated by users.</p>
+<pre><code language="language-python" class="language-python">duplicated = movies_data[movies_data.duplicated(&#39;movie_title&#39;, False)].sort_values(by = &#39;movie_title&#39;)
+duplicated.head()
+</code></pre>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<table>
+<tr><td colspan="1" rowspan="1"><p>item_id</p>
+</td><td colspan="1" rowspan="1"><p>movie_title</p>
+</td><td colspan="1" rowspan="1"><p>release_date</p>
+</td><td colspan="1" rowspan="1"><p>video_release_date</p>
+</td><td colspan="1" rowspan="1"><p>IMDb_URL</p>
+</td><td colspan="1" rowspan="1"><p>unknown</p>
+</td><td colspan="1" rowspan="1"><p>Action</p>
+</td><td colspan="1" rowspan="1"><p>Adventure</p>
+</td><td colspan="1" rowspan="1"><p>Animation</p>
+</td><td colspan="1" rowspan="1"><p>Childrens</p>
+</td><td colspan="1" rowspan="1"><p>Comedy</p>
+</td><td colspan="1" rowspan="1"><p>Crime</p>
+</td><td colspan="1" rowspan="1"><p>Documentary</p>
+</td><td colspan="1" rowspan="1"><p>Drama</p>
+</td><td colspan="1" rowspan="1"><p>Fantasy</p>
+</td><td colspan="1" rowspan="1"><p>Film-Noir</p>
+</td><td colspan="1" rowspan="1"><p>Horror</p>
+</td><td colspan="1" rowspan="1"><p>Musical</p>
+</td><td colspan="1" rowspan="1"><p>Mystery</p>
+</td><td colspan="1" rowspan="1"><p>Romance</p>
+</td><td colspan="1" rowspan="1"><p>Sci-Fi</p>
+</td><td colspan="1" rowspan="1"><p>Thriller</p>
+</td><td colspan="1" rowspan="1"><p>War</p>
+</td><td colspan="1" rowspan="1"><p>Western</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>670</p>
+</td><td colspan="1" rowspan="1"><p>Body Snatchers (1993)</p>
+</td><td colspan="1" rowspan="1"><p>1993-01-01</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/M/title-exact?Body%20Snatch...</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>573</p>
+</td><td colspan="1" rowspan="1"><p>Body Snatchers (1993)</p>
+</td><td colspan="1" rowspan="1"><p>1993-01-01</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/M/title-exact?Body%20Snatch...</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>1650</p>
+</td><td colspan="1" rowspan="1"><p>Butcher Boy, The (1998)</p>
+</td><td colspan="1" rowspan="1"><p>1998-01-01</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/M/title-exact?imdb-title-11...</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>1645</p>
+</td><td colspan="1" rowspan="1"><p>Butcher Boy, The (1998)</p>
+</td><td colspan="1" rowspan="1"><p>1998-01-01</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/M/title-exact?imdb-title-11...</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>1234</p>
+</td><td colspan="1" rowspan="1"><p>Chairman of the Board (1998)</p>
+</td><td colspan="1" rowspan="1"><p>1998-01-01</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/Title?Chairman+of+the+Board...</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td></tr>
+</table>
+<h2 is-upgraded>NaN record</h2>
+<p>We find that there is a record contains NaN for most of its attributes. However, we later on also found that there are users who did rate this item. So we decide not to drop this record.</p>
+<pre><code language="language-python" class="language-python">movies_data[movies_data.release_date.isnull()]
+</code></pre>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<table>
+<tr><td colspan="1" rowspan="1"><p>item_id</p>
+</td><td colspan="1" rowspan="1"><p>movie_title</p>
+</td><td colspan="1" rowspan="1"><p>release_date</p>
+</td><td colspan="1" rowspan="1"><p>video_release_date</p>
+</td><td colspan="1" rowspan="1"><p>IMDb_URL</p>
+</td><td colspan="1" rowspan="1"><p>unknown</p>
+</td><td colspan="1" rowspan="1"><p>Action</p>
+</td><td colspan="1" rowspan="1"><p>Adventure</p>
+</td><td colspan="1" rowspan="1"><p>Animation</p>
+</td><td colspan="1" rowspan="1"><p>Childrens</p>
+</td><td colspan="1" rowspan="1"><p>Comedy</p>
+</td><td colspan="1" rowspan="1"><p>Crime</p>
+</td><td colspan="1" rowspan="1"><p>Documentary</p>
+</td><td colspan="1" rowspan="1"><p>Drama</p>
+</td><td colspan="1" rowspan="1"><p>Fantasy</p>
+</td><td colspan="1" rowspan="1"><p>Film-Noir</p>
+</td><td colspan="1" rowspan="1"><p>Horror</p>
+</td><td colspan="1" rowspan="1"><p>Musical</p>
+</td><td colspan="1" rowspan="1"><p>Mystery</p>
+</td><td colspan="1" rowspan="1"><p>Romance</p>
+</td><td colspan="1" rowspan="1"><p>Sci-Fi</p>
+</td><td colspan="1" rowspan="1"><p>Thriller</p>
+</td><td colspan="1" rowspan="1"><p>War</p>
+</td><td colspan="1" rowspan="1"><p>Western</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>267</p>
+</td><td colspan="1" rowspan="1"><p>unknown</p>
+</td><td colspan="1" rowspan="1"><p>NaT</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td></tr>
+</table>
+<pre><code language="language-python" class="language-python">movies_data[movies_data.index == 266]
+</code></pre>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<table>
+<tr><td colspan="1" rowspan="1"><p>item_id</p>
+</td><td colspan="1" rowspan="1"><p>movie_title</p>
+</td><td colspan="1" rowspan="1"><p>release_date</p>
+</td><td colspan="1" rowspan="1"><p>video_release_date</p>
+</td><td colspan="1" rowspan="1"><p>IMDb_URL</p>
+</td><td colspan="1" rowspan="1"><p>unknown</p>
+</td><td colspan="1" rowspan="1"><p>Action</p>
+</td><td colspan="1" rowspan="1"><p>Adventure</p>
+</td><td colspan="1" rowspan="1"><p>Animation</p>
+</td><td colspan="1" rowspan="1"><p>Childrens</p>
+</td><td colspan="1" rowspan="1"><p>Comedy</p>
+</td><td colspan="1" rowspan="1"><p>Crime</p>
+</td><td colspan="1" rowspan="1"><p>Documentary</p>
+</td><td colspan="1" rowspan="1"><p>Drama</p>
+</td><td colspan="1" rowspan="1"><p>Fantasy</p>
+</td><td colspan="1" rowspan="1"><p>Film-Noir</p>
+</td><td colspan="1" rowspan="1"><p>Horror</p>
+</td><td colspan="1" rowspan="1"><p>Musical</p>
+</td><td colspan="1" rowspan="1"><p>Mystery</p>
+</td><td colspan="1" rowspan="1"><p>Romance</p>
+</td><td colspan="1" rowspan="1"><p>Sci-Fi</p>
+</td><td colspan="1" rowspan="1"><p>Thriller</p>
+</td><td colspan="1" rowspan="1"><p>War</p>
+</td><td colspan="1" rowspan="1"><p>Western</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>267</p>
+</td><td colspan="1" rowspan="1"><p>unknown</p>
+</td><td colspan="1" rowspan="1"><p>NaT</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td></tr>
+</table>
+<h2 is-upgraded>Year Cleaning</h2>
+<p>The movies lie in a span of 77 years.</p>
+<pre><code language="language-python" class="language-python">l = sorted(movies_data.release_date.dt.year.unique().tolist())
+max(l)  - min(l) + 1
+</code></pre>
+<pre><code>77.0
+</code></pre>
+<h2 is-upgraded>Histogram of movies w.r.t. release year</h2>
+<pre><code language="language-python" class="language-python">movies_data.release_date.hist(bins = 77, figsize = (10, 10))
+</code></pre>
+<pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x7f6521f34690&gt;
+</code></pre>
+<p class="image-container"><img alt="png" src="img/b2f62b1127f98fb5.png"></p>
+<p>Observing from the histogram showing the number of movies for each each, we notice that the movies mainly are released during 1990 and 1998. In order to facilitate the computation of similarity, we wish to aggregate years in which too few moives are released.</p>
+<pre><code language="language-python" class="language-python">def compute_year_label(row):
+    year = row[&#39;release_date&#39;].year
+    
+    if year &lt;= 1990 or np.isnan(year):
+        return 1990
+    else:
+        return year
+</code></pre>
+<pre><code language="language-python" class="language-python">movies_data[&#39;year_label&#39;] = movies_data.apply(lambda row: compute_year_label(row), axis = 1)
+</code></pre>
+<pre><code language="language-python" class="language-python">movies_data.year_label.unique()
+</code></pre>
+<pre><code>array([1995, 1996, 1994, 1990, 1993, 1992, 1991, 1997, 1998])
+</code></pre>
+<h2 is-upgraded>Histogram of movies under each year label.</h2>
+<pre><code language="language-python" class="language-python">movies_data.year_label.value_counts().sort_index()\
+.plot(kind = &#39;bar&#39;, rot = 45, figsize = (10, 6), title = &#39;Distribution of Movies Across Years&#39;)
+</code></pre>
+<pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x7f6521e81fd0&gt;
+</code></pre>
+<p class="image-container"><img alt="png" src="img/4532ea9363eec70d.png"></p>
+<h2 is-upgraded>The number of movies that falls in each genre.</h2>
+<pre><code language="language-python" class="language-python">movies_data.sum()[movies_data.columns[5:-1]].plot(kind = &#39;bar&#39;, figsize = (15, 5), rot = 45)
+</code></pre>
+<pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x7f65218ae0d0&gt;
+</code></pre>
+<p class="image-container"><img alt="png" src="img/fbad22c10ca48430.png"></p>
+<p>Below we take a glimpse of the percentage of each genere&#39;s movies in each year.</p>
+<pre><code language="language-python" class="language-python">movies_data[movies_data.movie_title != &#39;unknown&#39;].groupby(&#39;year_label&#39;).sum()[genre_cls].T\
+        .plot(kind = &#39;bar&#39;, rot=45, figsize=(15,8), title = &#39;Distribution of Movie Genre&#39;)
+</code></pre>
+<pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x7f6521801290&gt;
+</code></pre>
+<p class="image-container"><img alt="png" src="img/388cf43b14413440.png"></p>
+<p>Below we take a look at year 1995 - 1998 as an exmaple.</p>
+<pre><code language="language-python" class="language-python">movie_1995 = movies_data[movies_data[&#39;release_date&#39;].dt.year == 1995]
+movie_1996 = movies_data[movies_data[&#39;release_date&#39;].dt.year == 1996]
+movie_1997 = movies_data[movies_data[&#39;release_date&#39;].dt.year == 1997]
+movie_1998 = movies_data[movies_data[&#39;release_date&#39;].dt.year == 1998]
+</code></pre>
+<pre><code language="language-python" class="language-python">Year = {}
+Year[1995] = movie_1995[genre_cls].sum()/len(movie_1995)
+Year[1996] = movie_1996[genre_cls].sum()/len(movie_1996)
+Year[1997] = movie_1997[genre_cls].sum()/len(movie_1997)
+Year[1998] = movie_1998[genre_cls].sum()/len(movie_1998)
+movie_year = pd.DataFrame(Year) 
+axes = movie_year.plot.bar(rot=45,figsize=(15,7))
+axes.set_title(&#39;genres percentage over year&#39;)
+</code></pre>
+<pre><code>Text(0.5, 1.0, &#39;genres percentage over year&#39;)
+</code></pre>
+<p class="image-container"><img alt="png" src="img/489db0cad1fdf678.png"></p>
+<p>We conclude that the distribution of movie genres are generally balanced and hence are not biased.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="User data analysis" duration="15">
+        <pre><code language="language-python" class="language-python">############################### Demographic information about the users ###############################
+column_names = [&#34;user_id&#34;, &#34;age&#34;, &#34;gender&#34;, &#34;occupation&#34;, &#34;zip_code&#34;]
+user_data = pd.read_csv(&#39;ml-100k/u.user&#39;,sep=&#39;|&#39;, names=column_names)
+user_data
+</code></pre>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<table>
+<tr><td colspan="1" rowspan="1"><p>user_id</p>
+</td><td colspan="1" rowspan="1"><p>age</p>
+</td><td colspan="1" rowspan="1"><p>gender</p>
+</td><td colspan="1" rowspan="1"><p>occupation</p>
+</td><td colspan="1" rowspan="1"><p>zip_code</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>24</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>technician</p>
+</td><td colspan="1" rowspan="1"><p>85711</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>2</p>
+</td><td colspan="1" rowspan="1"><p>53</p>
+</td><td colspan="1" rowspan="1"><p>F</p>
+</td><td colspan="1" rowspan="1"><p>other</p>
+</td><td colspan="1" rowspan="1"><p>94043</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>3</p>
+</td><td colspan="1" rowspan="1"><p>23</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>writer</p>
+</td><td colspan="1" rowspan="1"><p>32067</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>4</p>
+</td><td colspan="1" rowspan="1"><p>24</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>technician</p>
+</td><td colspan="1" rowspan="1"><p>43537</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>5</p>
+</td><td colspan="1" rowspan="1"><p>33</p>
+</td><td colspan="1" rowspan="1"><p>F</p>
+</td><td colspan="1" rowspan="1"><p>other</p>
+</td><td colspan="1" rowspan="1"><p>15213</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>939</p>
+</td><td colspan="1" rowspan="1"><p>26</p>
+</td><td colspan="1" rowspan="1"><p>F</p>
+</td><td colspan="1" rowspan="1"><p>student</p>
+</td><td colspan="1" rowspan="1"><p>33319</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>940</p>
+</td><td colspan="1" rowspan="1"><p>32</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>administrator</p>
+</td><td colspan="1" rowspan="1"><p>02215</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>941</p>
+</td><td colspan="1" rowspan="1"><p>20</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>student</p>
+</td><td colspan="1" rowspan="1"><p>97229</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>942</p>
+</td><td colspan="1" rowspan="1"><p>48</p>
+</td><td colspan="1" rowspan="1"><p>F</p>
+</td><td colspan="1" rowspan="1"><p>librarian</p>
+</td><td colspan="1" rowspan="1"><p>78209</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>943</p>
+</td><td colspan="1" rowspan="1"><p>22</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>student</p>
+</td><td colspan="1" rowspan="1"><p>77841</p>
+</td></tr>
+</table>
+<p>943 rows × 5 columns</p>
+<pre><code language="language-python" class="language-python">############################### A list of the occupations(the jobs types of users). ############################### 
+occupation_data = pd.read_csv(&#39;ml-100k/u.occupation&#39;,sep=&#39;|&#39;,names=[&#34;occupation&#34;])
+occupation_data = occupation_data.reset_index().rename(columns={&#39;index&#39;:&#39;occupation_id&#39;})
+
+occupation_data.head()
+</code></pre>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<table>
+<tr><td colspan="1" rowspan="1"><p>occupation_id</p>
+</td><td colspan="1" rowspan="1"><p>occupation</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>administrator</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>artist</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>2</p>
+</td><td colspan="1" rowspan="1"><p>doctor</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>3</p>
+</td><td colspan="1" rowspan="1"><p>educator</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>4</p>
+</td><td colspan="1" rowspan="1"><p>engineer</p>
+</td></tr>
+</table>
+<h2 is-upgraded>Gender</h2>
+<pre><code language="language-python" class="language-python">user_data[&#39;gender&#39;].value_counts().plot(kind=&#39;pie&#39;, autopct=&#39;%1.1f%%&#39;)
+</code></pre>
+<pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x7f6521310290&gt;
+</code></pre>
+<p class="image-container"><img alt="png" src="img/6b2a52a8e33d44c7.png"></p>
+<h2 is-upgraded>Age</h2>
+<pre><code language="language-python" class="language-python">user_data[&#39;age&#39;].value_counts().plot(kind=&#39;pie&#39;, autopct=&#39;%1.1f%%&#39;,figsize=(8,8))
+</code></pre>
+<pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x7f65212ef2d0&gt;
+</code></pre>
+<p class="image-container"><img alt="png" src="img/eddee6985eb74df.png"></p>
+<h2 is-upgraded>Occupation</h2>
+<pre><code language="language-python" class="language-python">user_data[&#39;occupation&#39;].value_counts().plot(kind=&#39;pie&#39;, autopct=&#39;%1.1f%%&#39;,figsize=(8,8))
+</code></pre>
+<pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x7f652110fc10&gt;
+</code></pre>
+<p class="image-container"><img alt="png" src="img/842d2f7a368f6044.png"></p>
+<h2 is-upgraded>Location</h2>
+<p>We wish to find the geographical distribution of the users and to show them on a map. The only information we are given about this is the zip code and we find out there are only two countries involving these zip codes: America and Canada. And below we find out the number of users in Canada.</p>
+<pre><code language="language-python" class="language-python">canada = 0
+for i in range(len(user_data)):
+    if user_data.loc[i].zip_code.isdigit() == False:
+        canada += 1
+
+canada
+</code></pre>
+<pre><code>18
+</code></pre>
+<p>Geopy is used to find the exact coordinate corresponding to a zip code. And this information is stored in a dictionary.</p>
+<pre><code language="language-python" class="language-python">code_table = {x: (0, 0) for x in user_data.zip_code.unique().tolist()}
+
+from geopy.geocoders import Nominatim
+geolocator = Nominatim(user_agent=&#34;liu&#34;)
+
+for zip_code in code_table:
+    if code_table[zip_code] != (0, 0):
+        continue
+    
+    query_code = zip_code
+    
+    if query_code.isdigit() == False:
+        continue
+
+    # location = location = geolocator.geocode(query_code, country_codes = [&#39;US&#39;], timeout = 10)
+    location = location = geolocator.geocode(query_code, timeout = 10)
+    if not location:
+        continue
+    code_table[zip_code] = (location.latitude, location.longitude)
+</code></pre>
+<pre><code language="language-python" class="language-python">user_data[&#39;coordinate&#39;] = user_data.apply(lambda row: code_table[row[&#39;zip_code&#39;]], axis = 1)
+</code></pre>
+<pre><code language="language-python" class="language-python">user_data.head()
+</code></pre>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<table>
+<tr><td colspan="1" rowspan="1"><p>user_id</p>
+</td><td colspan="1" rowspan="1"><p>age</p>
+</td><td colspan="1" rowspan="1"><p>gender</p>
+</td><td colspan="1" rowspan="1"><p>occupation</p>
+</td><td colspan="1" rowspan="1"><p>zip_code</p>
+</td><td colspan="1" rowspan="1"><p>coordinate</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>24</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>technician</p>
+</td><td colspan="1" rowspan="1"><p>85711</p>
+</td><td colspan="1" rowspan="1"><p>(47.85214441225751, 37.78990982662502)</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>2</p>
+</td><td colspan="1" rowspan="1"><p>53</p>
+</td><td colspan="1" rowspan="1"><p>F</p>
+</td><td colspan="1" rowspan="1"><p>other</p>
+</td><td colspan="1" rowspan="1"><p>94043</p>
+</td><td colspan="1" rowspan="1"><p>(37.40699294726802, -122.08883939781505)</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>3</p>
+</td><td colspan="1" rowspan="1"><p>23</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>writer</p>
+</td><td colspan="1" rowspan="1"><p>32067</p>
+</td><td colspan="1" rowspan="1"><p>(24.974616313832115, 121.25945677410526)</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>4</p>
+</td><td colspan="1" rowspan="1"><p>24</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>technician</p>
+</td><td colspan="1" rowspan="1"><p>43537</p>
+</td><td colspan="1" rowspan="1"><p>(41.57806694508656, -83.6802562611722)</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>5</p>
+</td><td colspan="1" rowspan="1"><p>33</p>
+</td><td colspan="1" rowspan="1"><p>F</p>
+</td><td colspan="1" rowspan="1"><p>other</p>
+</td><td colspan="1" rowspan="1"><p>15213</p>
+</td><td colspan="1" rowspan="1"><p>(40.44449552294444, -79.95342923046202)</p>
+</td></tr>
+</table>
+<pre><code language="language-python" class="language-python">map2 = folium.Map(location=[38.9, -77.05], zoom_start=11)
+
+from folium.plugins import MarkerCluster
+marker_cluster = MarkerCluster().add_to(map2)
+
+
+for i in range(0, len(user_data)):
+    if user_data.loc[i].coordinate == (0, 0) or user_data.loc[i].zip_code.isdigit() == False:
+        continue
+    folium.Marker(user_data.iloc[i].coordinate, popup=str(user_data.loc[i].user_id), icon=folium.Icon(color=&#39;darkblue&#39;, icon_color=&#39;white&#39;, icon=&#39;male&#39;, angle=0, prefix=&#39;fa&#39;)).add_to(marker_cluster)
+
+map2
+</code></pre>
+<p>Make this Notebook Trusted to load map: File -&gt; Trust Notebook</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Relational Info between Users and Movies" duration="15">
+        <pre><code language="language-python" class="language-python">############################### Create user_item_matrix ############################### 
+data= pd.read_csv(&#39;ml-100k/u.data&#39;,sep=&#39;\t&#39;, names=[&#34;user_id&#34;, &#34;item_id&#34;, &#34;rating&#34;, &#34;timestamp&#34;])
+data[&#39;timestamp&#39;] = pd.to_datetime(data[&#39;timestamp&#39;], unit=&#39;s&#39;)
+data.head()
+</code></pre>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<table>
+<tr><td colspan="1" rowspan="1"><p>user_id</p>
+</td><td colspan="1" rowspan="1"><p>item_id</p>
+</td><td colspan="1" rowspan="1"><p>rating</p>
+</td><td colspan="1" rowspan="1"><p>timestamp</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>196</p>
+</td><td colspan="1" rowspan="1"><p>242</p>
+</td><td colspan="1" rowspan="1"><p>3</p>
+</td><td colspan="1" rowspan="1"><p>1997-12-04 15:55:49</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>186</p>
+</td><td colspan="1" rowspan="1"><p>302</p>
+</td><td colspan="1" rowspan="1"><p>3</p>
+</td><td colspan="1" rowspan="1"><p>1998-04-04 19:22:22</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>22</p>
+</td><td colspan="1" rowspan="1"><p>377</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>1997-11-07 07:18:36</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>244</p>
+</td><td colspan="1" rowspan="1"><p>51</p>
+</td><td colspan="1" rowspan="1"><p>2</p>
+</td><td colspan="1" rowspan="1"><p>1997-11-27 05:02:03</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>166</p>
+</td><td colspan="1" rowspan="1"><p>346</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>1998-02-02 05:33:16</p>
+</td></tr>
+</table>
+<p>Here we check for the duplicated items to see whether both of the two duplicated items are rated by users in this relational table.</p>
+<pre><code language="language-python" class="language-python">data.merge(duplicated.item_id, on = &#39;item_id&#39;).item_id.nunique()
+</code></pre>
+<pre><code>36
+</code></pre>
+<p>Because all the 36 items are reviewed by some users, so we conclude that the duplicated items have been both rated by users. Therefore, to remove the duplicates, we need to select one of the duplicated items as the main movie and direct all the ratings towards the other movie to this main one.</p>
+<pre><code language="language-python" class="language-python">data.merge(duplicated.item_id, on = &#39;item_id&#39;)
+</code></pre>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<table>
+<tr><td colspan="1" rowspan="1"><p>user_id</p>
+</td><td colspan="1" rowspan="1"><p>item_id</p>
+</td><td colspan="1" rowspan="1"><p>rating</p>
+</td><td colspan="1" rowspan="1"><p>timestamp</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>50</p>
+</td><td colspan="1" rowspan="1"><p>246</p>
+</td><td colspan="1" rowspan="1"><p>3</p>
+</td><td colspan="1" rowspan="1"><p>1997-10-17 01:38:49</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>269</p>
+</td><td colspan="1" rowspan="1"><p>246</p>
+</td><td colspan="1" rowspan="1"><p>5</p>
+</td><td colspan="1" rowspan="1"><p>1998-04-01 18:57:47</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>99</p>
+</td><td colspan="1" rowspan="1"><p>246</p>
+</td><td colspan="1" rowspan="1"><p>3</p>
+</td><td colspan="1" rowspan="1"><p>1998-02-26 05:03:12</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>276</p>
+</td><td colspan="1" rowspan="1"><p>246</p>
+</td><td colspan="1" rowspan="1"><p>4</p>
+</td><td colspan="1" rowspan="1"><p>1997-09-20 20:18:06</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>79</p>
+</td><td colspan="1" rowspan="1"><p>246</p>
+</td><td colspan="1" rowspan="1"><p>5</p>
+</td><td colspan="1" rowspan="1"><p>1998-03-30 15:25:45</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>116</p>
+</td><td colspan="1" rowspan="1"><p>1256</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>1997-10-10 03:13:42</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>463</p>
+</td><td colspan="1" rowspan="1"><p>1606</p>
+</td><td colspan="1" rowspan="1"><p>2</p>
+</td><td colspan="1" rowspan="1"><p>1998-03-15 04:36:05</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>863</p>
+</td><td colspan="1" rowspan="1"><p>1680</p>
+</td><td colspan="1" rowspan="1"><p>2</p>
+</td><td colspan="1" rowspan="1"><p>1998-03-07 16:52:50</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>587</p>
+</td><td colspan="1" rowspan="1"><p>1625</p>
+</td><td colspan="1" rowspan="1"><p>4</p>
+</td><td colspan="1" rowspan="1"><p>1998-04-18 03:55:32</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>655</p>
+</td><td colspan="1" rowspan="1"><p>1645</p>
+</td><td colspan="1" rowspan="1"><p>4</p>
+</td><td colspan="1" rowspan="1"><p>1998-04-18 03:47:05</p>
+</td></tr>
+</table>
+<p>1269 rows × 4 columns</p>
+<p>Below we find the item id to be replaced and the item id that is going to be used.</p>
+<pre><code language="language-python" class="language-python">duplicated_items = duplicated[[&#39;item_id&#39;, &#39;movie_title&#39;]].groupby(&#39;movie_title&#39;).apply(lambda x: list(x.item_id))
+# remove_pattern = pd.DataFrame(duplicated_items.tolist(), index = duplicated_items.index, columns = [&#39;item_id1&#39;, &#39;item_id2&#39;])
+to_replace = {}
+for i, j in duplicated_items.values.tolist():
+    to_replace[i] = j
+to_replace
+</code></pre>
+<pre><code>{246: 268,
+ 303: 297,
+ 305: 865,
+ 348: 329,
+ 500: 304,
+ 670: 573,
+ 680: 266,
+ 876: 881,
+ 1003: 878,
+ 1234: 1654,
+ 1257: 1256,
+ 1606: 309,
+ 1607: 1395,
+ 1617: 1175,
+ 1625: 1477,
+ 1650: 1645,
+ 1658: 711,
+ 1680: 1429}
+</code></pre>
+<p>Replace the duplicated item id with the replacement pattern shown above</p>
+<pre><code language="language-python" class="language-python">data.replace({&#39;item_id&#39;: to_replace}, inplace = True)
+</code></pre>
+<pre><code language="language-python" class="language-python">data.item_id.nunique()
+</code></pre>
+<pre><code>1664
+</code></pre>
+<pre><code language="language-python" class="language-python">movies_data.item_id.nunique()
+</code></pre>
+<pre><code>1682
+</code></pre>
+<p>We see that the 18 duplicated items are correctly replaced by its counterpart.</p>
+<pre><code language="language-python" class="language-python">data_merged = pd.merge(data,user_data,on=&#39;user_id&#39;,how=&#39;left&#39;)
+data_merged = pd.merge(data_merged,movies_data,on=&#39;item_id&#39;,how=&#39;left&#39;)
+data_merged
+</code></pre>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<table>
+<tr><td colspan="1" rowspan="1"><p>user_id</p>
+</td><td colspan="1" rowspan="1"><p>item_id</p>
+</td><td colspan="1" rowspan="1"><p>rating</p>
+</td><td colspan="1" rowspan="1"><p>timestamp</p>
+</td><td colspan="1" rowspan="1"><p>age</p>
+</td><td colspan="1" rowspan="1"><p>gender</p>
+</td><td colspan="1" rowspan="1"><p>occupation</p>
+</td><td colspan="1" rowspan="1"><p>zip_code</p>
+</td><td colspan="1" rowspan="1"><p>coordinate</p>
+</td><td colspan="1" rowspan="1"><p>movie_title</p>
+</td><td colspan="1" rowspan="1"><p>release_date</p>
+</td><td colspan="1" rowspan="1"><p>video_release_date</p>
+</td><td colspan="1" rowspan="1"><p>IMDb_URL</p>
+</td><td colspan="1" rowspan="1"><p>unknown</p>
+</td><td colspan="1" rowspan="1"><p>Action</p>
+</td><td colspan="1" rowspan="1"><p>Adventure</p>
+</td><td colspan="1" rowspan="1"><p>Animation</p>
+</td><td colspan="1" rowspan="1"><p>Childrens</p>
+</td><td colspan="1" rowspan="1"><p>Comedy</p>
+</td><td colspan="1" rowspan="1"><p>Crime</p>
+</td><td colspan="1" rowspan="1"><p>Documentary</p>
+</td><td colspan="1" rowspan="1"><p>Drama</p>
+</td><td colspan="1" rowspan="1"><p>Fantasy</p>
+</td><td colspan="1" rowspan="1"><p>Film-Noir</p>
+</td><td colspan="1" rowspan="1"><p>Horror</p>
+</td><td colspan="1" rowspan="1"><p>Musical</p>
+</td><td colspan="1" rowspan="1"><p>Mystery</p>
+</td><td colspan="1" rowspan="1"><p>Romance</p>
+</td><td colspan="1" rowspan="1"><p>Sci-Fi</p>
+</td><td colspan="1" rowspan="1"><p>Thriller</p>
+</td><td colspan="1" rowspan="1"><p>War</p>
+</td><td colspan="1" rowspan="1"><p>Western</p>
+</td><td colspan="1" rowspan="1"><p>year_label</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>196</p>
+</td><td colspan="1" rowspan="1"><p>242</p>
+</td><td colspan="1" rowspan="1"><p>3</p>
+</td><td colspan="1" rowspan="1"><p>1997-12-04 15:55:49</p>
+</td><td colspan="1" rowspan="1"><p>49</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>writer</p>
+</td><td colspan="1" rowspan="1"><p>55105</p>
+</td><td colspan="1" rowspan="1"><p>(44.93591002353645, -93.15771479418866)</p>
+</td><td colspan="1" rowspan="1"><p>Kolya (1996)</p>
+</td><td colspan="1" rowspan="1"><p>1997-01-24</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/M/title-exact?Kolya%20(1996)</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1997</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>186</p>
+</td><td colspan="1" rowspan="1"><p>302</p>
+</td><td colspan="1" rowspan="1"><p>3</p>
+</td><td colspan="1" rowspan="1"><p>1998-04-04 19:22:22</p>
+</td><td colspan="1" rowspan="1"><p>39</p>
+</td><td colspan="1" rowspan="1"><p>F</p>
+</td><td colspan="1" rowspan="1"><p>executive</p>
+</td><td colspan="1" rowspan="1"><p>00000</p>
+</td><td colspan="1" rowspan="1"><p>(33.89116595631258, 35.50065238789327)</p>
+</td><td colspan="1" rowspan="1"><p>L.A. Confidential (1997)</p>
+</td><td colspan="1" rowspan="1"><p>1997-01-01</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/M/title-exact?L%2EA%2E+Conf...</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1997</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>22</p>
+</td><td colspan="1" rowspan="1"><p>377</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>1997-11-07 07:18:36</p>
+</td><td colspan="1" rowspan="1"><p>25</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>writer</p>
+</td><td colspan="1" rowspan="1"><p>40206</p>
+</td><td colspan="1" rowspan="1"><p>(38.25743869638437, -85.70098484961258)</p>
+</td><td colspan="1" rowspan="1"><p>Heavyweights (1994)</p>
+</td><td colspan="1" rowspan="1"><p>1994-01-01</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/M/title-exact?Heavyweights%...</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1994</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>244</p>
+</td><td colspan="1" rowspan="1"><p>51</p>
+</td><td colspan="1" rowspan="1"><p>2</p>
+</td><td colspan="1" rowspan="1"><p>1997-11-27 05:02:03</p>
+</td><td colspan="1" rowspan="1"><p>28</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>technician</p>
+</td><td colspan="1" rowspan="1"><p>80525</p>
+</td><td colspan="1" rowspan="1"><p>(40.538784026809935, -105.06261961705628)</p>
+</td><td colspan="1" rowspan="1"><p>Legends of the Fall (1994)</p>
+</td><td colspan="1" rowspan="1"><p>1994-01-01</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/M/title-exact?Legends%20of%...</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>1994</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>166</p>
+</td><td colspan="1" rowspan="1"><p>346</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>1998-02-02 05:33:16</p>
+</td><td colspan="1" rowspan="1"><p>47</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>educator</p>
+</td><td colspan="1" rowspan="1"><p>55113</p>
+</td><td colspan="1" rowspan="1"><p>(45.00672233376197, -93.16366429313092)</p>
+</td><td colspan="1" rowspan="1"><p>Jackie Brown (1997)</p>
+</td><td colspan="1" rowspan="1"><p>1997-01-01</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/M/title-exact?imdb-title-11...</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1997</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>880</p>
+</td><td colspan="1" rowspan="1"><p>476</p>
+</td><td colspan="1" rowspan="1"><p>3</p>
+</td><td colspan="1" rowspan="1"><p>1997-11-22 05:10:44</p>
+</td><td colspan="1" rowspan="1"><p>13</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>student</p>
+</td><td colspan="1" rowspan="1"><p>83702</p>
+</td><td colspan="1" rowspan="1"><p>(43.6295934590343, -116.20646011955073)</p>
+</td><td colspan="1" rowspan="1"><p>First Wives Club, The (1996)</p>
+</td><td colspan="1" rowspan="1"><p>1996-09-14</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/M/title-exact?First%20Wives...</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1996</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>716</p>
+</td><td colspan="1" rowspan="1"><p>204</p>
+</td><td colspan="1" rowspan="1"><p>5</p>
+</td><td colspan="1" rowspan="1"><p>1997-11-17 19:39:03</p>
+</td><td colspan="1" rowspan="1"><p>36</p>
+</td><td colspan="1" rowspan="1"><p>F</p>
+</td><td colspan="1" rowspan="1"><p>administrator</p>
+</td><td colspan="1" rowspan="1"><p>44265</p>
+</td><td colspan="1" rowspan="1"><p>(51.45788877765785, 7.490441698704062)</p>
+</td><td colspan="1" rowspan="1"><p>Back to the Future (1985)</p>
+</td><td colspan="1" rowspan="1"><p>1985-01-01</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/M/title-exact?Back%20to%20t...</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1990</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>276</p>
+</td><td colspan="1" rowspan="1"><p>1090</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>1997-09-20 22:49:55</p>
+</td><td colspan="1" rowspan="1"><p>21</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>student</p>
+</td><td colspan="1" rowspan="1"><p>95064</p>
+</td><td colspan="1" rowspan="1"><p>(36.99386818077129, -122.05960802079737)</p>
+</td><td colspan="1" rowspan="1"><p>Sliver (1993)</p>
+</td><td colspan="1" rowspan="1"><p>1993-01-01</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/M/title-exact?Sliver%20(1993)</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1993</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>13</p>
+</td><td colspan="1" rowspan="1"><p>225</p>
+</td><td colspan="1" rowspan="1"><p>2</p>
+</td><td colspan="1" rowspan="1"><p>1997-12-17 22:52:36</p>
+</td><td colspan="1" rowspan="1"><p>47</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>educator</p>
+</td><td colspan="1" rowspan="1"><p>29206</p>
+</td><td colspan="1" rowspan="1"><p>(34.02836172210214, -80.95817394724247)</p>
+</td><td colspan="1" rowspan="1"><p>101 Dalmatians (1996)</p>
+</td><td colspan="1" rowspan="1"><p>1996-11-27</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/M/title-exact?101%20Dalmati...</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1996</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>12</p>
+</td><td colspan="1" rowspan="1"><p>203</p>
+</td><td colspan="1" rowspan="1"><p>3</p>
+</td><td colspan="1" rowspan="1"><p>1997-11-19 17:13:03</p>
+</td><td colspan="1" rowspan="1"><p>28</p>
+</td><td colspan="1" rowspan="1"><p>F</p>
+</td><td colspan="1" rowspan="1"><p>other</p>
+</td><td colspan="1" rowspan="1"><p>06405</p>
+</td><td colspan="1" rowspan="1"><p>(41.27705635799289, -72.81073627570757)</p>
+</td><td colspan="1" rowspan="1"><p>Unforgiven (1992)</p>
+</td><td colspan="1" rowspan="1"><p>1992-01-01</p>
+</td><td colspan="1" rowspan="1"><p>NaN</p>
+</td><td colspan="1" rowspan="1"><p>http://us.imdb.com/M/title-exact?Unforgiven%20...</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>1992</p>
+</td></tr>
+</table>
+<p>100000 rows × 33 columns</p>
+<p>We find that users only rated all these movies in 1997 and 1998.</p>
+<pre><code language="language-python" class="language-python">data_merged.timestamp.dt.year.unique()
+</code></pre>
+<h2 is-upgraded>Top 5 most rated movies for each year</h2>
+<p>Below we find the top 5 movies that are rated the most in each year and in total respectively.</p>
+<pre><code language="language-python" class="language-python">data_1997 = data_merged[data_merged[&#39;timestamp&#39;].dt.year == 1997]
+data_1998 = data_merged[data_merged[&#39;timestamp&#39;].dt.year == 1998]
+</code></pre>
+<pre><code language="language-python" class="language-python">data_1997.groupby(&#39;movie_title&#39;).count()[[&#39;item_id&#39;]].nlargest(5, columns = &#39;item_id&#39;).rename(columns={&#34;item_id&#34;: &#39;count&#39;})
+</code></pre>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<table>
+<tr><td colspan="1" rowspan="1"><p>count</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>movie_title</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>335</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>301</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>300</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>267</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>261</p>
+</td></tr>
+</table>
+<pre><code language="language-python" class="language-python">data_1998.groupby(&#39;movie_title&#39;).count()[[&#39;item_id&#39;]].nlargest(5, columns = &#39;item_id&#39;).rename(columns={&#34;item_id&#34;: &#39;count&#39;})
+</code></pre>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<table>
+<tr><td colspan="1" rowspan="1"><p>count</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>movie_title</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>322</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>264</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>248</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>241</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>238</p>
+</td></tr>
+</table>
+<pre><code language="language-python" class="language-python">data_merged.groupby(&#39;movie_title&#39;).count()[[&#39;item_id&#39;]].nlargest(5, columns = &#39;item_id&#39;).rename(columns={&#34;item_id&#34;: &#39;count&#39;})
+</code></pre>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<table>
+<tr><td colspan="1" rowspan="1"><p>count</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>movie_title</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>583</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>509</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>508</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>507</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>485</p>
+</td></tr>
+</table>
+<pre><code language="language-python" class="language-python">## the most rated movie genre every year
+Popular = {}
+Popular[1997] = data_1997[genre_cls].sum()/len(data_1997)
+Popular[1998] = data_1998[genre_cls].sum()/len(data_1998)
+Popular_year = pd.DataFrame(Popular) 
+axes = Popular_year.plot.bar(rot=45,figsize=(15,7))
+axes.set_title(&#39;genres percentage over year&#39;)
+</code></pre>
+<pre><code>Text(0.5, 1.0, &#39;genres percentage over year&#39;)
+</code></pre>
+<p class="image-container"><img alt="png" src="img/9711c931a6a1036a.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="User graph analysis" duration="15">
+        <pre><code language="language-python" class="language-python">def plt_graph(adjacency,data,title):
+    graph_user = nx.from_numpy_matrix(adjacency)
+    print(&#39;The number of connected components is {}&#39;.format(nx.number_connected_components(graph_user)))
+    coords = nx.spring_layout(graph_user,k=0.03)  # Force-directed layout.
+    fig=plt.figure(figsize=(15, 10))
+    labels = data.iloc[np.sort(nx.nodes(graph_user))]
+    im=nx.draw_networkx_nodes(graph_user, coords, node_size=40,node_color=labels, cmap=&#39;tab20b&#39;,vmin=min(data), vmax=max(data))
+    nx.draw_networkx_edges(graph_user, coords, alpha=0.1, width=0.7)
+    plt.title(title)
+    plt.colorbar(im)
+    return graph_user
+</code></pre>
+<pre><code language="language-python" class="language-python"># Initialize the adjacency matrix
+n_users = len(user_data)
+adjacency_user = np.zeros((n_users, n_users), dtype=float)
+user_features1 =user_data.copy()[[&#39;user_id&#39;, &#39;age&#39;, &#39;gender&#39;, &#39;occupation&#39;, &#39;zip_code&#39;]]
+user_features1[&#39;age_normal&#39;] = user_features1[&#39;age&#39;]/max(user_features1[&#39;age&#39;])
+user_features1= pd.merge(user_features1,occupation_data,on=&#39;occupation&#39;,how=&#39;left&#39;)
+user_features1[&#39;gender_id&#39;] = user_features1[&#39;gender&#39;].replace([&#39;M&#39;,&#39;F&#39;],[1,0])
+</code></pre>
+<pre><code language="language-python" class="language-python">user_features2=user_features1[[&#39;user_id&#39;,&#39;age&#39;,&#39;gender&#39;,&#39;occupation_id&#39;]].copy()
+user_features2[&#39;avg_rating&#39;] = data_merged[[&#39;user_id&#39;,&#39;item_id&#39;,&#39;rating&#39;]].groupby(&#39;user_id&#39;).mean()[&#39;rating&#39;].values
+user_features2[&#39;movie&#39;] = data_merged[[&#39;user_id&#39;,&#39;item_id&#39;,&#39;rating&#39;]].groupby(&#39;user_id&#39;)[&#39;item_id&#39;].apply(set).values
+</code></pre>
+<pre><code language="language-python" class="language-python">user_features1
+</code></pre>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<table>
+<tr><td colspan="1" rowspan="1"><p>user_id</p>
+</td><td colspan="1" rowspan="1"><p>age</p>
+</td><td colspan="1" rowspan="1"><p>gender</p>
+</td><td colspan="1" rowspan="1"><p>occupation</p>
+</td><td colspan="1" rowspan="1"><p>zip_code</p>
+</td><td colspan="1" rowspan="1"><p>age_normal</p>
+</td><td colspan="1" rowspan="1"><p>occupation_id</p>
+</td><td colspan="1" rowspan="1"><p>gender_id</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>24</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>technician</p>
+</td><td colspan="1" rowspan="1"><p>85711</p>
+</td><td colspan="1" rowspan="1"><p>0.328767</p>
+</td><td colspan="1" rowspan="1"><p>19</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>2</p>
+</td><td colspan="1" rowspan="1"><p>53</p>
+</td><td colspan="1" rowspan="1"><p>F</p>
+</td><td colspan="1" rowspan="1"><p>other</p>
+</td><td colspan="1" rowspan="1"><p>94043</p>
+</td><td colspan="1" rowspan="1"><p>0.726027</p>
+</td><td colspan="1" rowspan="1"><p>13</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>3</p>
+</td><td colspan="1" rowspan="1"><p>23</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>writer</p>
+</td><td colspan="1" rowspan="1"><p>32067</p>
+</td><td colspan="1" rowspan="1"><p>0.315068</p>
+</td><td colspan="1" rowspan="1"><p>20</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>4</p>
+</td><td colspan="1" rowspan="1"><p>24</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>technician</p>
+</td><td colspan="1" rowspan="1"><p>43537</p>
+</td><td colspan="1" rowspan="1"><p>0.328767</p>
+</td><td colspan="1" rowspan="1"><p>19</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>5</p>
+</td><td colspan="1" rowspan="1"><p>33</p>
+</td><td colspan="1" rowspan="1"><p>F</p>
+</td><td colspan="1" rowspan="1"><p>other</p>
+</td><td colspan="1" rowspan="1"><p>15213</p>
+</td><td colspan="1" rowspan="1"><p>0.452055</p>
+</td><td colspan="1" rowspan="1"><p>13</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>939</p>
+</td><td colspan="1" rowspan="1"><p>26</p>
+</td><td colspan="1" rowspan="1"><p>F</p>
+</td><td colspan="1" rowspan="1"><p>student</p>
+</td><td colspan="1" rowspan="1"><p>33319</p>
+</td><td colspan="1" rowspan="1"><p>0.356164</p>
+</td><td colspan="1" rowspan="1"><p>18</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>940</p>
+</td><td colspan="1" rowspan="1"><p>32</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>administrator</p>
+</td><td colspan="1" rowspan="1"><p>02215</p>
+</td><td colspan="1" rowspan="1"><p>0.438356</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>941</p>
+</td><td colspan="1" rowspan="1"><p>20</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>student</p>
+</td><td colspan="1" rowspan="1"><p>97229</p>
+</td><td colspan="1" rowspan="1"><p>0.273973</p>
+</td><td colspan="1" rowspan="1"><p>18</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>942</p>
+</td><td colspan="1" rowspan="1"><p>48</p>
+</td><td colspan="1" rowspan="1"><p>F</p>
+</td><td colspan="1" rowspan="1"><p>librarian</p>
+</td><td colspan="1" rowspan="1"><p>78209</p>
+</td><td colspan="1" rowspan="1"><p>0.657534</p>
+</td><td colspan="1" rowspan="1"><p>10</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>943</p>
+</td><td colspan="1" rowspan="1"><p>22</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>student</p>
+</td><td colspan="1" rowspan="1"><p>77841</p>
+</td><td colspan="1" rowspan="1"><p>0.301370</p>
+</td><td colspan="1" rowspan="1"><p>18</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td></tr>
+</table>
+<p>943 rows × 8 columns</p>
+<pre><code language="language-python" class="language-python">user_features2
+</code></pre>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<table>
+<tr><td colspan="1" rowspan="1"><p>user_id</p>
+</td><td colspan="1" rowspan="1"><p>age</p>
+</td><td colspan="1" rowspan="1"><p>gender</p>
+</td><td colspan="1" rowspan="1"><p>occupation_id</p>
+</td><td colspan="1" rowspan="1"><p>avg_rating</p>
+</td><td colspan="1" rowspan="1"><p>movie</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>24</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>19</p>
+</td><td colspan="1" rowspan="1"><p>3.610294</p>
+</td><td colspan="1" rowspan="1"><p>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14...</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>2</p>
+</td><td colspan="1" rowspan="1"><p>53</p>
+</td><td colspan="1" rowspan="1"><p>F</p>
+</td><td colspan="1" rowspan="1"><p>13</p>
+</td><td colspan="1" rowspan="1"><p>3.709677</p>
+</td><td colspan="1" rowspan="1"><p>{257, 258, 1, 10, 13, 14, 269, 272, 273, 274, ...</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>3</p>
+</td><td colspan="1" rowspan="1"><p>23</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>20</p>
+</td><td colspan="1" rowspan="1"><p>2.796296</p>
+</td><td colspan="1" rowspan="1"><p>{258, 260, 264, 268, 271, 272, 288, 294, 297, ...</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>4</p>
+</td><td colspan="1" rowspan="1"><p>24</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>19</p>
+</td><td colspan="1" rowspan="1"><p>4.333333</p>
+</td><td colspan="1" rowspan="1"><p>{258, 260, 264, 11, 271, 288, 294, 297, 300, 3...</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>5</p>
+</td><td colspan="1" rowspan="1"><p>33</p>
+</td><td colspan="1" rowspan="1"><p>F</p>
+</td><td colspan="1" rowspan="1"><p>13</p>
+</td><td colspan="1" rowspan="1"><p>2.874286</p>
+</td><td colspan="1" rowspan="1"><p>{1, 2, 17, 21, 24, 25, 29, 40, 42, 50, 62, 63,...</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>939</p>
+</td><td colspan="1" rowspan="1"><p>26</p>
+</td><td colspan="1" rowspan="1"><p>F</p>
+</td><td colspan="1" rowspan="1"><p>18</p>
+</td><td colspan="1" rowspan="1"><p>4.265306</p>
+</td><td colspan="1" rowspan="1"><p>{257, 258, 255, 1028, 9, 266, 15, 274, 275, 40...</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>940</p>
+</td><td colspan="1" rowspan="1"><p>32</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>3.457944</p>
+</td><td colspan="1" rowspan="1"><p>{4, 516, 7, 8, 9, 521, 12, 14, 527, 529, 549, ...</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>941</p>
+</td><td colspan="1" rowspan="1"><p>20</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>18</p>
+</td><td colspan="1" rowspan="1"><p>4.045455</p>
+</td><td colspan="1" rowspan="1"><p>{257, 258, 1, 7, 15, 273, 147, 919, 408, 294, ...</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>942</p>
+</td><td colspan="1" rowspan="1"><p>48</p>
+</td><td colspan="1" rowspan="1"><p>F</p>
+</td><td colspan="1" rowspan="1"><p>10</p>
+</td><td colspan="1" rowspan="1"><p>4.265823</p>
+</td><td colspan="1" rowspan="1"><p>{514, 1028, 520, 528, 1050, 539, 31, 50, 71, 5...</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>943</p>
+</td><td colspan="1" rowspan="1"><p>22</p>
+</td><td colspan="1" rowspan="1"><p>M</p>
+</td><td colspan="1" rowspan="1"><p>18</p>
+</td><td colspan="1" rowspan="1"><p>3.410714</p>
+</td><td colspan="1" rowspan="1"><p>{2, 1028, 9, 11, 12, 526, 1044, 22, 23, 24, 10...</p>
+</td></tr>
+</table>
+<p>943 rows × 6 columns</p>
+<h2 is-upgraded>Metric 1: measure similarity between users by their age, gender, occupation and residence.</h2>
+<pre><code language="language-python" class="language-python">def similarity(row,data):
+    sim = pd.DataFrame(np.cos(row[&#39;age_normal&#39;]-data[&#39;age_normal&#39;]))
+    sim[&#39;gender&#39;] = (row[&#39;gender&#39;]==data[&#39;gender&#39;])
+    sim[&#39;occupation&#39;] = (row[&#39;occupation&#39;]==data[&#39;occupation&#39;])
+    sim[&#39;zip_code&#39;] = (row[&#39;zip_code&#39;] == data[&#39;zip_code&#39;])
+    return sim
+</code></pre>
+<pre><code language="language-python" class="language-python">for i in range(n_users):
+    adjacency_user[i,:] = similarity(user_features1.loc[i,:],user_features1).mean(axis=1)
+</code></pre>
+<h3 is-upgraded>Adjacency Matrix of users</h3>
+<pre><code language="language-python" class="language-python">mask = adjacency_user&lt;=0.5
+adjacency = adjacency_user.copy()
+adjacency[mask]=0
+
+plt.figure(figsize=(8,8))
+plt.spy(adjacency,markersize=0.1)
+plt.title(&#39;Adjacency matrix&#39;)
+</code></pre>
+<pre><code>Text(0.5, 1.05, &#39;Adjacency matrix&#39;)
+</code></pre>
+<p class="image-container"><img alt="png" src="img/6e441ec1215dfb13.png"></p>
+<h3 is-upgraded>User Graph 1 with colors representing gender</h3>
+<p>No specific pattern is identified from the distribution of the colours of the nodes.</p>
+<pre><code language="language-python" class="language-python">graph_user = nx.from_numpy_matrix(adjacency)
+G = graph_user
+print(&#39;The number of connected components is {}&#39;.format(nx.number_connected_components(G)))
+coords = nx.spring_layout(G,k=0.03)  # Force-directed layout.
+fig=plt.figure(figsize=(15, 10))
+labels = user_features1[&#39;gender_id&#39;].iloc[np.sort(nx.nodes(G))]
+im=nx.draw_networkx_nodes(G, coords, node_size=40,node_color=labels, cmap=&#39;plasma&#39;,vmin=0, vmax=1)
+nx.draw_networkx_edges(graph_user, coords, alpha=0.1, width=0.7)
+plt.title(&#39;User graph from personal information with threshold 0.5&#39;)
+plt.colorbar(im)
+</code></pre>
+<pre><code>The number of connected components is 12
+
+
+
+
+
+&lt;matplotlib.colorbar.Colorbar at 0x7f6518c87f90&gt;
+</code></pre>
+<p class="image-container"><img alt="png" src="img/6d4c04a61134800d.png"></p>
+<h3 is-upgraded>User Graph 1 with colors representing Occupation</h3>
+<p>We do observe that there is nice and clear pattern here, as the nodes of the same colour falls in one cluster, meaning that people of the same occupation do share lots of similarities with repsect to movies of interest.</p>
+<pre><code language="language-python" class="language-python">graph_user = nx.from_numpy_matrix(adjacency)
+G = graph_user
+print(&#39;The number of connected components is {}&#39;.format(nx.number_connected_components(G)))
+coords = nx.spring_layout(G,k=0.03)  # Force-directed layout.
+fig=plt.figure(figsize=(15, 10))
+labels = user_features1[&#39;occupation_id&#39;].iloc[np.sort(nx.nodes(G))]
+im=nx.draw_networkx_nodes(G, coords, node_size=40,node_color=labels, cmap=&#39;tab20&#39;,vmin=0, vmax=20)
+nx.draw_networkx_edges(graph_user, coords, alpha=0.1, width=0.7)
+plt.title(&#39;User graph from personal information with threshold 0.5&#39;)
+plt.colorbar(im)
+</code></pre>
+<pre><code>The number of connected components is 12
+
+
+
+
+
+&lt;matplotlib.colorbar.Colorbar at 0x7f650e97d890&gt;
+</code></pre>
+<p class="image-container"><img alt="png" src="img/70db50cb48a71842.png"></p>
+<h3 is-upgraded>User Graph 1 with colors representing Age</h3>
+<p>No specific pattern is identified from the distribution of the colours of the nodes.</p>
+<pre><code language="language-python" class="language-python">graph_user = nx.from_numpy_matrix(adjacency)
+G = graph_user
+print(&#39;The number of connected components is {}&#39;.format(nx.number_connected_components(G)))
+coords = nx.spring_layout(G,k=0.03)  # Force-directed layout.
+fig=plt.figure(figsize=(15, 10))
+labels = user_features1[&#39;age&#39;].iloc[np.sort(nx.nodes(G))]
+im=nx.draw_networkx_nodes(G, coords, node_size=40,node_color=labels, cmap=&#39;tab20&#39;,vmin=min(labels), vmax=max(labels))
+nx.draw_networkx_edges(graph_user, coords, alpha=0.1, width=0.7)
+plt.title(&#39;User graph from personal information with threshold 0.5&#39;)
+plt.colorbar(im)
+</code></pre>
+<pre><code>The number of connected components is 12
+
+
+
+
+
+&lt;matplotlib.colorbar.Colorbar at 0x7f650db70250&gt;
+</code></pre>
+<p class="image-container"><img alt="png" src="img/3aab99db0afa5624.png"></p>
+<h3 is-upgraded>Giant Components in User Graph 1</h3>
+<pre><code language="language-python" class="language-python">G = graph_user
+Gc = max([G.subgraph(c) for c in nx.connected_components(G)], key=len)
+coords_Gc = nx.spring_layout(Gc,k=0.03)  # Force-directed layout.
+
+print(&#39;The number of nodes is is {}&#39;.format(Gc.number_of_nodes()))
+labels = user_features1[&#39;occupation_id&#39;].iloc[np.sort(nx.nodes(Gc))]
+fig=plt.figure(figsize=(15, 10))
+im=nx.draw_networkx_nodes(Gc, coords_Gc, node_size=10,node_color=labels, cmap=&#39;tab20b&#39;,vmin=0, vmax=20)
+nx.draw_networkx_edges(Gc, coords_Gc, alpha=0.1, width=0.7)
+plt.title(&#39;Giant component of the users connected by at least 0.5 similarity&#39;)
+plt.colorbar(im);
+</code></pre>
+<pre><code>The number of nodes is is 903
+</code></pre>
+<p class="image-container"><img alt="png" src="img/fbd6c7194d954de1.png"></p>
+<h3 is-upgraded>Below we analyse the graph from the view of spectal theory</h3>
+<pre><code language="language-python" class="language-python">def compute_laplacian(adjacency: np.ndarray, normalize: bool):
+    &#34;&#34;&#34; Return:
+        L (n x n ndarray): combinatorial or symmetric normalized Laplacian.
+    &#34;&#34;&#34;
+    d = np.sum(adjacency, axis = 1)
+    d_sqrt = np.sqrt(d)
+    D = np.diag(1 / d_sqrt)
+    if normalize:
+        L = np.eye(adjacency.shape[0]) - (adjacency.T / d_sqrt).T / d_sqrt
+    else:
+        L = np.diag(d) - adjacency
+    return L
+
+def spectral_decomposition(laplacian: np.ndarray):
+    &#34;&#34;&#34; Return:
+        lamb (np.array): eigenvalues of the Laplacian
+        U (np.ndarray): corresponding eigenvectors.
+    &#34;&#34;&#34;
+    lamb, U = np.linalg.eigh(laplacian)
+    
+    return lamb, U
+</code></pre>
+<pre><code language="language-python" class="language-python">laplacian_norm = compute_laplacian(adjacency, normalize=True)
+lamb_norm, U_norm = spectral_decomposition(laplacian_norm)
+</code></pre>
+<pre><code language="language-python" class="language-python">plt.figure(figsize=(15,5))
+plt.subplot(121)
+plt.plot(lamb_norm)
+plt.xlabel(&#39;Index&#39;)
+plt.ylabel(&#39;Eigenvalue&#39;)
+plt.title(&#39;Eigenvalues $L_{norm}$&#39;)
+
+plt.subplot(122)
+first_k = 70
+plt.scatter(range(first_k), lamb_norm[:first_k])
+plt.xlabel(&#39;Index&#39;)
+plt.ylabel(&#39;Eigenvalue&#39;)
+plt.title(&#39;First 70 Eigenvalues $L_{norm}$&#39;)
+
+plt.show()
+</code></pre>
+<p class="image-container"><img alt="png" src="img/cb03bb4d794b77ff.png"></p>
+<p>In order to observe the properties of the eigenvalues calculated, we zoom in the eigenvalues and we observe that there is a significant gap of eighvalues as shown in the plot, which correspond to the fact that there are about 40 clear clusters in the graph. As we know that if the data has exactly k clear clusters, there will be a gap in the Laplacian spectrum after the k-th eigenvalue. Here the clusters are generally defined by the occupation of the users.</p>
+<h2 is-upgraded>Metric 2: meaure similarities between users by how many common movies they have rated</h2>
+<p>The more common movies two users have rated, the more similar they are.</p>
+<pre><code language="language-python" class="language-python"># Calulate the number of common movies they have rated between two users
+def common_movie(i,j,data):
+    left = data[data[&#39;user_id&#39;]==i+1][&#39;movie&#39;].values.tolist()[0]
+    right = data[data[&#39;user_id&#39;]==j+1][&#39;movie&#39;].values.tolist()[0]
+    common = left.intersection(right)
+    return len(common)
+</code></pre>
+<pre><code language="language-python" class="language-python">adjacency_user2 = np.zeros((n_users, n_users), dtype=float)
+for i in range(n_users):
+    for j in range(n_users):
+        if j&lt;i:
+            adjacency_user2[i,j] = adjacency_user2[j,i]
+        else:
+            adjacency_user2[i,j] = common_movie(i,j,user_features2)
+            
+np.save(&#39;adjacency_user2.npy&#39;, adjacency_user2)
+</code></pre>
+<p>Histogram of the Median of common movies</p>
+<pre><code language="language-python" class="language-python">adjacency_user2 = np.load(&#39;adjacency_user2.npy&#39;)
+median = []
+for i in range(n_users):
+    median.append(np.median(adjacency_user2[i,:]))
+
+plt.hist(median, density=True)
+plt.xlabel(&#39;number of common movies&#39;)
+plt.ylabel(&#39;Frequency&#39;)
+plt.title(&#39;histogram of number of common movies&#39;)
+</code></pre>
+<pre><code>Text(0.5, 1.0, &#39;histogram of number of common movies&#39;)
+</code></pre>
+<p class="image-container"><img alt="png" src="img/faf7eb490478df9f.png"></p>
+<p>The adjacency matrix of <strong>Metric 2</strong></p>
+<pre><code language="language-python" class="language-python">mask2 = adjacency_user2&lt;20
+adjacency = adjacency_user2.copy()
+adjacency[mask2]=0
+
+# Normalize 
+adjacency_normalized = np.divide(adjacency,adjacency.max());
+adjacency_normalized = adjacency
+plt.figure(figsize=(8,8))
+plt.spy(adjacency_normalized,markersize=0.1)
+plt.title(&#39;Adjacency matrix&#39;)
+</code></pre>
+<pre><code>Text(0.5, 1.05, &#39;Adjacency matrix&#39;)
+</code></pre>
+<p class="image-container"><img alt="png" src="img/a233d612f9e94411.png"></p>
+<h3 is-upgraded>User Graph 2 with colors representing Occupation</h3>
+<pre><code language="language-python" class="language-python">graph_user2 = nx.from_numpy_matrix(adjacency_normalized)
+G = graph_user2
+print(&#39;The number of connected components is {}&#39;.format(nx.number_connected_components(G)))
+coords = nx.spring_layout(G,k=0.03)  # Force-directed layout.
+fig=plt.figure(figsize=(15, 10))
+labels = user_features1[&#39;occupation_id&#39;].iloc[np.sort(nx.nodes(G))]
+im=nx.draw_networkx_nodes(G, coords, node_size=40,node_color=labels, cmap=&#39;tab20&#39;,vmin=0, vmax=20)
+nx.draw_networkx_edges(graph_user, coords, alpha=0.1, width=0.7)
+plt.title(&#39;User graph from common movie with threshold 20&#39;)
+plt.colorbar(im)
+</code></pre>
+<pre><code>The number of connected components is 37
+
+
+
+
+
+&lt;matplotlib.colorbar.Colorbar at 0x7f6518fba9d0&gt;
+</code></pre>
+<p class="image-container"><img alt="png" src="img/97db116326b7131a.png"></p>
+<h3 is-upgraded>User Graph 2 with colors representing Average Rating</h3>
+<pre><code language="language-python" class="language-python">graph_user2 = nx.from_numpy_matrix(adjacency_normalized)
+G = graph_user2
+print(&#39;The number of connected components is {}&#39;.format(nx.number_connected_components(G)))
+coords = nx.spring_layout(G,k=0.03)  # Force-directed layout.
+fig=plt.figure(figsize=(15, 10))
+labels = user_features2[&#39;avg_rating&#39;].iloc[np.sort(nx.nodes(G))]
+im=nx.draw_networkx_nodes(G, coords, node_size=40,node_color=labels, cmap=&#39;tab20c&#39;,vmin=0, vmax=5)
+nx.draw_networkx_edges(graph_user, coords, alpha=0.1, width=0.7)
+plt.title(&#39;User graph from common movie with threshold 20&#39;)
+plt.colorbar(im)
+</code></pre>
+<pre><code>The number of connected components is 37
+
+
+
+
+
+&lt;matplotlib.colorbar.Colorbar at 0x7f650a13c350&gt;
+</code></pre>
+<p class="image-container"><img alt="png" src="img/a2101d2482f6bc93.png"></p>
+<h3 is-upgraded>User Graph 2 with colors representing Age of user</h3>
+<pre><code language="language-python" class="language-python">graph_user2 = nx.from_numpy_matrix(adjacency_normalized)
+G = graph_user2
+print(&#39;The number of connected components is {}&#39;.format(nx.number_connected_components(G)))
+coords = nx.spring_layout(G,k=0.03)  # Force-directed layout.
+fig=plt.figure(figsize=(15, 10))
+labels = user_features2[&#39;age&#39;].iloc[np.sort(nx.nodes(G))]
+im=nx.draw_networkx_nodes(G, coords, node_size=40,node_color=labels, cmap=&#39;Blues&#39;,vmin=min(labels), vmax=max(labels))
+nx.draw_networkx_edges(graph_user, coords, alpha=0.1, width=0.7)
+plt.title(&#39;User graph from common movie with threshold 20&#39;)
+plt.colorbar(im)
+</code></pre>
+<pre><code>The number of connected components is 37
+
+
+
+
+
+&lt;matplotlib.colorbar.Colorbar at 0x7f650a338750&gt;
+</code></pre>
+<p class="image-container"><img alt="png" src="img/a3c053a989ef19c8.png"></p>
+<h3 is-upgraded>Giant component of the User Graph 2 connected by at least 20 common movies</h3>
+<pre><code language="language-python" class="language-python">G = graph_user2
+Gc = max([G.subgraph(c) for c in nx.connected_components(G)], key=len)
+coords_Gc = nx.spring_layout(Gc,k=0.03)  # Force-directed layout.
+print(&#39;The number of nodes is is {}&#39;.format(Gc.number_of_nodes()))
+labels = user_features2[&#39;avg_rating&#39;].iloc[np.sort(nx.nodes(Gc))]
+fig=plt.figure(figsize=(15, 10))
+im=nx.draw_networkx_nodes(Gc, coords_Gc, node_size=10,node_color=labels, cmap=&#39;tab20&#39;,vmin=0, vmax=20)
+nx.draw_networkx_edges(Gc, coords_Gc, alpha=0.1, width=0.7)
+plt.title(&#39;Giant component of the users connected by at least 20 common movies&#39;)
+plt.colorbar(im);
+</code></pre>
+<pre><code>The number of nodes is is 907
+</code></pre>
+<p class="image-container"><img alt="png" src="img/1f45f48289084ac5.png"></p>
+<pre><code language="language-python" class="language-python">laplacian_norm = compute_laplacian(adjacency_normalized, normalize=True)
+lamb_norm, U_norm = spectral_decomposition(laplacian_norm)
+</code></pre>
+<pre><code language="language-python" class="language-python">plt.figure(figsize=(15,5))
+plt.subplot(121)
+plt.plot(lamb_norm)
+plt.xlabel(&#39;Index&#39;)
+plt.ylabel(&#39;Eigenvalue&#39;)
+plt.title(&#39;Eigenvalues $L_{norm}$&#39;)
+
+plt.subplot(122)
+first_k = 70
+plt.scatter(range(first_k), lamb_norm[:first_k])
+plt.xlabel(&#39;Index&#39;)
+plt.ylabel(&#39;Eigenvalue&#39;)
+plt.title(&#39;First 70 Eigenvalues $L_{norm}$&#39;)
+
+plt.show()
+</code></pre>
+<p class="image-container"><img alt="png" src="img/cb1206ba1c0693f0.png"></p>
+<p>In order to observe the properties of the eigenvalues calculated, we zoom in the eigenvalues and we observe that there is a significant gap of eighvalues as shown in the plot, which correspond to the fact that there are about 35 clear clusters in the graph. As we know that if the data has exactly k clear clusters, there will be a gap in the Laplacian spectrum after the k-th eigenvalue. However, the pattern here in this user graph is not clear as most of them are not really clusters by outliers. There is only one giant component that dominates the graph.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Movie graph analysis" duration="15">
+        <h2 is-upgraded>Metric 1: similarity between moives measured by genres</h2>
+<pre><code language="language-python" class="language-python">movie_features1 = movies_data[[&#39;item_id&#39;]+genre_cls]
+movie_features1.loc[:, &#39;year_label&#39;] = movies_data[&#39;year_label&#39;]
+movie_features1.reset_index(drop = True, inplace = True)
+movie_features1
+</code></pre>
+<pre><code>/usr/local/lib/python3.7/dist-packages/pandas/core/indexing.py:1596: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  self.obj[key] = _infer_fill_value(value)
+/usr/local/lib/python3.7/dist-packages/pandas/core/indexing.py:1743: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  isetter(ilocs[0], value)
+</code></pre>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<table>
+<tr><td colspan="1" rowspan="1"><p>item_id</p>
+</td><td colspan="1" rowspan="1"><p>unknown</p>
+</td><td colspan="1" rowspan="1"><p>Action</p>
+</td><td colspan="1" rowspan="1"><p>Adventure</p>
+</td><td colspan="1" rowspan="1"><p>Animation</p>
+</td><td colspan="1" rowspan="1"><p>Childrens</p>
+</td><td colspan="1" rowspan="1"><p>Comedy</p>
+</td><td colspan="1" rowspan="1"><p>Crime</p>
+</td><td colspan="1" rowspan="1"><p>Documentary</p>
+</td><td colspan="1" rowspan="1"><p>Drama</p>
+</td><td colspan="1" rowspan="1"><p>Fantasy</p>
+</td><td colspan="1" rowspan="1"><p>Film-Noir</p>
+</td><td colspan="1" rowspan="1"><p>Horror</p>
+</td><td colspan="1" rowspan="1"><p>Musical</p>
+</td><td colspan="1" rowspan="1"><p>Mystery</p>
+</td><td colspan="1" rowspan="1"><p>Romance</p>
+</td><td colspan="1" rowspan="1"><p>Sci-Fi</p>
+</td><td colspan="1" rowspan="1"><p>Thriller</p>
+</td><td colspan="1" rowspan="1"><p>War</p>
+</td><td colspan="1" rowspan="1"><p>Western</p>
+</td><td colspan="1" rowspan="1"><p>year_label</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1995</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>2</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1995</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>3</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1995</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>4</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1995</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>5</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1995</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td><td colspan="1" rowspan="1"><p>...</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>1678</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1998</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>1679</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1998</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>1680</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1998</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>1681</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1994</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>1682</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>0</p>
+</td><td colspan="1" rowspan="1"><p>1996</p>
+</td></tr>
+</table>
+<p>1682 rows × 21 columns</p>
+<pre><code language="language-python" class="language-python"># Initialize the adjacency matrix
+n_movies = len(movie_features1)
+adjacency_movie = np.zeros((n_movies, n_movies), dtype=float)
+</code></pre>
+<pre><code language="language-python" class="language-python">for i in range(n_movies):
+    adjacency_movie[i,:] = np.logical_and(movie_features1.loc[i,:][genre_cls], movie_features1[genre_cls])\
+    .sum(axis=1)
+</code></pre>
+<pre><code language="language-python" class="language-python"># Normalize 
+mask_movie = adjacency_movie&lt;2
+adjacency = adjacency_movie.copy()
+adjacency[mask_movie] = 0 
+adjacency_movie_nor =np.divide(adjacency,adjacency.max())
+plt.figure(figsize=(8,8))
+plt.spy(adjacency_movie_nor,markersize=0.1)
+plt.title(&#39;Adjacency matrix&#39;)
+</code></pre>
+<pre><code>Text(0.5, 1.05, &#39;Adjacency matrix&#39;)
+</code></pre>
+<p class="image-container"><img alt="png" src="img/bd55fd9d0ff4ae3a.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusion" duration="2">
+        <p>Congratulations!</p>
+<h2 class="checklist" is-upgraded>What we&#39;ve covered</h2>
+<ul>
+<li>User analysis</li>
+<li>Item analysis</li>
+<li>Graph analysis</li>
+</ul>
+<h2 is-upgraded>Next steps</h2>
+<ul>
+<li>Perform advanced statistical analysis</li>
+<li>Interactive graph analysis</li>
+</ul>
+<h2 is-upgraded>Links and References</h2>
+<ul>
+<li>https://www.kaggle.com/gogulrajsekhar/movielens-eda-rating-prediction</li>
+<li>https://github.com/WJMatthew/MovieLens-EDA</li>
+</ul>
+<h2 is-upgraded>Have a Question?</h2>
+<ul>
+<li><a href="https://form.jotform.com/211377288388469" target="_blank">Fill out this form</a></li>
+<li><a href="https://github.com/recohut/reco-step/issues" target="_blank">Raise issue on Github</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
