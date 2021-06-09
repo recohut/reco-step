@@ -73,16 +73,14 @@ jobs:
       run: |
         cd ./site/
         gulp dist
-    # - name: Add Site Path Patch
-    #   run: |
-    #     cd ./site/
-    #     rm -rf ./stage
-    #     mkdir ./stage
-    #     cp -r ./dist/ ./stage
-    #     rm ./stage/dist/codelabs
-    #     grep -rl '"\/[a-zA-Z0-9]' ./stage/dist/ | xargs sed -i 's/"\//"\/'${{ github.event.repository.name }}'\//g'
-    #     grep -rl '\/'${{ github.event.repository.name }}'\/'${{ github.event.repository.name }}'\/' ./stage/dist/ | xargs sed -i 's/\/'${{ github.event.repository.name }}'\/'${{ github.event.repository.name }}'/\/'${{ github.event.repository.name }}'/g'
-    #     cp -r ./codelabs ./stage/dist
+    - name: Add Site Path Patch
+      run: |
+        cd ./site/
+        rm -rf ./stage
+        mkdir ./stage
+        cp -r ./dist/ ./stage
+        rm ./stage/dist/codelabs
+        cp -r ./codelabs ./stage/dist
     - name: Add CNAME
       run: |
         touch CNAME
