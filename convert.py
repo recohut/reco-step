@@ -38,7 +38,11 @@ for p in image_paths:
     newpath = Path(os.path.join(p.parent,newname))
     os.rename(p, newpath)
     renamed_image_paths.append(newpath)
-    shutil.move(str(newpath), os.path.join(target_path,'img'))   
+    try:
+      shutil.move(str(newpath), os.path.join(target_path,'img'))
+    except:
+      print('{} already exists! please rename the new file if this is different one otherwise ignore this message!'.format(newpath.name))
+      continue
 
 sourcestr = [replacer(x) for x in image_paths]
 targetstr = [replacer(x, True) for x in renamed_image_paths]
@@ -54,6 +58,10 @@ for p in Path(source_path).rglob('*.md'):
   newname = clean_path(p.name)
   newpath = Path(os.path.join(p.parent,newname))
   os.rename(p, newpath)
-  shutil.move(str(newpath), target_path)
+  try:
+    shutil.move(str(newpath), target_path)
+  except:
+    print('{} already exists! please rename the new file if this is different one otherwise ignore this message!'.format(newname))
+    continue
 
 print('Done!')
