@@ -3,7 +3,7 @@
   "format": "html",
   "prefix": "https://storage.googleapis.com",
   "mainga": "UA-49880327-14",
-  "updated": "2021-06-21T05:26:06Z",
+  "updated": "2021-06-21T14:07:34Z",
   "id": "personalized-recommender-implicit-als-sagemaker",
   "duration": 79,
   "title": "How to build an end-to-end recommender system with Implicit BPR and Amazon SageMaker",

@@ -1,0 +1,23 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-21T14:07:34Z",
+  "id": "product-recommender-contextual-rl",
+  "duration": 37,
+  "title": "Product Recommendation with contextual RL",
+  "authors": "Sparsh A.",
+  "summary": "Contextual bandit based recommendation system modeling, and Dash app to simulate the contextual bandit environment",
+  "source": "./product-recommendation-with-contextual-rl-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "tutorial"
+  ],
+  "tags": [],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "product-recommender-contextual-rl"
+}

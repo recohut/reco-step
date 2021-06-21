@@ -1,0 +1,25 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-21T14:07:34Z",
+  "id": "storycafe-series-part-3",
+  "duration": 57,
+  "title": "StoryCafe Series Part 3",
+  "authors": "Sparsh A.",
+  "summary": "1. How ShopRunner process 1TB of data per day to serve quality fashion recommendations to shoppers 2. How Scribd recommend next best book to read to its readers using transformer model 3. How Dailymotion find similar videos at scale using sequential model 4. How TikTok makes us addictive to its platform by recommending short videos 5. How TripAdvisor model the user journey sequentially to provide the best trip recommendations",
+  "source": "./storycafe-series-part-3-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "story"
+  ],
+  "tags": [
+    "storycafe"
+  ],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "storycafe-series-part-3"
+}

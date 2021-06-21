@@ -1,0 +1,23 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-21T14:07:34Z",
+  "id": "amazon-personalize-poc-in-a-box",
+  "duration": 82,
+  "title": "Amazon Personalize POC in a box",
+  "authors": "Sparsh A.",
+  "summary": "In this workshop you will build your very own recommendation model that will recommend movies to users based on their past preferences. You will further improve the recommendation model to take into account a user’s interactions with movie items to provide accurate recommendations. This workshop will use the publicly available movie lens dataset.",
+  "source": "./amazon-personalize-poc-in-a-box-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "tutorial"
+  ],
+  "tags": [],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "amazon-personalize-poc-in-a-box"
+}

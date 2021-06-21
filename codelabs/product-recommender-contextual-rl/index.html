@@ -1,0 +1,237 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Product Recommendation with contextual RL</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="product-recommender-contextual-rl"
+                  title="Product Recommendation with contextual RL"
+                  environment="web"
+                  feedback-link="https://github.com/recohut/reco-step/issues">
+    
+      <google-codelab-step label="Introduction" duration="5">
+        <p>Contextual bandits have become a popular approach to recommender problems, where there are many possible items to offer and there is frequent interaction with the users, e.g. via click/no-click or purchase/no-purchase events. The key idea is that improvement of the recommender policy is achieved in a trial-and-error fashion by taking user features into account. In general, bandit algorithms can be thought of as &#34;online self-improving A/B testing&#34;. A somewhat cartoonish way of comparison of the usual A/B testing, standard multi-armed bandit approach (online improvement not taking individual user features into account) and contextual bandit approach (online improvement taking individual user features into account) could be viewed as follows.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-product-recommendation-with-contextual-rl-untitled.png" src="img/ef0877699efd995.png"></p>
+<p>Common applications of contextual bandit algorithms include, among others, news recommendation and website/ad personalization.</p>
+<h2 is-upgraded>What you&#39;ll learn?</h2>
+<ul>
+<li>Contextual bandit based recommendation system modeling</li>
+<li>Dash app to simulate the contextual bandit environment</li>
+</ul>
+<h2 is-upgraded>Why is this important?</h2>
+<ol type="1">
+<li>Context plays an important role in building good recommender systems</li>
+<li>Reinforcement learning is capable of adapting the changing environment quickly which is crucial for the success of recommender systems</li>
+</ol>
+<h2 is-upgraded>How it will work?</h2>
+<ol type="1">
+<li>Create the baseline contextual RL agent</li>
+<li>Modify the context and re-train the contextual RL agent</li>
+</ol>
+<h2 is-upgraded>Who is this for?</h2>
+<ul>
+<li>People who are new in reinforcement and contextual recommendations</li>
+<li>People looking to get a practical sense on contextual RL based recommendations</li>
+</ul>
+<h2 is-upgraded>Important resources</h2>
+<ul>
+<li><a href="https://nb.recohut.com/reinforcement/contextual/2021/04/22/vowpal-wabbit-contextual-recommender.html" target="_blank">Notebook - Simulating a news personalization scenario using Contextual Bandits</a></li>
+<li><a href="https://github.com/recohut-admin/reco-nb/blob/dev/_notebooks/2021-06-12-vowpalwabbit-changing-context.ipynb" target="_blank">Notebook - Contextual bandit with changing context</a></li>
+<li><a href="https://github.com/recohut-admin/reco-nb/blob/dev/_notebooks/2021-06-12-vowpalwabbit-changing-context-part2.ipynb" target="_blank">Notebook - Contextual bandit with changing context part 2</a></li>
+<li><a href="https://nbviewer.jupyter.org/github/recohut-admin/reco-nb/blob/dev/_notebooks/2021-06-12-contextual-bandit-dash-app.ipynb" target="_blank">Notebook - Dash app</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Baseline model" duration="10">
+        <p>Refer to <a href="https://nb.recohut.com/reinforcement/contextual/2021/04/22/vowpal-wabbit-contextual-recommender.html" target="_blank">this</a> notebook for the detailed guidelines on baseline model.</p>
+<h2 is-upgraded>Setting the initial context</h2>
+<p>We have 3 users and 6 items. Context 1 is time of day - morning and evening. Context 2 is season - summer and winter.</p>
+<p>Ground truth rules:</p>
+<ol type="1">
+<li>User 1 likes Item 1 in morning, and Item 6 in summer</li>
+<li>User 2 likes Item 2 in winter, and Item 5 in summer morning</li>
+<li>User 3 likes Item 2 in morning, Item 3 in evening, and item 4 in winter morning</li>
+</ol>
+<pre><code language="language-python" class="language-python">users = [&#39;A&#39;,&#39;B&#39;,&#39;C&#39;]
+items = [&#39;Item1&#39;,&#39;Item2&#39;,&#39;Item3&#39;,&#39;Item4&#39;,&#39;Item5&#39;,&#39;Item6&#39;]
+context1 = [&#39;morning&#39;,&#39;evening&#39;]
+context2 = [&#39;summer&#39;,&#39;winter&#39;]
+
+context = pd.DataFrame(list(product(users, context1, context2, items)), columns=[&#39;users&#39;, &#39;context1&#39;, &#39;context2&#39;, &#39;items&#39;])
+context[&#39;reward&#39;] = 0
+
+#user 1 likes Item 1 in morning, and Item 6 in summer
+context.loc[(context.users==&#39;A&#39;) &amp; \
+            (context.context1==&#39;morning&#39;) &amp; \
+            (context[&#39;items&#39;]==&#39;Item1&#39;), \
+            &#39;reward&#39;] = 1
+context.loc[(context.users==&#39;A&#39;) &amp; \
+            (context.context2==&#39;summer&#39;) &amp; \
+            (context[&#39;items&#39;]==&#39;Item6&#39;), \
+            &#39;reward&#39;] = 1
+
+#user 2 likes Item 2 in winter, and Item 5 in summer morning
+context.loc[(context.users==&#39;B&#39;) &amp; \
+            (context.context2==&#39;winter&#39;) &amp; \
+            (context[&#39;items&#39;]==&#39;Item2&#39;), \
+            &#39;reward&#39;] = 1
+context.loc[(context.users==&#39;B&#39;) &amp; \
+            (context.context1==&#39;morning&#39;) &amp; \
+            (context.context2==&#39;summer&#39;) &amp; \
+            (context[&#39;items&#39;]==&#39;Item5&#39;), \
+            &#39;reward&#39;] = 1
+
+#user 3 likes Item 2 in morning, Item 3 in evening, and item 4 in winter morning
+context.loc[(context.users==&#39;C&#39;) &amp; \
+            (context.context1==&#39;morning&#39;) &amp; \
+            (context[&#39;items&#39;]==&#39;Item2&#39;), \
+            &#39;reward&#39;] = 1
+context.loc[(context.users==&#39;C&#39;) &amp; \
+            (context.context1==&#39;evening&#39;) &amp; \
+            (context[&#39;items&#39;]==&#39;Item3&#39;), \
+            &#39;reward&#39;] = 1
+context.loc[(context.users==&#39;C&#39;) &amp; \
+            (context.context1==&#39;morning&#39;) &amp; \
+            (context.context2==&#39;winter&#39;) &amp; \
+            (context[&#39;items&#39;]==&#39;Item4&#39;), \
+            &#39;reward&#39;] = 1
+</code></pre>
+<h2 is-upgraded>Running simulation</h2>
+<pre><code language="language-python" class="language-python"># Instantiate learner in VW
+vw = pyvw.vw(&#34;--cb_explore_adf -q UA --quiet --epsilon 0.2&#34;)
+
+num_iterations = 5000
+ctr = run_simulation(vw, num_iterations, users, context1, context2, items, get_cost)
+
+plot_ctr(num_iterations, ctr)
+</code></pre>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-product-recommendation-with-contextual-rl-untitled-1.png" src="img/f336f3bd5c406c7c.png"></p>
+<pre><code language="language-python" class="language-python"># Instantiate learner in VW but without -q
+vw = pyvw.vw(&#34;--cb_explore_adf --quiet --epsilon 0.2&#34;)
+
+num_iterations = 5000
+ctr = run_simulation(vw, num_iterations, users, context1, context2, items, get_cost)
+
+plot_ctr(num_iterations, ctr)
+</code></pre>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-product-recommendation-with-contextual-rl-untitled-2.png" src="img/36c2205f098c2041.png"></p>
+<pre><code language="language-python" class="language-python"># Instantiate learner in VW
+vw = pyvw.vw(&#34;--cb_explore_adf -q UA --quiet --epsilon 0.2&#34;)
+
+num_iterations = 5000
+ctr = run_simulation(vw, num_iterations, users, context1, context2, items, get_cost, do_learn=False)
+
+plot_ctr(num_iterations, ctr)
+</code></pre>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-product-recommendation-with-contextual-rl-untitled-3.png" src="img/ace18d72ae9879e6.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Change the context" duration="10">
+        <p>Refer to <a href="https://github.com/recohut-admin/reco-nb/blob/dev/_notebooks/2021-06-12-vowpalwabbit-changing-context.ipynb" target="_blank">this</a> and <a href="https://github.com/recohut-admin/reco-nb/blob/dev/_notebooks/2021-06-12-vowpalwabbit-changing-context-part2.ipynb" target="_blank">this</a> notebook.</p>
+<p>Updated ground truth rules:</p>
+<ol type="1">
+<li>User 1 likes Item 2 in morning, and Item 5 in summer</li>
+<li>User 2 likes Item 2 in summer, and Item 5 in morning</li>
+<li>User 3 likes Item 4 in morning, Item 3 in evening, and item 4 in winter evening</li>
+</ol>
+<h2 is-upgraded>Running simulation</h2>
+<p>We are using the first reward function initially and then switch to second reward function</p>
+<pre><code language="language-python" class="language-python">vw = pyvw.vw(&#34;--cb_explore_adf -q UA --quiet --epsilon 0.2&#34;)
+
+num_iterations_per_cost_func = 5000
+cost_functions = [get_cost, get_cost_new1]
+total_iterations = num_iterations_per_cost_func * len(cost_functions)
+
+ctr = run_simulation_multiple_cost_functions(vw, num_iterations_per_cost_func, users, context1, context2, items, cost_functions)
+
+plot_ctr(total_iterations, ctr)
+</code></pre>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-product-recommendation-with-contextual-rl-untitled-4.png" src="img/4d34cf07bbc89d1b.png"></p>
+<pre><code language="language-python" class="language-python">vw = pyvw.vw(&#34;--cb_explore_adf -q UA --quiet --epsilon 0.2&#34;)
+
+num_iterations_per_cost_func = 5000
+cost_functions = [get_cost, get_cost_new1]
+total_iterations = num_iterations_per_cost_func * len(cost_functions)
+
+ctr = run_simulation_multiple_cost_functions(vw, num_iterations_per_cost_func, users, context1, context2, items, cost_functions, do_learn=False)
+plot_ctr(total_iterations, ctr)
+</code></pre>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-product-recommendation-with-contextual-rl-untitled-5.png" src="img/f38a990eb5a66998.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Create the dash app" duration="10">
+        <p>Refer to <a href="https://github.com/recohut-admin/reco-nb/blob/dev/_notebooks/2021-06-12-contextual-bandit-dash-app.ipynb" target="_blank">this</a> notebook.</p>
+<p>The objective of this app is to apply the contextual bandit algorithms to recommendation problem under a simulated environment. The recommender agent is able to quickly adapt the changing behavior of users and change the recommendation strategy accordingly.</p>
+<p>There are 3 users: Alex, Ben and Cindy. There are 6 news topics and 2 types of context. That means, Alex, Ben, and Cindy might prefer to read news reated to any of the 6 topics on morning/evening and weekday/weekends. Eg. Alex might prefer business related news on weekday mornings and entertainment related news on weekend evenings. And it is also possible that in future, Alex starts reading politics on weekday mornings. These situations reflect the real-world scenarios and the job of our contextual agent is to automatically detect these preferences and changes and recommend the items accordingly to maximize the reward like user satisfaction.</p>
+<p><a href="https://www.youtube.com/watch?v=9t0-FZIWMRQ" target="_blank">https://www.youtube.com/watch?v=9t0-FZIWMRQ</a></p>
+<p>In the example, agent initialized with random preferences and starts recommending news to the users. We added 2 context: &#34;Cindy prefers economy news on weekday mornings&#34; and &#34;Ben prefers weather news on weekday mornings&#34; and starts rewarding agent for correctly recommending as per these preferences. At the moment, agent knows that Ben prefers business news and Cindy prefers history news. With time, agent started recommending weather news to Ben. Similar case we will see for Cindy and in fact, for all users.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-product-recommendation-with-contextual-rl-untitled-6.png" src="img/e724f777689b99b5.png"></p>
+<p>Note: Interval is 1 sec but we are not seeing updates every second because we are looking at a particular context only: Weekday mornings but agent is recommending globally.</p>
+<p>It is important to note that agent do not know the ground truth. It just taking action and receiving reward and the objective is to estimate this ground truth preferences.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusion" duration="2">
+        <p>Congratulations!</p>
+<h2 class="checklist" is-upgraded>What we&#39;ve covered</h2>
+<ul>
+<li>Contextual bandit based recommendation system modeling</li>
+<li>Dash app to simulate the contextual bandit environment</li>
+</ul>
+<h2 is-upgraded>Next steps</h2>
+<ul>
+<li>Enhance the app by increasing the products</li>
+<li>Improve the app design by adding product images and changing the layout design</li>
+</ul>
+<h2 is-upgraded>Links and References</h2>
+<ul>
+<li><a href="https://nb.recohut.com/reinforcement/contextual/2021/04/22/vowpal-wabbit-contextual-recommender.html" target="_blank">Notebook - Simulating a news personalization scenario using Contextual Bandits</a></li>
+<li><a href="https://github.com/recohut-admin/reco-nb/blob/dev/_notebooks/2021-06-12-vowpalwabbit-changing-context.ipynb" target="_blank">Notebook - Contextual bandit with changing context</a></li>
+<li><a href="https://github.com/recohut-admin/reco-nb/blob/dev/_notebooks/2021-06-12-vowpalwabbit-changing-context-part2.ipynb" target="_blank">Notebook - Contextual bandit with changing context part 2</a></li>
+<li><a href="https://nbviewer.jupyter.org/github/recohut-admin/reco-nb/blob/dev/_notebooks/2021-06-12-contextual-bandit-dash-app.ipynb" target="_blank">Notebook - Dash app</a></li>
+<li><a href="https://engineering.nordeus.com/contextual-bandits-for-in-app-recommendation/" target="_blank">https://engineering.nordeus.com/contextual-bandits-for-in-app-recommendation/</a></li>
+</ul>
+<h2 is-upgraded>Have a Question?</h2>
+<ul>
+<li><a href="https://form.jotform.com/211377288388469" target="_blank">Fill out this form</a></li>
+<li><a href="https://github.com/recohut/reco-step/issues" target="_blank">Raise issue on Github</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>

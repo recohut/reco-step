@@ -1,0 +1,143 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Amazon Personalize Workshop</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="amazon-personalize-workshop-a"
+                  title="Amazon Personalize Workshop"
+                  environment="web"
+                  feedback-link="https://github.com/recohut/reco-step/issues">
+    
+      <google-codelab-step label="Introduction" duration="5">
+        <h2 is-upgraded>What you&#39;ll learn?</h2>
+<p>In this workshop you will build your very own recommendation model that will recommend movies to users based on their past preferences. You will further improve the recommendation model to take into account a user&#39;s interactions with movie items to provide accurate recommendations. This workshop will use the publicly available movie lens dataset.</p>
+<h2 is-upgraded>Why is this important?</h2>
+<p>Amazon Personalize is an advanced tool for building recommender systems, that supports AutoML and Real-time.</p>
+<h2 is-upgraded>How it will work?</h2>
+<ol type="1">
+<li>Setup the environment using CloudFormation template</li>
+<li>Open the SageMaker Jupyter Lab instance</li>
+<li>Train the recommender model on MovieLens dataset and build the campaign</li>
+<li>View campaign and generate a recommendation</li>
+<li>Simulate a real-time event and analyze how recommendation changes</li>
+<li>Clean the environment by deleting all the resources</li>
+</ol>
+<h2 is-upgraded>Who is this for?</h2>
+<ul>
+<li>People who are new in deep learning and cloud</li>
+<li>People learning Amazon Personalize</li>
+<li>People looking to build a scalable real-time recommender solution</li>
+</ul>
+<h2 is-upgraded>Important resources</h2>
+<ul>
+<li><a href="https://nb-dev.recohut.com/amazonpersonalize/movie/2021/06/20/amazon-personalize-workshop-part-1.html" target="_blank">Amazon Personalize Workshop Part 1 - Build your campaign</a></li>
+<li><a href="https://nb-dev.recohut.com/amazonpersonalize/movie/realtime/2021/06/20/amazon-personalize-workshop-part-2.html" target="_blank">Amazon Personalize Workshop Part 2 - View Campaign and Interactions</a></li>
+<li><a href="https://nb-dev.recohut.com/amazonpersonalize/movie/2021/06/20/amazon-personalize-workshop-part-3.html" target="_blank">Amazon Personalize Workshop Part 3 - Cleanup the resources</a></li>
+<li><a href="https://nb-dev.recohut.com/amazonpersonalize/movie/security/privacy/2021/06/20/amazon-personalize-workshop-part-4.html" target="_blank">Amazon Personalize Workshop Part 4 - Security best practices (optional)</a></li>
+<li><a href="https://www.sagemakerworkshop.com/personalize/" target="_blank">Workshop site</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Setup the Environment" duration="5">
+        <p>Use <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/template?stackName=PersonalizeDemo&templateURL=https://chriskingpartnershare.s3.amazonaws.com/PersonalizeDemo.yaml" target="_blank">this</a> template for the setup.</p>
+<p>These are the 3 resources that will be created.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-amazon-personalize-workshop-untitled.png" src="img/61c13ed2c9c8500b.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Start the lab" duration="5">
+        <p>Go to SageMaker → Notebooks and Open the Jupyter Lab.</p>
+<p>You will see something like this:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-amazon-personalize-workshop-untitled-1.png" src="img/8a5a1f65fd7fdee3.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Build your First Campaign" duration="10">
+        <p>This notebook will walk you through the steps to build a recommendation model for movies based on data collected from the movielens data set. The goal is to recommend movies that are relevant based on a particular user. The data is coming from the MovieLens project.</p>
+<p>Go to <a href="https://nb-dev.recohut.com/amazonpersonalize/movie/2021/06/20/amazon-personalize-workshop-part-1.html" target="_blank">this</a> notebook for in-depth guideline.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="View Campaign and Interactions" duration="10">
+        <p>Now that we successfully built and deployed a recommendation model using deep learning with Amazon Personalize, the following notebook will expand on that and will walk you through adding the ability to react to the real-time behavior of users. If their intent changes while browsing a movie, you will see revised recommendations based on that behavior. It will also showcase demo code for simulating user behavior selecting movies before the recommendations are returned.</p>
+<p>Go to <a href="https://nb-dev.recohut.com/amazonpersonalize/movie/realtime/2021/06/20/amazon-personalize-workshop-part-2.html" target="_blank">this</a> notebook for in-depth guideline.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Security Best Practices (optional)" duration="10">
+        <p>We are using a pre-made dataset that hasn&#39;t been encrypted so there is no need to decrypt this dataset. However, it would be a good security practice to store your datasets encrypted.</p>
+<p>Refer to <a href="https://nb-dev.recohut.com/amazonpersonalize/movie/security/privacy/2021/06/20/amazon-personalize-workshop-part-4.html" target="_blank">this</a> notebook for in-depth guideline.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Clean the Environment" duration="5">
+        <p><a href="https://nb-dev.recohut.com/amazonpersonalize/movie/2021/06/20/amazon-personalize-workshop-part-3.html" target="_blank">This</a> notebook demonstrate the process of deleting the resources that we created during campaign.</p>
+<p>Once you have completed all of the work in the Notebooks and have completed the cleanup steps there as well, the last thing to do is to delete the stack you created with CloudFormation. To do that, go to CloudFormation and delete the stack. This will automatically delete the 3 resources that we created in the beginning.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusion" duration="2">
+        <p>Congratulations!</p>
+<h2 class="checklist" is-upgraded>What we&#39;ve covered</h2>
+<ol type="1">
+<li>Setup the environment using CloudFormation template</li>
+<li>Open the SageMaker Jupyter Lab instance</li>
+<li>Train the recommender model on MovieLens dataset and build the campaign</li>
+<li>View campaign and generate a recommendation</li>
+<li>Simulate a real-time event and analyze how recommendation changes</li>
+<li>Clean the environment by deleting all the resources</li>
+</ol>
+<h2 is-upgraded>Links and References</h2>
+<ul>
+<li><a href="https://nb-dev.recohut.com/amazonpersonalize/movie/2021/06/20/amazon-personalize-workshop-part-1.html" target="_blank"><strong>Amazon Personalize Workshop Part 1 - Build your campaign</strong></a></li>
+<li><a href="https://nb-dev.recohut.com/amazonpersonalize/movie/realtime/2021/06/20/amazon-personalize-workshop-part-2.html" target="_blank"><strong>Amazon Personalize Workshop Part 2 - View Campaign and Interactions</strong></a></li>
+<li><a href="https://nb-dev.recohut.com/amazonpersonalize/movie/2021/06/20/amazon-personalize-workshop-part-3.html" target="_blank"><strong>Amazon Personalize Workshop Part 3 - Cleanup the resources</strong></a></li>
+<li><a href="https://nb-dev.recohut.com/amazonpersonalize/movie/security/privacy/2021/06/20/amazon-personalize-workshop-part-4.html" target="_blank"><strong>Amazon Personalize Workshop Part 4 - Security best practices (optional)</strong></a></li>
+<li><a href="https://www.sagemakerworkshop.com/personalize/" target="_blank">Workshop site</a></li>
+</ul>
+<h2 is-upgraded>Have a Question?</h2>
+<ul>
+<li><a href="https://form.jotform.com/211377288388469" target="_blank">Fill out this form</a></li>
+<li><a href="https://github.com/recohut/reco-step/issues" target="_blank">Raise issue on Github</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
