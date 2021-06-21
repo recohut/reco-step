@@ -1,0 +1,132 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>1mg Pharmacy</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="onemg-pharmacy"
+                  title="1mg Pharmacy"
+                  environment="web"
+                  feedback-link="https://github.com/recohut/reco-step/issues">
+    
+      <google-codelab-step label="Introduction" duration="5">
+        <p>To enable better recommendations for the visitors on the platform, 1mg has been using state-of-the-art collaborative filtering and transformer models to build its recommendation engine. It uses graph representation algorithms like Meta Prod2Vec to build user and item embeddings, which are utilised in neural collaborative filtering and models like BERT, GPT-2, to enhance personalisation of product recommendations; this has significantly improved the click-through rate (CTR) and product conversions.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-1mg-pharmacy-untitled.png" src="img/edf39aec6117f196.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Placements" duration="2">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-1mg-pharmacy-untitled-1.png" src="img/100fe46302311d04.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Model evolution" duration="2">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-1mg-pharmacy-untitled-2.png" src="img/6c62f7ff698f5c03.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Product embeddings" duration="2">
+        <h2 is-upgraded>Content-based methods</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-1mg-pharmacy-untitled-3.png" src="img/884f7be4d70b45b3.png"></p>
+<h2 is-upgraded>Deepwalk based Prod2Vec</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-1mg-pharmacy-untitled-4.png" src="img/80644abb1c6a0b82.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Challenges" duration="2">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-1mg-pharmacy-untitled-5.png" src="img/ce055b4a31cf5ee7.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Sequential model" duration="5">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-1mg-pharmacy-untitled-6.png" src="img/3bf0effd918a3e81.png"></p>
+<h2 is-upgraded>Transformer based model</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-1mg-pharmacy-untitled-7.png" src="img/b860b589f3e5f1a3.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Proposed model" duration="2">
+        <p>MetaProd2Vec method encodes the product&#39;s meta-info along with the sequence context to achieve the product&#39;s embedding, which helps in dealing with the problem mentioned above since we have meta-info powering our embeddings and hence handling long-tail products with low co-occurrences.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-1mg-pharmacy-untitled-8.png" src="img/5ba8494c9b13bb67.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Exploratory analysis" duration="5">
+        <p>This model architecture has enabled us to analyse the importance of different meta info features in the final embedding. For majority of the products the item embedding itself holds the highest weightage, although Therapeutic Use and Use both hold high importance as well(Use and Therapeutic Use for the user is basically defined by the ingredients of the product and hence the high significance). This enables us to better understand the significance of these features, and how these features are perceived by the users.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-1mg-pharmacy-untitled-9.png" src="img/2c6bd7bab1cdada6.png"></p>
+<p>Use and Therapeutic Use play a major role in defining the product embedding</p>
+<p>We plotted our product embeddings on the cartesian space and observed the clustering for the products belonging to the category of ‘Personal Care&#39;, to find that they are quite well segregated on basis of their use, which confirms the previous observation with regards to high significance of Uses in defining the embeddings.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-1mg-pharmacy-untitled-10.png" src="img/375949eabb16c42d.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Experimental setup" duration="2">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-1mg-pharmacy-untitled-11.png" src="img/4b96c460a607754b.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Results" duration="5">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-1mg-pharmacy-untitled-12.png" src="img/fc9f4b888a18bcf5.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-1mg-pharmacy-untitled-13.png" src="img/b687f3c5d28910a5.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-1mg-pharmacy-untitled-14.png" src="img/a04cc9de28fd5b6.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-1mg-pharmacy-untitled-15.png" src="img/342b856c2ef2455e.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-1mg-pharmacy-untitled-16.png" src="img/9d56f3943d829efa.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusion" duration="2">
+        <p>Congratulations!</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-1mg-pharmacy-untitled-17.png" src="img/21c54cfe82e7697a.png"></p>
+<h2 is-upgraded>Links and References</h2>
+<ol type="1">
+<li><a href="https://www.1mg.com/" target="_blank">https://www.1mg.com/</a></li>
+<li><a href="https://analyticsindiamag.com/how-1mg-is-democratising-ai-ml-in-healthcare-delivery/" target="_blank">https://analyticsindiamag.com/how-1mg-is-democratising-ai-ml-in-healthcare-delivery/</a></li>
+<li><a href="https://medium.com/1mgofficial/moving-beyond-meta-better-product-embeddings-for-better-recommendations-fa6dd1578777" target="_blank">https://medium.com/1mgofficial/moving-beyond-meta-better-product-embeddings-for-better-recommendations-fa6dd1578777</a></li>
+</ol>
+<h2 is-upgraded>Have a Question?</h2>
+<ul>
+<li><a href="https://form.jotform.com/211377288388469" target="_blank">Fill out this form</a></li>
+<li><a href="https://github.com/recohut/reco-step/issues" target="_blank">Raise issue on Github</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,208 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>How to build a simple similarity recommender</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="simple-similarity-recommender"
+                  title="How to build a simple similarity recommender"
+                  environment="web"
+                  feedback-link="https://github.com/recohut/reco-step/issues">
+    
+      <google-codelab-step label="Introduction" duration="5">
+        <p>It will not be wrong to say that recommender systems are similarity hunters, depending on how we define &#34;similarity&#34; between &#34;items&#34;. Given any reasonable similarity function between items, a recommender system presents relevant items to a user. This similarity function between 2 items could be common users that have interacted with those items in the past, similarity in their attributes, similarity in the context in which they are used, and so on.‌</p>
+<p>In this tutorial, we will build a simple recommenders using different similarity methods.</p>
+<h2 is-upgraded>What you&#39;ll learn?</h2>
+<ul>
+<li>Minkowski Distance</li>
+<li>Pearson Correlation Coefficient</li>
+<li>Cosine Similarity</li>
+<li>K-Nearest Neighbors</li>
+</ul>
+<h2 is-upgraded>Why is this important?</h2>
+<p>Finding similarities between these users is the most crucial task because the accuracy and the quality of the recommendations rely majorly on them.</p>
+<h2 is-upgraded>How it will work?</h2>
+<ol type="1">
+<li>Generate a synthetic user-music dataset of given number of users and songs</li>
+<li>Build the Minkowski distance function in python</li>
+<li>Recommend songs to users based on this distance based user similarity</li>
+<li>Discuss the result and shortcomings of this method</li>
+<li>Build the pearson correlation function and recommend songs based on the pearson coefficient</li>
+<li>Discuss the result and shortcomings of this method</li>
+<li>Build the cosine similarity function and recommend songs based on user cosine similarities</li>
+<li>Discuss the result and shortcomings of this method</li>
+<li>Discuss how KNN method could help in resolving these shortcomings</li>
+</ol>
+<h2 is-upgraded>Who is this for?</h2>
+<ul>
+<li>People who are new in recommender systems and similarities</li>
+<li>People looking to advance their knowledge on calculating similarities in python</li>
+</ul>
+<h2 is-upgraded>Important resources</h2>
+<ul>
+<li><a href="https://nb-dev.recohut.com/similarity/2021/06/19/simple-similarity-based-recommenders.html" target="_blank">Colab notebook</a></li>
+<li><a href="https://colab.research.google.com/gist/sparsh-ai/213a09c16866966c460331d796c8f1a1/2021-06-19-simple-similarity-based-recommenders.ipynb" target="_blank">Mirror of the above notebook</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Generate Data" duration="10">
+        <p>We are using 8 users and 8 songs. Feel free to increase this number if you want. We need to use the while loop because we want to get a list of unique 8 songs but the faker library sometimes generates duplicates. While loop will not exit if this happens and will generate the data again. We are putting a null probability of 60% which means 6 out of every 10 records will be null i.e. user didn&#39;t yet listen to that song band. Feel free to modify it so that this 60% can also be treated as a sparsity ratio.</p>
+<pre><code language="language-python" class="language-python">def generate_data():
+  
+  NUM_USER = 8
+  NUM_ITEM = 8
+
+  RATING_OPTIONS = np.arange(0,5.5,0.5)
+
+  while True:
+    
+    users = [names.get_full_name() for i in range(NUM_USER)]
+    items = [fake.music_genre() for i in range(NUM_ITEM)]
+
+    data = pd.DataFrame(list(product(users, items)), columns=[&#39;USERS&#39;, &#39;ITEMS&#39;])
+
+    PROBS = [0.6]
+    PROBS.extend([0.05]*(len(RATING_OPTIONS)-1))
+    PROBS = [i/sum(PROBS) for i in PROBS]
+
+    data[&#39;RATINGS&#39;] = np.random.choice(RATING_OPTIONS, NUM_USER*NUM_ITEM, p=PROBS)
+
+    data[&#39;RATINGS&#39;] = data[&#39;RATINGS&#39;].astype(&#39;float32&#39;)
+
+    data = pd.pivot_table(data, index=&#39;ITEMS&#39;, columns=&#39;USERS&#39;, values=&#39;RATINGS&#39;)
+
+    data = data.replace(0, np.nan)
+
+    if len(np.unique(items))==NUM_ITEM:
+      return data, users
+</code></pre>
+<p>The generated data would look like this:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-simple-similarity-recommender-untitled.png" src="img/6138bdad9d1bce2f.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Minkowski Distance" duration="5">
+        <p>So how can we tell if two users have similar taste? One [simple] answer to that is the Minkowski Distance Metric: $d(x,y) = (\sum<em>{i=1}^{k}{|x</em>{i} - y_{i}|^{r}})^{1/r}$, where $x$ and $y$ are two records with $k$ features (ratings, in this case) and r ∈ {1,2,...,∞}.</p>
+<pre><code language="language-python" class="language-python">def minkowski(ratings1, ratings2, r=2):
+    &#34;&#34;&#34;
+    Compute the Minkowski Distance between two users.
+    If `r` is not given, it defaults to Euclidian.
+    &#34;&#34;&#34;
+
+    mink_distance = 0
+
+    for key in ratings1:
+        if key in ratings2:
+            mink_distance += abs(ratings1[key] - ratings2[key])**r
+
+    mink_distance = mink_distance ** (1/r)
+
+    return mink_distance
+</code></pre>
+<p><strong>Note:</strong></p>
+<ul>
+<li><em>r</em>=1 is called the <strong>Manhattan Distance</strong></li>
+<li><em>r</em>=2 is called the <strong>Euclidean Distance</strong></li>
+</ul>
+<p>The results would look like this:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-simple-similarity-recommender-untitled-1.png" src="img/a991dd26ce72f2b2.png"></p>
+<p>Halina&#39;s neighbor is George and he gave 4.5 to Comedy and 0.5 to Jazz. Since Halina didn&#39;t yet listened to Comedy, this gets recommended to Halina.</p>
+<p>On the other hand, Earl&#39;s neighbor is Betty and she gave 3.5 to Alternative. But since Betty already listed to this, no recommendation was provided.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Pearson Correlation Coefficient" duration="2">
+        <p>The problem with the above method of calculating similarity is that some users, like to rate all their songs between 4 and 5 e.g. On the other hand, some users like bands in a binary fashion (either 1 or 4) e.g. People have similar taste but use different scales to rate bands.</p>
+<p>We fix this problem, called grade inflation, by using the Pearson Correlation Coefficient:</p>
+<p>$r = \frac{n(\sum xy)-(\sum x)(\sum y)}{\sqrt{[n\sum x^{2}-(\sum x)^{2}] [n\sum y^{2}- (\sum y )^{2}]}}$.</p>
+<pre><code language="language-python" class="language-python">def pearson_corrcoef(x, y):
+    
+    x_mean = x.mean()
+    y_mean = y.mean()
+
+    numer = np.sum( (x - x_mean) * (y - y_mean) )
+    denom = ( np.sum( (x - x_mean)**2 ) )**0.5 * ( np.sum( (y - y_mean)**2 ) )**0.5
+
+    return numer / denom
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Cosine Similarity" duration="2">
+        <p>When we compare two people by using the number of plays of the 15 million tracks on ,say iTunes, mostly they will have shared zeros in common. However, we do not want to use these shared zeros when we are computing similarity, as they will affect the performance of our model for the worse.</p>
+<p>Cosine similarity ignores 0-0 matches. It is defined as: $cos(x,y) = \dfrac{x.y}&#123;&#123;\lVert \mathbf{x}\rVert}\times{\lVert \mathbf{y}\rVert}}$, Where ⋅ indicates the dot product and ||x|| indicates the length of the vector x.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Which Similarity Measure to Use?" duration="2">
+        <ul>
+<li>If the data is subject to grade-inflation (different users may be using different scales) use Pearson.</li>
+<li>If your data is dense (almost all attributes have nonzero values) and the magnitude of the attribute values is important, use distance measures such as Euclidean or Manhattan.</li>
+<li>If the data is sparse consider using Cosine Similarity.</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="K-Nearest Neighbors" duration="2">
+        <p>The problem is that we are relying on a single &#34;most similar&#34; person. Any quirk that person has is passed on as a recommendation. One way of evening out those quirks is to base our recommendations on more than one person who is similar to our user. For this we can use the k-nearest neighbor approach.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-simple-similarity-recommender-untitled-2.png" src="img/6a8b3307eb84c981.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusion" duration="2">
+        <p>Congratulations!</p>
+<h2 class="checklist" is-upgraded>What we&#39;ve covered</h2>
+<ul>
+<li>Generated a synthetic user-music dataset of given number of users and songs</li>
+</ul>
+<ol type="1">
+<li>Built the Minkowski distance function in python and analyzed the results</li>
+<li>Built the Pearson correlation function in python and analyzed the results</li>
+<li>Built the Cosine Similarity function in python and analyzed the results</li>
+<li>Discussed how KNN method could help in resolving the cosine similarity&#39;s shortcomings</li>
+</ol>
+<h2 is-upgraded>Have a Question?</h2>
+<ul>
+<li><a href="https://form.jotform.com/211377288388469" target="_blank">Fill out this form</a></li>
+<li><a href="https://github.com/recohut/reco-step/issues" target="_blank">Raise issue on Github</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>

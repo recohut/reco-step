@@ -1,0 +1,217 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>How to setup and run Jenkins</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="how-to-setup-jenkins"
+                  title="How to setup and run Jenkins"
+                  environment="web"
+                  feedback-link="https://github.com/recohut/reco-step/issues">
+    
+      <google-codelab-step label="Introduction" duration="5">
+        <h2 is-upgraded>What you&#39;ll learn?</h2>
+<p>Setup a Jenkins server to run the cicd pipelines</p>
+<h2 is-upgraded>Why is this important?</h2>
+<p>Important part of MLOps</p>
+<h2 is-upgraded>How it will work?</h2>
+<ol type="1">
+<li>Go to Play-with-docker site</li>
+<li>Pull the Jenkins docker</li>
+<li>Run the container</li>
+<li>Access Jenkins GUI and install plugins</li>
+<li>Create a pipeline</li>
+<li>Trigger the pipeline by pushing to git</li>
+</ol>
+<h2 is-upgraded>Who is this for?</h2>
+<ol type="1">
+<li>People who are new to MLOps</li>
+<li>People willing to improve CICD skills</li>
+</ol>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Login to PWD" duration="5">
+        <p>We will use <em>Play with docker</em> for this tutorial.</p>
+<h2 is-upgraded>Sign-in</h2>
+<p>Go to <a href="https://labs.play-with-docker.com/" target="_blank">this</a> link and login. The landing page will look like this:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-how-to-set-up-and-run-jenkins-untitled.png" src="img/920ff47f6016afcb.png"></p>
+<h2 is-upgraded>Create an instance</h2>
+<p>Click on <em>ADD NEW INSTANCE</em>. After clicking, it will look like this:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-how-to-set-up-and-run-jenkins-untitled-1.png" src="img/8915b92236bde7e9.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Run Jenkins docker" duration="2">
+        <p><code>docker run -p 8080:8080 -p 50000:50000 -d -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts</code></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-how-to-set-up-and-run-jenkins-untitled-2.png" src="img/7c310e79d51c7f18.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Get Jenkins password" duration="2">
+        <p>Run <code>docker logs <container name></code> and get the password</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-how-to-set-up-and-run-jenkins-untitled-3.png" src="img/fa31fb2f08c07372.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Access Jenkins GUI" duration="2">
+        <p>Go to <code>localhost:8080</code> and paste the copied password</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-how-to-set-up-and-run-jenkins-untitled-4.png" src="img/abd1e039f2a73195.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Install the plugins" duration="2">
+        <p>Select <em>Install suggested plugins</em> option</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-how-to-set-up-and-run-jenkins-untitled-5.png" src="img/e34c810de982be66.png"></p>
+<p>Note down the Jenkin URL: <a href="http://ip172-18-0-30-c1d37qhbqvp000f2mu60-8080.direct.labs.play-with-docker.com/" target="_blank">http://ip172-18-0-30-c1d37qhbqvp000f2mu60-8080.direct.labs.play-with-docker.com/</a></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Jenkins project types" duration="2">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-how-to-set-up-and-run-jenkins-untitled-6.png" src="img/46c9bf5c2354ae37.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Add global credentials" duration="2">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-how-to-set-up-and-run-jenkins-untitled-7.png" src="img/f09fa7c9eb256394.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Create a new Jenkins job" duration="2">
+        <p>Create a new job, name it and select multi-branch as type. Repo might be <a href="https://gitlab.com/nanuchi/techworld-js-docker-demo-app/-/tree/jenkins-multi-input" target="_blank">https://gitlab.com/nanuchi/techworld-js-docker-demo-app/-/tree/jenkins-multi-input</a></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Add git address and credentials" duration="2">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-how-to-set-up-and-run-jenkins-untitled-8.png" src="img/4908601424dc29f7.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Understand Pipeline format in Jenkinsfile" duration="2">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-how-to-set-up-and-run-jenkins-untitled-9.png" src="img/f2e6c19c8a75bcb8.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-how-to-set-up-and-run-jenkins-untitled-10.png" src="img/feb31f5df51a8515.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Create Jenkinsfile" duration="2">
+        <pre><code language="language-groovy" class="language-groovy">pipeline {
+    agent none
+    stages {
+        stage(&#39;Select micro services&#39;) {
+            input {
+                message &#34;Select all micro services to deploy&#34;
+                ok &#34;All selected!&#34;
+                parameters {
+                    choice(name: &#39;MS1&#39;, choices: [&#39;1.1.0&#39;, &#39;1.2.0&#39;, &#39;1.3.0&#39;], description: &#39;input ms&#39;)
+                    choice(name: &#39;MS2&#39;, choices: [&#39;1.1.0&#39;, &#39;1.2.0&#39;, &#39;1.3.0&#39;], description: &#39;input ms&#39;)
+                    choice(name: &#39;MS3&#39;, choices: [&#39;1.1.0&#39;, &#39;1.2.0&#39;, &#39;1.3.0&#39;], description: &#39;input ms&#39;)
+                    choice(name: &#39;MS4&#39;, choices: [&#39;1.1.0&#39;, &#39;1.2.0&#39;, &#39;1.3.0&#39;], description: &#39;input ms&#39;)
+                }
+            }
+            steps {
+                script {   
+                    echo &#34;Hello, ${MS1}. Hello, ${MS2}. Hello, ${MS3}. Hello, ${MS4}&#34;
+                    MS1_TO_DEPLOY = MS1
+                    MS2_TO_DEPLOY = MS2
+                    env.MS3_TO_DEPLOY = MS3
+                    env.MS4_TO_DEPLOY = MS4      
+                }
+            }
+        }
+        stage(&#39;Select single service&#39;) {
+            input {
+                message &#34;Select single micro services to deploy?&#34;
+                parameters {
+                    choice(name: &#39;MS5&#39;, choices: [&#39;1.1.0&#39;, &#39;1.2.0&#39;, &#39;1.3.0&#39;], description: &#39;second param with single option&#39;)   
+                }
+            }
+            steps {
+                script {
+                    echo &#34;Hello, ${MS5}.&#34;  
+                    env.MS5_TO_DEPLOY = MS5
+                    echo &#34;${MS1_TO_DEPLOY}&#34;
+                    echo &#34;${MS4_TO_DEPLOY}&#34;
+                    echo &#34;${MS5_TO_DEPLOY}&#34;  
+                }
+            }
+        }
+    }
+}
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Trigger the pipeline job" duration="2">
+        <p>Pipeline can be triggered either by 1) Push notifications, or 2) Polling.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-how-to-set-up-and-run-jenkins-untitled-11.png" src="img/c8e6eb44fc7f35ea.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Check out the pipeline" duration="2">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-how-to-set-up-and-run-jenkins-untitled-12.png" src="img/b47dc69b9d08d039.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusion" duration="2">
+        <p>Congratulations!</p>
+<h2 class="checklist" is-upgraded>What we&#39;ve covered</h2>
+<p>How to setup a Jenkins server to automatically run the CICD pipelines</p>
+<h2 is-upgraded>Links &amp; references</h2>
+<ol type="1">
+<li><a href="https://youtu.be/pMO26j2OUME" target="_blank">Jenkins Pipeline Tutorial for Beginners 1⁄4</a></li>
+<li><a href="https://youtu.be/tuxO7ZXplRE" target="_blank">Jenkins Pipeline Tutorial for Beginners 2⁄4</a></li>
+<li><a href="https://youtu.be/MY1w7sWW5ms" target="_blank">Jenkins Pipeline Tutorial for Beginners 3⁄4</a></li>
+<li><a href="https://youtu.be/CmwTPxdx24Y" target="_blank">Jenkins Pipeline Tutorial for Beginners 4⁄4</a></li>
+<li><a href="https://youtu.be/7KCS70sCoK0" target="_blank">Complete Jenkins Pipeline Tutorial | Jenkinsfile explained</a></li>
+</ol>
+<h2 is-upgraded>Have a Question?</h2>
+<ul>
+<li><a href="https://form.jotform.com/211377288388469" target="_blank">Fill out this form</a></li>
+<li><a href="https://github.com/recohut/reco-step/issues" target="_blank">Raise issue on Github</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>

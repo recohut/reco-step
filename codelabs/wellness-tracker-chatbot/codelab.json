@@ -1,0 +1,25 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-21T05:13:49Z",
+  "id": "wellness-tracker-chatbot",
+  "duration": 42,
+  "title": "How to build a wellness tracker bot",
+  "authors": "Sparsh A.",
+  "summary": "A bot that logs daily wellness data to a spreadsheet (using the Airtable API), to help the user keep track of their health goals. Connect the assistant to a messaging channel—Twilio—so users can talk to the assistant via text message and Whatsapp.",
+  "source": "./wellness-tracker-chatbot-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "tutorial"
+  ],
+  "tags": [
+    "bot"
+  ],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "wellness-tracker-chatbot"
+}

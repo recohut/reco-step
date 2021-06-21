@@ -1,0 +1,23 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-21T05:13:49Z",
+  "id": "wehkamp",
+  "duration": 36,
+  "title": "Wehkamp",
+  "authors": "Sparsh A.",
+  "summary": "Dutch retailer Wehkamp offers their shoppers a wide range of quality products. They carry the latest fashion trends, home-goods, electronics and everything in between. As a leading e-commerce company in fashion in the Netherlands, they dedicates itself to provide a better shopping experience for the customers, and continually looks for ways to not only engage shoppers on their site, but also create opportunities for their brand partners to clearly demonstrate their value. Their main marketing focus is relevance — ensuring their shoppers are able to find what they need in the most efficient way. This puts shoppers in a purchasing frame of mind when they visit Wehkamp’s website.",
+  "source": "./wehkamp-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "story"
+  ],
+  "tags": [],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "wehkamp"
+}

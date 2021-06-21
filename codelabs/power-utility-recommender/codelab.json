@@ -1,0 +1,23 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-21T05:13:49Z",
+  "id": "power-utility-recommender",
+  "duration": 19,
+  "title": "Power Utility Recommendation System",
+  "authors": "Sparsh A.",
+  "summary": "Recommend ancillary products of a power utility company",
+  "source": "./power-utility-recommendation-system-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "story"
+  ],
+  "tags": [],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "power-utility-recommender"
+}

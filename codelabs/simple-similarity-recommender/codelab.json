@@ -1,0 +1,23 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-21T05:13:49Z",
+  "id": "simple-similarity-recommender",
+  "duration": 30,
+  "title": "How to build a simple similarity recommender",
+  "authors": "https://deepnote.com/@fadelights/Foundation-of-Combinatorics-Project-nmC-ilUtQqqz403906un9Q",
+  "summary": "In this tutorial, we will build a simple recommenders using different similarity methods.",
+  "source": "./simple-similarity-recommender-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "tutorial"
+  ],
+  "tags": [],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "simple-similarity-recommender"
+}

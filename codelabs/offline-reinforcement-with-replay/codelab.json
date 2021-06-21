@@ -1,0 +1,23 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-21T05:13:49Z",
+  "id": "offline-reinforcement-with-replay",
+  "duration": 57,
+  "title": "Offline Reinforcement Learning with Replay",
+  "authors": "Sparsh A.",
+  "summary": "Replay evaluation essentially takes historic events and algorithm’s recommendations at each time step and throws out all samples except for those where your model’s recommendation is the same as the one the user saw in the historic dataset.",
+  "source": "./offline-reinforcement-learning-with-replay-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "tutorial"
+  ],
+  "tags": [],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "offline-reinforcement-with-replay"
+}

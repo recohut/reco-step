@@ -1,0 +1,135 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Wehkamp</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="wehkamp"
+                  title="Wehkamp"
+                  environment="web"
+                  feedback-link="https://github.com/recohut/reco-step/issues">
+    
+      <google-codelab-step label="Introduction" duration="5">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled.png" src="img/a693faf8b46506d6.png"></p>
+<p>Dutch retailer Wehkamp offers their shoppers a wide range of quality products. They carry the latest fashion trends, home-goods, electronics and everything in between. As a leading e-commerce company in fashion in the Netherlands, they dedicates itself to provide a better shopping experience for the customers, and continually looks for ways to not only engage shoppers on their site, but also create opportunities for their brand partners to clearly demonstrate their value. Their main marketing focus is relevance — ensuring their shoppers are able to find what they need in the most efficient way. This puts shoppers in a purchasing frame of mind when they visit Wehkamp&#39;s website.</p>
+<h2 is-upgraded>History</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled-1.png" src="img/331eb110d10865e4.png"></p>
+<h2 is-upgraded>Company statistics</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled-2.png" src="img/a8c234fb6a316454.png"></p>
+<h2 is-upgraded>Machine learning at Wehkamp</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled-3.png" src="img/127067fc69f7e70e.png"></p>
+<h2 is-upgraded>Key features of the recommender system</h2>
+<ul>
+<li>Fully managed platform on AWS: Automated cluster management simplifies the infrastructure and operations at any scale.</li>
+<li>More efficient data flow: Able to easily integrate with other tools like airflow and Kubernetes, allowing them to build automated data pipelines while establishing CI/CD best practices.</li>
+<li>Improved cross-team collaboration: Collaborative notebook environment with support for multiple languages (SQL, Scala, Python, R) enables a diverse team of users to work together in their preferred language allowed them to accelerate data science operations and innovation.</li>
+<li>Streamlined ML lifecycle: Native support for MLflow enables data science teams to easily replicate experiments, track model performance, and rapidly iterate across their models in a systematic fashion.</li>
+</ul>
+<h2 is-upgraded>Tech stack</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled-4.png" src="img/d401438df34971cc.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Ranking problem" duration="5">
+        <p>A major topic for the data science team is ranking products. If a visitor enters a search phrase, what are the best products that fit the search phrase and in what order should the products been shown? Ranking products is also important if a visitor enters a product overview page, where hundreds or even thousands of products of a certain article type are displayed.</p>
+<p>For instance, when a user search for ‘jeans&#39; on wehkamp website, it returns 4400+ products. User navigates to ‘ladies jeans&#39; overview page. The search result page now has 2176 products. So the goal is to maximize the order of relevance of returned products given a user query.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled-5.png" src="img/bee37c61ad9ee9aa.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled-6.png" src="img/94a5302ad776a9a3.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled-7.png" src="img/3affa4871b7e9222.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled-8.png" src="img/ab33d67b56c45025.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Data collection" duration="2">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled-9.png" src="img/17aacab7e6023ae1.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Click model" duration="5">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled-10.png" src="img/82a34a7f9249f4d3.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled-11.png" src="img/16b4453f84b693e0.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled-12.png" src="img/1c087c1a65e78b7f.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Feature generation" duration="2">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled-13.png" src="img/5497e577de2a33f8.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled-14.png" src="img/fffdc644bf01638a.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled-15.png" src="img/3db52bf016d1d6f.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled-16.png" src="img/29a6382b6449cc95.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Ranking model" duration="5">
+        <p>Notebook jobs were used to process raw data and generate features. XGBoost model was trained on these features. HyperOpt and MLflow were used for hyperparameter optimization and experiment tracking respectively. For identifying feature importances and explaining them, SHAP was used.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled-17.png" src="img/149136461467ee21.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled-18.png" src="img/bbb0e8ba0f502d2b.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled-19.png" src="img/91509db9c5e61084.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Serve model" duration="5">
+        <p>Model was saved in Elastic index.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled-20.png" src="img/a269b08803731836.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled-21.png" src="img/44df8ac9e2e0d421.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Evaluation" duration="5">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled-22.png" src="img/93eb38c8c3c865fe.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wehkamp-untitled-23.png" src="img/e11936a7211e5861.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusion" duration="2">
+        <p>Congratulations!</p>
+<h2 is-upgraded>Links and References</h2>
+<ol type="1">
+<li><a href="https://youtu.be/6BGCn3h59nA" target="_blank">https://youtu.be/6BGCn3h59nA</a></li>
+<li><a href="https://databricks.com/session_eu19/applied-machine-learning-for-ranking-products-in-an-ecommerce-setting" target="_blank">Applied Machine Learning for Ranking Products in an Ecommerce Setting</a></li>
+</ol>
+<h2 is-upgraded>Have a Question?</h2>
+<ul>
+<li><a href="https://form.jotform.com/211377288388469" target="_blank">Fill out this form</a></li>
+<li><a href="https://github.com/recohut/reco-step/issues" target="_blank">Raise issue on Github</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>

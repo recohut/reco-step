@@ -1,0 +1,131 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>How to build a wellness tracker bot</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="wellness-tracker-chatbot"
+                  title="How to build a wellness tracker bot"
+                  environment="web"
+                  feedback-link="https://github.com/recohut/reco-step/issues">
+    
+      <google-codelab-step label="Introduction" duration="5">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wellness-tracker-chatbot-untitled.png" src="img/22dc89548d404365.png"></p>
+<p>A bot that logs daily wellness data to a spreadsheet (using the Airtable API), to help the user keep track of their health goals. Connect the assistant to a messaging channel—Twilio—so users can talk to the assistant via text message and Whatsapp.</p>
+<h2 is-upgraded>What you&#39;ll learn?</h2>
+<ul>
+<li>RASA chatbot with Forms and Custom actions</li>
+<li>Connect with Airtable API to log records in the table database</li>
+<li>Connect with Whatsapp for user interaction</li>
+</ul>
+<h2 is-upgraded>Why is this important?</h2>
+<ul>
+<li>Bots are the future</li>
+<li>More and more users are starting using bots to get recommendations</li>
+</ul>
+<h2 is-upgraded>How it will work?</h2>
+<ul>
+<li>Buid chatbot in RASA</li>
+<li>Test the functionality using command line</li>
+<li>Connect to Twilio</li>
+<li>Connect to Whatsapp via Twilio</li>
+<li>Store responses in Airtable</li>
+</ul>
+<h2 is-upgraded>Who is this for?</h2>
+<ul>
+<li>People who are new in chatbots</li>
+<li>People looking to learn how chatbots work and suggest/assist users</li>
+</ul>
+<h2 is-upgraded>Important resources</h2>
+<ol type="1">
+<li><a href="https://www.udemy.com/course/rasa-for-beginners/learn/lecture/20746878#overview" target="_blank">Udemy course</a></li>
+<li><a href="https://github.com/sparsh-ai/chatbots/tree/master/wellnessTracker" target="_blank">GitHub code repo</a></li>
+</ol>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Command-line chat" duration="10">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wellness-tracker-chatbot-untitled-1.png" src="img/b3f272581d136218.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wellness-tracker-chatbot-untitled-2.png" src="img/fdc33abf1ea9d0a6.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Twilio" duration="10">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wellness-tracker-chatbot-untitled-3.png" src="img/9e91f2b6c53ef271.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Whatsapp" duration="5">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wellness-tracker-chatbot-untitled-4.png" src="img/c3e4b4e1016d255b.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Airtable" duration="5">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wellness-tracker-chatbot-untitled-5.png" src="img/e9731def6a55adc8.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-wellness-tracker-chatbot-untitled-6.png" src="img/aae5fabf236c2767.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Running the assistant" duration="5">
+        <ol type="1">
+<li>Download the Airtable template and generate an <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key-" target="_blank">Airtable API token</a>. You&#39;ll also need to locate your Table Name and Base ID, which can be found in the <a href="https://airtable.com/api" target="_blank">Airtable API docs</a>.</li>
+<li>Make a copy of the <code>.example-env</code> and rename it <code>.env</code>. Add your Airtable API token, Base ID, and Table Name to the file.</li>
+<li>Install Rasa Open Source: <a href="https://rasa.com/docs/rasa/user-guide/installation/" target="_blank">https://rasa.com/docs/rasa/user-guide/installation/</a></li>
+<li>Install the action server dependencies: <code>pip install -r requirements-actions.txt</code></li>
+<li>Train the model: <code>rasa train</code></li>
+<li>Open a second terminal window and start the action server: <code>rasa run actions</code></li>
+<li>Return to the first terminal window and start the assistant on the command line: <code>rasa shell</code></li>
+</ol>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusion" duration="2">
+        <p>Congratulations!</p>
+<h2 is-upgraded>Links and References</h2>
+<ol type="1">
+<li><a href="https://www.udemy.com/course/rasa-for-beginners/learn/lecture/20746878#overview" target="_blank">Udemy course</a></li>
+<li><a href="https://github.com/sparsh-ai/chatbots/tree/master/wellnessTracker" target="_blank">GitHub code repo</a></li>
+</ol>
+<h2 is-upgraded>Have a Question?</h2>
+<ul>
+<li><a href="https://form.jotform.com/211377288388469" target="_blank">Fill out this form</a></li>
+<li><a href="https://github.com/recohut/reco-step/issues" target="_blank">Raise issue on Github</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>

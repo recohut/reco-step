@@ -1,0 +1,23 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-21T05:13:49Z",
+  "id": "diversity-aware-book-recommender",
+  "duration": 37,
+  "title": "Diversity Aware Book Recommender",
+  "authors": "Sparsh A.",
+  "summary": "How can we build a better recommender system that enables consumer diversity and increases customer lifetime value? We can approach this problem through the customer lens. Let’s take Elon Musk as a model world citizen, who publicly stated he loved fantasy books growing up and Lord of the Rings having a large impact on him. But if Elon continued to follow the recommendations of today’s most visible machine learning algorithm on Amazon, he would continue down the path of fantasy, fantasy, and more fantasy. Elon has also stated that business books shaped his worldview, with Zero to One as his recommendation.",
+  "source": "./diversity-aware-book-recommender-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "tutorial"
+  ],
+  "tags": [],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "diversity-aware-book-recommender"
+}

@@ -1,0 +1,23 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-21T05:13:49Z",
+  "id": "feature-engineering-recsys20-guide",
+  "duration": 82,
+  "title": "How to do feature engineering for recommenders",
+  "authors": "Sparsh A.",
+  "summary": "Beginner to intermediate users are the target audience, which should have prior knowledge in python programming using libraries, such as pandas and NumPy. In addition, they should have a basic understanding of recommender systems, decision trees and feed forward neural networks.",
+  "source": "./feature-engineering-for-recommenders-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "tutorial"
+  ],
+  "tags": [],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "feature-engineering-recsys20-guide"
+}

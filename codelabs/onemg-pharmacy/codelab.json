@@ -1,0 +1,23 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-21T05:13:49Z",
+  "id": "onemg-pharmacy",
+  "duration": 34,
+  "title": "1mg Pharmacy",
+  "authors": "Sparsh A.",
+  "summary": "To enable better recommendations for the visitors on the platform, 1mg has been using state-of-the-art collaborative filtering and transformer models to build its recommendation engine. It uses graph representation algorithms like Meta Prod2Vec to build user and item embeddings, which are utilised in neural collaborative filtering and models like BERT, GPT-2, to enhance personalisation of product recommendations; this has significantly improved the click-through rate (CTR) and product conversions.",
+  "source": "./1mg-pharmacy-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "story"
+  ],
+  "tags": [],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "onemg-pharmacy"
+}

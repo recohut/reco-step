@@ -1,0 +1,25 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-21T05:13:49Z",
+  "id": "real-time-streaming-kafka-mongodb",
+  "duration": 52,
+  "title": "How to capture real-time events with Kafka and MongoDB",
+  "authors": "Sparsh A.",
+  "summary": "Creating kafka cluster and topic on cloud - Creating mongodb cluster and database on cloud - Pre-process movielens data in kafka Json format - Send and receive data events in kafka in real-time - Persist the streaming data in NoSQL mongoDB database",
+  "source": "./real-time-event-capturing-with-kafka-and-mongodb-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "tutorial"
+  ],
+  "tags": [
+    "realtime"
+  ],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "real-time-streaming-kafka-mongodb"
+}

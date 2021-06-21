@@ -1,0 +1,27 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-21T05:13:49Z",
+  "id": "cicd-docker-eks",
+  "duration": 24,
+  "title": "CI/CD with Docker compose and EKS",
+  "authors": "Sparsh A.",
+  "summary": "We will first convert our ML app into docker image and register it on AWS ECR (elastic container registry). Then we will use Amazon Elastic Kubernetes Service (Amazon EKS) to deploy the app as a docker container.",
+  "source": "./ci-cd-with-docker-compose-and-eks-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "tutorial"
+  ],
+  "tags": [
+    "aws",
+    "cicd",
+    "docker"
+  ],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "cicd-docker-eks"
+}

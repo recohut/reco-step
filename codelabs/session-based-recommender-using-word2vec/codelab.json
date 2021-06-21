@@ -1,0 +1,25 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-21T05:13:49Z",
+  "id": "session-based-recommender-using-word2vec",
+  "duration": 72,
+  "title": "How to build a session-based recommender using word2vec",
+  "authors": "Sparsh A.",
+  "summary": "A key trend over the past few years has been session-based recommendation algorithms that provide recommendations solely based on a user’s interactions in an ongoing session, and which do not require the existence of user profiles or their entire historical preferences. This tutorial explores a simple, yet powerful, NLP-based approach (word2vec) to recommend a next item to a user. While NLP-based approaches are generally employed for linguistic tasks, here we exploit them to learn the structure induced by a user’s behavior or an item’s nature.",
+  "source": "./session-based-recommendation-using-word2vec-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "tutorial"
+  ],
+  "tags": [
+    "session"
+  ],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "session-based-recommender-using-word2vec"
+}

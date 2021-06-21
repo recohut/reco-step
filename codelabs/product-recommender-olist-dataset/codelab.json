@@ -1,0 +1,23 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-21T05:13:49Z",
+  "id": "product-recommender-olist-dataset",
+  "duration": 23,
+  "title": "How to build a product recommender with Olist",
+  "authors": "Dr. Monica",
+  "summary": "In this tutorial, we are going to learn different approaches for Recommendation system that can built on Brazilian e-commerce public dataset.",
+  "source": "./product-recommendation-with-olist-dataset-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "tutorial"
+  ],
+  "tags": [],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "product-recommender-olist-dataset"
+}

@@ -1,0 +1,25 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-21T05:13:49Z",
+  "id": "image-similarity-system",
+  "duration": 62,
+  "title": "How to build an image similarity system",
+  "authors": "Sparsh A.",
+  "summary": "Recommending visually similar products is an important task in today’s E-commerce recommender systems. In this tutorial, we will learn how to achieve this task using the latest tools and techniques.",
+  "source": "./how-to-build-an-image-similarity-system-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "tutorial"
+  ],
+  "tags": [
+    "vision"
+  ],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "image-similarity-system"
+}

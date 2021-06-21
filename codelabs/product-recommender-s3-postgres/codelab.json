@@ -1,0 +1,23 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-21T05:13:49Z",
+  "id": "product-recommender-s3-postgres",
+  "duration": 34,
+  "title": "How to build a product recommender",
+  "authors": "https://towardsdatascience.com/similar-product-recommendations-data-to-deployment-970a085bafce",
+  "summary": "We will build a simple recommender system using co-occurence concept and then save the outputs in an AWS S3 bucket in JSON format.",
+  "source": "./how-to-build-a-product-recommender-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "tutorial"
+  ],
+  "tags": [],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "product-recommender-s3-postgres"
+}

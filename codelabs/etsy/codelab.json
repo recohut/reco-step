@@ -1,0 +1,23 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-21T05:13:49Z",
+  "id": "etsy",
+  "duration": 37,
+  "title": "Etsy",
+  "authors": "Sparsh A.",
+  "summary": "Etsy wanted to use this kind of information in combination with user and listing features to train their machine learning models and predict the probability of purchase as their recommender system. With these probabilities of purchase, they could also use it to infer how new users might make purchases.",
+  "source": "./etsy-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "story"
+  ],
+  "tags": [],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "etsy"
+}

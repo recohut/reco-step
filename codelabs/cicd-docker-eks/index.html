@@ -1,0 +1,302 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>CI/CD with Docker compose and EKS</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="cicd-docker-eks"
+                  title="CI/CD with Docker compose and EKS"
+                  environment="web"
+                  feedback-link="https://github.com/recohut/reco-step/issues">
+    
+      <google-codelab-step label="Introduction" duration="5">
+        <h2 is-upgraded>What you&#39;ll learn?</h2>
+<ul>
+<li>Build a docker image and run as a container</li>
+<li>Register the docker image on AWS ECR</li>
+<li>Deploy the docker image on AWS EKS</li>
+<li>Techstack: NodeJS app, MongoDB, Docker, AWS ECR, and AWS EKS</li>
+</ul>
+<h2 is-upgraded>Why is this important?</h2>
+<ul>
+<li>Continuous integration and deployment (CI/CD) is an important skill in MLOps</li>
+</ul>
+<h2 is-upgraded>How it will work?</h2>
+<ol type="1">
+<li>Use a pre-built nodeJS which is using MongoDB for data storage, pull this app from a git repo</li>
+<li>Pull mongodb and mongodb-express images docker images from docker hub</li>
+<li>Build the app&#39;s docker image</li>
+<li>Write a docker compose file that will stitch all these docker images together</li>
+<li>Run the docker compose locally to verify that everything is working fine</li>
+<li>Signup/Login to AWS and configure the AWS CLI</li>
+<li>Push the docker compose to AWS&#39;s ECR - AWS&#39;s container registry portal</li>
+<li>Use AWS&#39;s EKS to run the docker</li>
+</ol>
+<h2 is-upgraded>Who is this for?</h2>
+<ul>
+<li>People who are new in MLOps</li>
+<li>People looking to strengthen their MLOps CI/CD skills</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Login to PWD" duration="5">
+        <p>We will use <em>Play with docker</em> for this tutorial.</p>
+<h2 is-upgraded>Sign-in</h2>
+<p>Go to <a href="https://labs.play-with-docker.com/" target="_blank">this</a> link and login. The landing page will look like this:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-how-to-set-up-and-run-jenkins-untitled.png" src="img/920ff47f6016afcb.png"></p>
+<h2 is-upgraded>Create an instance</h2>
+<p>Click on <em>ADD NEW INSTANCE</em>. After clicking, it will look like this:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-how-to-set-up-and-run-jenkins-untitled-1.png" src="img/8915b92236bde7e9.png"></p>
+<p>You are ready to run the dockers in a free cloud environment!</p>
+<p>Note: to paste the command in PWD, use <code>ctrl</code>+<code>shift</code>+<code>v</code>.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Develop your model" duration="2">
+        <p>First we will develop our ML model which we want to deploy and serve. It can be as simple as a popularity based item recommendation model. In this tutorial, we are going to use a simple pre-built nodejs app, so that we can keep our focus on MLOps part.</p>
+<h2 is-upgraded>Clone the app repository</h2>
+<p><code>git clone https://gitlab.com/nanuchi/techworld-js-docker-demo-app.git</code></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ci-cd-with-docker-compose-and-eks-untitled.png" src="img/7303c73754ad3502.png"></p>
+<h2 is-upgraded>Explore</h2>
+<p>Explore the HTML webpage front-end file<code>./app/index.html</code>, and the Node JS back-end file <code>./app/server.js</code></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Run the app" duration="2">
+        <h2 is-upgraded>Install NodeJS</h2>
+<ul>
+<li><code>apk add --update nodejs npm</code></li>
+<li><code>npm install express</code></li>
+</ul>
+<h2 is-upgraded>Start the app</h2>
+<p>Start by running Node JS server: <code>node server.js</code>.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ci-cd-with-docker-compose-and-eks-untitled-1.png" src="img/e155a2e66acba90b.png"></p>
+<p>In PWD, we have to open port to access the site. Click on <em>OPEN PORT</em> and enter 3000.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ci-cd-with-docker-compose-and-eks-untitled-2.png" src="img/8755c72af3062a58.png"></p>
+<p>A new window will pop-up which will look like this:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ci-cd-with-docker-compose-and-eks-untitled-3.png" src="img/bc41175fbd0f63a2.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Understand the basics" duration="2">
+        <p>This step is just for understanding. You don&#39;t need to run the commands.</p>
+<h2 is-upgraded>Image pulling</h2>
+<ul>
+<li>Pull mongoDB docker image: <code>docker pull mongo</code></li>
+<li>Pull mongoDB express: <code>docker pull mongo-express</code></li>
+</ul>
+<h2 is-upgraded>What is docker network</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ci-cd-with-docker-compose-and-eks-untitled-4.png" src="img/c41225e059df3ff9.png"></p>
+<h2 is-upgraded>What is Dockerfile</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ci-cd-with-docker-compose-and-eks-untitled-5.png" src="img/1618cba6711dd04f.png"></p>
+<h2 is-upgraded>Create docker network</h2>
+<p><code>docker network create mongo-network</code></p>
+<h2 is-upgraded>Start the mongodb container</h2>
+<pre><code language="language-bash" class="language-bash">docker run -d \
+-p 27017:27017 \
+-e MONGO_INITDB_ROOT_USERNAME=admin \
+-e MONGO_INITDB_ROOT_PASSWORD=password \
+--name mongodb \
+--net mongo-network \
+mongo
+</code></pre>
+<h2 is-upgraded>Start the mongodb express container</h2>
+<pre><code language="language-bash" class="language-bash">docker run -d \
+-p 8081:8081 \
+-e ME_CONFIG_MONGODB_ADMINUSERNAME=admin \
+-e ME_CONFIG_MONGODB_ADMINPASSWORD=password \
+-e ME_CONFIG_MONGODB_SERVER=mongodb \
+--name mongo-express \
+--net mongo-network \
+mongo-express
+</code></pre>
+<h2 is-upgraded>Listing down the docker images</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ci-cd-with-docker-compose-and-eks-untitled-6.png" src="img/441bb49901ecf69c.png"></p>
+<h2 is-upgraded>Listing down the docker containers</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ci-cd-with-docker-compose-and-eks-untitled-7.png" src="img/6cc11dcd5a17cbe6.png"></p>
+<h2 is-upgraded>What is docker volume?</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ci-cd-with-docker-compose-and-eks-untitled-8.png" src="img/280fac5856df8cc7.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ci-cd-with-docker-compose-and-eks-untitled-9.png" src="img/a0f0d790132ca460.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ci-cd-with-docker-compose-and-eks-untitled-10.png" src="img/7de20353d4c7afe3.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ci-cd-with-docker-compose-and-eks-untitled-11.png" src="img/db30debc109840e5.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Build and run the app container" duration="2">
+        <h2 is-upgraded>Explore <code>Dockerfile</code></h2>
+<pre><code language="language-docker" class="language-docker">FROM node:13-alpine
+
+ENV MONGO_DB_USERNAME=admin \
+    MONGO_DB_PWD=password
+
+RUN mkdir -p /home/app
+
+COPY ./app /home/app
+
+# set default dir so that next commands executes in /home/app dir
+WORKDIR /home/app
+
+# will execute npm install in /home/app because of WORKDIR
+RUN npm install
+
+# no need for /home/app/server.js because of WORKDIR
+CMD [&#34;node&#34;, &#34;server.js&#34;]
+</code></pre>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ci-cd-with-docker-compose-and-eks-untitled-12.png" src="img/3af335bd46ccede9.png"></p>
+<h2 is-upgraded>Explore docker compose file</h2>
+<p><code>docker-compose-yaml</code></p>
+<pre><code language="language-yaml" class="language-yaml">version: &#39;3&#39;
+services:
+  # my-app:
+  # image: ${docker-registry}/my-app:1.0
+  # ports:
+  # - 3000:3000
+  mongodb:
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - mongo-data:/data/db
+  mongo-express:
+    image: mongo-express
+    ports:
+      - 8080:8081
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+volumes:
+  mongo-data:
+    driver: local
+</code></pre>
+<h2 is-upgraded>Start containers with docker compose</h2>
+<p>Go back to the main directory. Make sure you see something like this:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ci-cd-with-docker-compose-and-eks-untitled-13.png" src="img/d3d73ba7e6b82663.png"></p>
+<p>Run the docker compose using this command: <code>docker-compose up</code></p>
+<p>This will start both containers with a single command and also takes care of creating a common network. We will simulate what Jenkins will do later in CI stage. We will compose a NodeJS docker image. We are gonna need a docker file for that.</p>
+<h2 is-upgraded>Build the docker image</h2>
+<p><code>docker build -t my-app:1.0 .</code></p>
+<h2 is-upgraded>Run the container to verify</h2>
+<p><code>docker run my-app:1.0</code></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Verify the app locally" duration="2">
+        <p>Data input in node JS and saved in mongoDB.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ci-cd-with-docker-compose-and-eks-untitled-14.png" src="img/69979626cff24048.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ci-cd-with-docker-compose-and-eks-untitled-15.png" src="img/fede674a86d632bc.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ci-cd-with-docker-compose-and-eks-untitled-16.png" src="img/25a2c0afaab1ec1d.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Push docker image to AWS EKS" duration="2">
+        <h2 is-upgraded>Create private docker repository on AWS</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ci-cd-with-docker-compose-and-eks-untitled-17.png" src="img/4fe155faad32744a.png"></p>
+<h2 is-upgraded>Analyze the ECR push commands</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ci-cd-with-docker-compose-and-eks-untitled-18.png" src="img/9cfc470d5a5d005.png"></p>
+<h2 is-upgraded>Configure AWS CLI and Credentials and AWS push commands</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ci-cd-with-docker-compose-and-eks-untitled-19.png" src="img/faa5fa4e53f1db3b.png"></p>
+<h2 is-upgraded>Run a dry cycle</h2>
+<p>Lets run a dry cycle. We will modify server.js a little bit and then build the docker image with version 1.1 this time. Now tag it and push to AWS ECR.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ci-cd-with-docker-compose-and-eks-untitled-20.png" src="img/ac97c244be579463.png"></p>
+<h2 is-upgraded>Add docker image and re-run</h2>
+<p>We will now add our image in docker compose and trigger the</p>
+<pre><code language="language-yaml" class="language-yaml">version: &#39;3&#39;
+services:
+  my-app:
+    image: ${docker-registry}/my-app:1.0
+    ports:
+      - 3000:3000
+  mongodb:
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - mongo-data:/data/db
+  mongo-express:
+    image: mongo-express
+    ports:
+      - 8080:8081
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+volumes:
+  mongo-data:
+    driver: local
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusion" duration="2">
+        <p>Congratulations!</p>
+<h2 class="checklist" is-upgraded>What we&#39;ve covered</h2>
+<p>Successfully created and deployed our app as a docker container on cloud.</p>
+<h2 is-upgraded>Next steps</h2>
+<ul>
+<li>Analyze the role of this in the overall MLOps process</li>
+<li>Explore other options for registration and deployment</li>
+<li>Use Jenkins for robust CI/CD pipeline instead of manually building the images</li>
+</ul>
+<h2 is-upgraded>Links and References</h2>
+<ol type="1">
+<li><a href="https://youtu.be/gdbA3vR2eDs" target="_blank">Deploying docker app using Jenkins pipeline | CI/CD Of Docker | DevOps - Jenkins Pipeline Tutorial</a></li>
+<li><a href="https://youtu.be/6YisG2GcXaw?list=PLy7NrYWoggjzfAHlUusx2wuDwfCrmJYcs" target="_blank">Developing with Docker - Docker in Practice || Docker Tutorial 8</a></li>
+<li><a href="https://youtu.be/MVIcrmeV_6c?list=PLy7NrYWoggjzfAHlUusx2wuDwfCrmJYcs" target="_blank">Docker Compose Tutorial - Docker in Practice || Docker Tutorial 9</a></li>
+<li><a href="https://youtu.be/WmcdMiyqfZs?list=PLy7NrYWoggjzfAHlUusx2wuDwfCrmJYcs" target="_blank">Docker Compose Tutorial - Docker in Practice || Docker Tutorial 10</a></li>
+<li><a href="https://www.youtube.com/watch?v=vWSRWpOPHws&list=PLy7NrYWoggjzfAHlUusx2wuDwfCrmJYcs&index=11" target="_blank">Docker Compose Tutorial - Docker in Practice || Docker Tutorial 11</a></li>
+<li><a href="https://www.youtube.com/watch?v=ZowjOhpAcIc&list=PLy7NrYWoggjzfAHlUusx2wuDwfCrmJYcs&index=13" target="_blank">Docker Compose Tutorial - Docker in Practice || Docker Tutorial 12</a></li>
+<li><a href="https://youtu.be/SBUCYJgg4Mk?list=PLy7NrYWoggjzfAHlUusx2wuDwfCrmJYcs" target="_blank">Docker Compose Tutorial - Docker in Practice || Docker Tutorial 13</a></li>
+</ol>
+<h2 is-upgraded>Have a Question?</h2>
+<ul>
+<li><a href="https://form.jotform.com/211377288388469" target="_blank">Fill out this form</a></li>
+<li><a href="https://github.com/recohut/reco-step/issues" target="_blank">Raise issue on Github</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>

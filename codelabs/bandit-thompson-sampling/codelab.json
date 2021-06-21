@@ -1,0 +1,27 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-21T05:13:49Z",
+  "id": "bandit-thompson-sampling",
+  "duration": 27,
+  "title": "Bandit-based online learning using Thompson sampling",
+  "authors": "Sparsh A.",
+  "summary": "The objective of this app is to apply the bandit algorithms to recommendation problems under a simulated environment. Although in practice we will use real data, the complexity of the recommendation problem and associated algorithmic challenges can be realized in this simulated environment.",
+  "source": "./bandit-based-online-learning-using-thompson-sampli-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "tutorial"
+  ],
+  "tags": [
+    "bandit",
+    "dash",
+    "reinforcement"
+  ],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "bandit-thompson-sampling"
+}

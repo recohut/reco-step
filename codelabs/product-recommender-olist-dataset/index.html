@@ -1,0 +1,145 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>How to build a product recommender with Olist</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="product-recommender-olist-dataset"
+                  title="How to build a product recommender with Olist"
+                  environment="web"
+                  feedback-link="https://github.com/recohut/reco-step/issues">
+    
+      <google-codelab-step label="Introduction" duration="5">
+        <p>Implementation of Machine learning algorithms to assist consumers in discovering new products and services is a new form of digital marketing on e-commerce websites. When you shop online, a recommendation system directs you to the product that is most likely to be purchased. Users are often frustrated by options and need assistance discovering what they&#39;re looking for, so recommender systems are an important element of our digital environment. Customers will be happier, and profits will increase as a result. Recommender systems are similar to salespeople who know what you want based on your history and interests.</p>
+<p>In this tutorial, we are going to learn different approaches for a Recommendation system that can be built on the Brazilian e-commerce public dataset.</p>
+<h2 is-upgraded>What you&#39;ll learn?</h2>
+<ol type="1">
+<li>Loading and processing of a Brazilian retail dataset</li>
+<li>Popularity based recommender</li>
+<li>KNN Collaborative filtering based recommender</li>
+<li>NLP review sentiment based recommender</li>
+</ol>
+<h2 is-upgraded>Why is this important?</h2>
+<ol type="1">
+<li>Data comes from multiple sources and this tutorial will help us understand how to manage it</li>
+<li>Simple baselines sometimes works better than advanced model-heavy methods. It is important to know them well</li>
+</ol>
+<h2 is-upgraded>How it will work?</h2>
+<ol type="1">
+<li>Download the dataset from Kaggle</li>
+<li>Build different recommenders</li>
+</ol>
+<h2 is-upgraded>Who is this for?</h2>
+<ul>
+<li>People who are new in deep learning</li>
+<li>People looking to use tensorflow keras to build deep recommender models</li>
+</ul>
+<h2 is-upgraded>Important resources</h2>
+<ul>
+<li><a href="https://nb-dev.recohut.com/ecommerce/2021/06/15/recostep-ecommerce-recommender-olist.html" target="_blank">Colab notebook</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Dataset" duration="10">
+        <p>Brazilian E-Commerce Public Dataset by Olist is a collection of 100,000 Orders with product, customer and reviews info. It contains information on 100k orders from 2016 to 2018 made at multiple marketplaces in Brazil. Its features allow viewing an order from multiple dimensions: from order status, price, payment and freight performance to customer location, product attributes and finally reviews written by customers. We also released a geolocation dataset that relates Brazilian zip codes to lat/lng coordinates. This is real commercial data, it has been anonymized, and references to the companies and partners in the review text have been replaced with the names of Game of Thrones great houses.</p>
+<h2 is-upgraded>Context</h2>
+<p>This dataset was generously provided by Olist, the largest department store in Brazilian marketplaces. Olist connects small businesses from all over Brazil to channels without hassle and with a single contract. Those merchants are able to sell their products through the Olist Store and ship them directly to the customers using Olist logistics partners. See more on our website: <a href="https://www.olist.com/" target="_blank">www.olist.com</a></p>
+<p>After a customer purchases the product from Olist Store a seller gets notified to fulfill that order. Once the customer receives the product, or the estimated delivery date is due, the customer gets a satisfaction survey by email where he can give a note for the purchase experience and write down some comments.</p>
+<h2 is-upgraded>Data schema</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-product-recommendation-with-olist-dataset-untitled.png" src="img/120a038b16ee093.png"></p>
+<h2 is-upgraded>Download link</h2>
+<p><a href="https://www.kaggle.com/olistbr/brazilian-ecommerce" target="_blank">https://www.kaggle.com/olistbr/brazilian-ecommerce</a></p>
+<h2 is-upgraded>Data notebooks</h2>
+<ol type="1">
+<li><a href="https://www.kaggle.com/sank3t/olist-data-preparation" target="_blank">Data preparation and EDA notebook</a></li>
+</ol>
+<h2 is-upgraded>Rating distribution</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-product-recommendation-with-olist-dataset-untitled-1.png" src="img/f1bc384cfe036f1f.png"></p>
+<p>From figure, we can state that we have review score of maximum 5 and which is highest in our dataset. Let&#39;s try to built the system based on popularity.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Popularity based recommender" duration="2">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-product-recommendation-with-olist-dataset-untitled-2.png" src="img/a9f4840203c31175.png"></p>
+<p>These are the top 5 products with highest review score and so we can recommend these ones. Best recommended technique when completely new user visits an e-commerce site, that site will not have any past history</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Collaborative filtering based recommender" duration="2">
+        <p>The collaborative filtering algorithm uses &#34;User Behavior&#34; for recommending items. KNN is a machine-learning algorithm to find clusters of similar users based on ratings, and make predictions using the average rating of top-k nearest neighbors. For example, we first present ratings in a matrix with the matrix having one row for each item and one column for each user location.</p>
+<p>We will first build a cross-tab matrix of users and items filled with user review scores, and then use KNN to estimate the similarities.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-product-recommendation-with-olist-dataset-untitled-3.png" src="img/4ec0816e36590248.png"></p>
+<p>Generating Top-5 recommendations based on a product:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-product-recommendation-with-olist-dataset-untitled-4.png" src="img/9a517b77d812c9f8.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Sentiment based recommender" duration="2">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-product-recommendation-with-olist-dataset-untitled-5.png" src="img/8613a2eefa77fcf.png"></p>
+<p>We will use the Textblob library to estimate the sentiment of user&#39;s reviews on products and identify the highest positive sentiment items to recommend to the user. Similar to the popularity-based method, this one is also a non-personalized recommender but works pretty well practically.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-product-recommendation-with-olist-dataset-untitled-6.png" src="img/991e796e2afdd791.png"></p>
+<p>These are the 40 products that get most positive reviews from customers. We can recommend these products to other customers. This method is non-personalized but highly effective!</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusion" duration="2">
+        <p>Congratulations!</p>
+<h2 class="checklist" is-upgraded>What we&#39;ve covered</h2>
+<ol type="1">
+<li>Popularity based recommender</li>
+<li>KNN Collaborative filtering based recommender</li>
+<li>NLP review sentiment based recommender</li>
+</ol>
+<h2 is-upgraded>Next steps</h2>
+<ol type="1">
+<li>Recommendation system using Hybrid approach</li>
+<li>The system can be particularly built using data of customers, products at a different location</li>
+<li>Can also try system with customer payment history</li>
+</ol>
+<h2 is-upgraded>Links and References</h2>
+<ul>
+<li><a href="https://medium.com/mlearning-ai/recommendation-system-using-collborative-filtering-90e26cbfb4ed" target="_blank">https://medium.com/mlearning-ai/recommendation-system-using-collborative-filtering-90e26cbfb4ed</a></li>
+</ul>
+<h2 is-upgraded>Have a Question?</h2>
+<ul>
+<li><a href="https://form.jotform.com/211377288388469" target="_blank">Fill out this form</a></li>
+<li><a href="https://github.com/recohut/reco-step/issues" target="_blank">Raise issue on Github</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,263 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>AirBnB Experiences</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="airbnb-experiences"
+                  title="AirBnB Experiences"
+                  environment="web"
+                  feedback-link="https://github.com/recohut/reco-step/issues">
+    
+      <google-codelab-step label="Introduction" duration="5">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-airbnb-experiences-untitled.png" src="img/505e88d2ba4d662f.png"></p>
+<p>Airbnb Experiences is a one-of-a-kind offering by Airbnb where people get to experience the local culture of their hosts. These are handcrafted activities designed and led by expert hosts that offer a unique taste of the local scene and culture. Each experience is vetted for quality by a team of editors before it makes its way onto the platform. As the number of Experiences grew, Search &amp; Discoverability, as well as Personalization, have become very important factors for the growth and success of the marketplace. But when Airbnb started the Experiences offering, they were not sure how to rank them.</p>
+<p>In this story, we describe the stages of Experience Ranking development using machine learning at different growth phases of the marketplace, from small to mid-size and large. We will learn how Airbnb built and iterated on a machine learning Search Ranking platform for a new two-sided marketplace and how they helped it grow.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Launch" duration="2">
+        <p>Airbnb Experiences was launched in November 2016 with 500 Experiences in 12 cities worldwide.</p>
+<p>During 2017, Airbnb grew the business to 5,000 Experiences in 60 cities.</p>
+<p>In 2018, the rapid growth continued, and Airbnb managed to bring Experiences to more than 1,000 destinations, including unique places like Easter Island, Tasmania, and Iceland. Airbnb finished the year strong with more than 20,000 active Experiences.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Need for Personalization" duration="2">
+        <p>As the number of Experiences grew, Search &amp; Discoverability, as well as Personalization, have become very important factors for the growth and success of the marketplace. But when Airbnb started the Experiences offering, they were not sure how to rank them.</p>
+<p>In the beginning, the amount of Experiences that needed to be ranked in Search was small, and Airbnb just started collecting data on user interactions with Experiences (impressions, clicks, and bookings). At that moment, the best choice was to just randomly re-rank Experiences daily, until a small dataset is collected for development of the Stage 1 ML model.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Stage 1: MVP" duration="5">
+        <h2 is-upgraded>Data</h2>
+<p>To train the first machine learning model for ranking Experiences, Airbnb collected search logs (i.e. clicks) of users who ended up making bookings.</p>
+<h2 is-upgraded>Labels</h2>
+<p>When labeling training data, Airbnb was mainly interested in two labels: experiences that were booked (which were treated as positive labels) and experiences that were clicked but not booked (which were treated as negative labels). In this manner, Airbnb collected a training dataset of 50,000 examples.</p>
+<h2 is-upgraded>Features</h2>
+<p>They decided to rank solely based on *Experience Features.* In total they built 25 features, some of which were:</p>
+<ul>
+<li><strong>Experience duration</strong> (e.g. 1h, 2h, 3h, etc.)</li>
+<li><strong>Price</strong> and <strong>Price-per-hour</strong></li>
+<li><strong>Category</strong> (e.g. cooking class, music, surfing, etc.)</li>
+<li><strong>Reviews</strong> (rating, number of reviews)</li>
+<li><strong>Number of bookings</strong> (last 7 days, last 30 days)</li>
+<li><strong>Occupancy of past and future instances</strong> (e.g. 60%)</li>
+<li><strong>Maximum number of seats</strong> (e.g. max 5 people can attend)</li>
+<li><strong>Click-through rate</strong></li>
+</ul>
+<h2 is-upgraded>Training</h2>
+<p>Given the training data, labels, and features, Airbnb used the Gradient Boosted Decision Tree (GBDT) model. At this point, they treated the problem as binary classification with a log-loss loss function.</p>
+<h2 is-upgraded>Offline evaluation</h2>
+<p><em>AUC and NDCG</em>: They re-ranked the Experiences based on model scores (probabilities of booking) and tested where the booked Experience would rank among all Experiences the user clicked (the higher the better).</p>
+<p><em>Partial dependency plot</em>: In addition, to get a sense of what a trained model learned, they plotted partial dependency plots for several most important Experience features.</p>
+<ul>
+<li>Experiences with more bookings per 1k viewers will rank higher</li>
+<li>Experiences with higher average review rating will rank higher</li>
+<li>Experiences with lower prices will rank higher</li>
+</ul>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-airbnb-experiences-untitled-1.png" src="img/f9625d622c76e208.png"></p>
+<h2 is-upgraded>Online evaluation</h2>
+<p>Since offline testing often has too many assumptions, e.g. in Airbnb&#39;s case it was limited to re-ranking what users clicked and not the entire inventory, they conducted an online experiment, i.e. A/B test, as the next step. They compared the Stage 1 ML model to the rule-based random ranking in terms of the number of bookings. The results were very encouraging as they were able to improve bookings by +13% with the Stage 1 ML ranking model.</p>
+<h2 is-upgraded>MLOps</h2>
+<p>The entire ranking pipeline, including training and scoring, was implemented offline and ran daily in Airflow. The output was just a complete ordering of all Experiences, i.e. an ordered list, which was uploaded to production machines and used every time a search was conducted to rank a subset of Experiences that satisfied the search criteria.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Stage 2: Personalization" duration="10">
+        <p>The stage 1 model was limited to using only Experience Features, and as a result, the ranking of Experiences was the same for all users. In addition, all query parameters (number of guests, dates, location, etc.) served only as filters for retrieval (e.g. fetch Paris Experiences available next week for 2 guests), and the ranking of Experiences did not change based on those inputs.</p>
+<p>Two randomly chosen Experiences are likely to be very different, e.g. a Cooking Class vs. a Surf Lesson. At the same time, guests may have different interests and ideas of what they want to do on their trip, and it is our goal to capture that interest fast and serve the right content higher in search results. So, the next step was to add the Personalization capability to the ML ranking model.</p>
+<h2 is-upgraded>Features based on Airbnb&#39;s home booking data</h2>
+<ul>
+<li>Booked Home location</li>
+<li>Trip dates</li>
+<li>Trip length</li>
+<li>Number of guests</li>
+<li>Trip price (Below/Above Market)</li>
+<li>Type of trip: Family, Business</li>
+<li>First trip or returning to location</li>
+<li>Domestic / International trip</li>
+<li>Lead days</li>
+</ul>
+<p>Let&#39;s understand and validate the intuition behind 2 engineered features: Distance between Booked Home and Experience, and Experience available during Booked Trip.</p>
+<p><strong>Distance between Booked Home and Experience.</strong> Knowing Booked Home location (latitude and longitude) as well as Experience meeting location, we can compute their distance in miles. Data shows that users like convenience, i.e. large fraction of booked Airbnb Experiences are near booked Airbnb Home.</p>
+<p><strong>Experience available during Booked Trip.</strong> Given Home check-in and check-out dates, we have an idea on which dates the guest is looking to book Experiences and can mark Experiences as available or not during those dates.</p>
+<p>These two features (in addition to others) were used when training the new ML ranking model. Below we show their partial dependency plots.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-airbnb-experiences-untitled-2.png" src="img/b5f600233e42dde3.png"></p>
+<p>The plots confirmed that features behavior matches what we intuitively expected the model will learn, i.e. Experiences that are closer to Booked Home will rank higher (have higher scores), and Experiences that are available for Booked Trip dates will rank higher (which is very convenient because even in dateless search we can leverage trip dates).</p>
+<h2 is-upgraded>Features based on clickstream data</h2>
+<p>Given the user&#39;s short-term search history, we can infer useful information that can help us personalize future searches:</p>
+<ul>
+<li><strong>Infer user interest in certain categories:</strong> For example, if the user is mostly clicking on *Music* Experiences we can infer that the user&#39;s interest is in <em>Music.</em></li>
+<li><strong>Infer the user&#39;s time-of-day availability:</strong> For example, if the user is mostly clicking on *Evening* Experiences we can infer that the user is available at that time of day.</li>
+<li><strong>Category Intensity:</strong> Weighted sum of user clicks on Experiences that have that particular category, where the sum is over the last 15 days (d_0 to d_now) and A is the number of actions (in this case clicks) on certain category on day d.</li>
+<li><strong>Category Recency:</strong> Number of days that passed since the user last clicked on an Experience in that category.  Let&#39;s validate the intuition for the 2 engineered features - intensity and recency:  <img alt="img/_markdowns-raw-recostep-stage-airbnb-experiences-untitled-3.png" src="img/4f65f23c49173bf0.png">  Airbnb built the same types of features (intensity &amp; recency) for several different user actions, including wishlisting and booking a certain category.</li>
+<li><strong>Time of Day Personalization:</strong> Different Experiences are held at different times of day (e.g. early morning, evening, etc.). Similar to how we track clicks on different categories, we can also track clicks on different times of day and compute Time of Day Fit between the user&#39;s time-of-day percentages and the Experience&#39;s time of day, as described below:  <img alt="img/_markdowns-raw-recostep-stage-airbnb-experiences-untitled-4.png" src="img/8ea829258b0736d4.png">  As it can be observed, the model learned to use this feature in a way that ranks Experiences held at time of day that the user prefers higher.</li>
+</ul>
+<h2 is-upgraded>Preprocessing</h2>
+<ul>
+<li>Generated the training data that contains those features by reconstructing the past based on search logs.</li>
+<li>Computed the personalization features only if the user interacted with more than one Experience and category (to avoid cases where the user clicked only one Experience / category, e.g. Surfing, and ended up booking that category).</li>
+</ul>
+<h2 is-upgraded>Training</h2>
+<p>As search traffic contains searches by both logged-in and logged-out users, Airbnb found it more appropriate to train two models, one with personalization features for logged-in users and one without personalization features that will serve log-out traffic. The main reason was that the logged-in model trained with personalization features relies too much on the presence of those features, and as such is not appropriate for usage on logged-out traffic.</p>
+<h2 is-upgraded>Online evaluation</h2>
+<p>Results showed that Personalization matters as they were able to improve bookings by +7.9% compared to the Stage 1 model.</p>
+<h2 is-upgraded>MLOps</h2>
+<ul>
+<li>They created a look-up table keyed off of user id that contained personalized ranking of all Experiences for that user, and use key 0 for ranking for logged-out users.</li>
+<li>This required daily offline computation of all these rankings in Airflow by computing the latest features and scoring the two models to produce rankings. Because of the high cost involved with pre-computing personalized rankings for all users (O(NM), where N is the number of users and M is the number of Experiences), they limited N to only 1 million most active users.</li>
+<li>The personalization features at this point were computed only daily, which means that they have up to one day latency (also a factor that can be greatly improved with more investment in infrastructure).</li>
+</ul>
+<p>Stage 2 implementation was a temporary solution used to validate personalization gains before investing more resources in building an Online Scoring Infrastructure in Stage 3, which was needed as both N and M are expected to grow much more.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Stage 3: Move to Online Scoring" duration="10">
+        <p>After Airbnb demonstrated significant booking gains from iterating on their ML ranking model and after inventory and training data grew to the extent where training a more complex model is possible, they were ready to invest more engineering resources to build an Online Scoring Infrastructure and target more booking gains.</p>
+<h2 is-upgraded>Features</h2>
+<p>Moving to Online Scoring unlocks a whole new set of features that can be used: Query Feature</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-airbnb-experiences-untitled-5.png" src="img/299a755565d8e5e7.png"></p>
+<p>This means that we would be able to use the entered location, number of guests, and dates to engineer more features. For example,</p>
+<ul>
+<li>we can use the entered location, such as city, neighborhood, or place of interest, to compute Distance between Experience and Entered Location. This feature helps us rank those Experiences closer to entered location higher.</li>
+<li>we can use the entered number of guests (singles, couple, large group) to calculate how it relates to the number of guests in an average booking of Experience that needs to be ranked. This feature helps us rank better fit Experiences higher.</li>
+</ul>
+<p>In the online setting, Airbnb was also able to leverage the user&#39;s browser language setting to do language personalization on the fly. Below is an example of Stage 3 ML model ranking Experiences offered in Russian higher when browser language is Russian.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-airbnb-experiences-untitled-6.png" src="img/4f0b3ce253c42cc4.png"></p>
+<p>Finally, in the online setting we also know the Country which the user is searching from. We can use the country information to personalize the Experience ranking based on Categories preferred by users from those countries. Airbnb used this information to engineer several personalization features at the Origin — Destination level.</p>
+<h2 is-upgraded>Training</h2>
+<p>To train the model with *Query Features* Airbnb first added them to their historical training data. The inventory at that moment was 16,000 Experiences and they had more than 2 million labeled examples to be used in training with a total of 90 ranking features. As mentioned before, they trained two GBDT models:</p>
+<ul>
+<li><strong>Model for logged-in users</strong>*,* which **uses <em>Experience Features</em>, *Query Features,* and <em>User (Personalization) Features</em></li>
+<li><strong>Model for logged-out traffic</strong>, which **uses *Experience &amp; Query Features,* trained using data (clicks &amp; bookings) of logged-in users but not considering <em>Personalization Features</em></li>
+</ul>
+<p>The advantage of having an online scoring infrastructure is that we can use logged-in model for far more uses than before, because there is no need to pre-compute personalized rankings as we did in Stage 2. Airbnb used the logged-in model whenever personalization signals were available for a particular user id, else the model fall back to using logged-out model.</p>
+<h2 is-upgraded>Online evaluation</h2>
+<p>Airbnb conducted an A/B test to compare the Stage 3 models to Stage 2 models. Once again, they were able to grow the bookings, this time by +5.1%.</p>
+<h2 is-upgraded>Implementation</h2>
+<p>To implement online scoring of thousands of listings in real time, Airbnb have built their own ML infra in the context of their search service. There are mainly three parts of the infrastructure, 1) getting model input from various places in real time, 2) model deployment to production, and 3) model scoring.</p>
+<p>The model requires three types of signals to conduct scoring: Experience Features, Query Features, and User Features. Different signals were stored differently depending on their size, update frequency, etc. Specifically, due to their large size (hundreds of millions of user keys), the User Features were stored in an online key-value store and search server boxes can look them up when a user does the search. The Experience Features are on the other hand not that large (tens of thousands of Experiences), and as such can be stored in memory of the search server boxes and read directly from there. Finally, the Query Features are not stored at all, and they are just read as they come in from the front end.</p>
+<p>Experience and User Features are both updated daily as the Airflow pipeline feature generation job finishes. Airbnb is also working on transitioning some of the features to the online world, by using a key-value store that has both read and write capabilities which would allow them to update the features instantly as more data comes in (e.g. new experience reviews, new user clicks, etc.).</p>
+<p>In the model deployment process, they transform the GBDT model file, which originally came from their training pipeline in JSON format, to an internal Java GBDT structure, and load it within the search service application when it starts.</p>
+<p>During the scoring stage, they first pull in all the features (User, Experience, and Query Features) from their respective locations and concatenate them in a vector used as input to the model. Next, depending on if User Features are empty or not they decide which model to use, i.e. logged-out or logged-in model, respectively. Finally, they return the model scores for all Experiences and rank them on the page in descending order of the scores.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Stage 4: Handle Business Rules" duration="5">
+        <p>Up to this point the ranking model&#39;s objective was to grow bookings. However, a marketplace such as Airbnb Experiences may have several other secondary objectives, as we call them Business Rules, that can be achieved through machine learning.</p>
+<p>One such important Business Rule is to Promote Quality. From the beginning they believed that if guests have a really good experience they will come back and book Experiences again in the near future. For that reason, they started collecting feedback from users in terms of 1) star ratings, ranging from 1 to 5, and 2) additional structured multiple-response feedback on whether the Experience was unique, better than expected, engaging, etc.</p>
+<p>As more and more data became available to support their rebooking hypothesis, the trend became more clear. As it can be observed on the left in the figure below, guests who have had a great experience (leave a 5-star rating) are 1.5x more likely to rebook another Experience in the next 90 days compared to guests who have had a less good time (leave 4 star rating or lower).</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-airbnb-experiences-untitled-7.png" src="img/9b9f9b46128bbf8c.png"></p>
+<p>This motivated them to experiment with their objective function, where they changed their binary classification (+1 = booked, -1 = click &amp; not booked) to introduce weights in training data for different quality tiers (e.g. highest for very high quality bookings, lowest for very low quality bookings). The quality tiers were defined by their Quality Team via data analysis. For example:</p>
+<ul>
+<li>*very high quality* Experience is one with &gt;50 reviews, &gt;4.95 review rating and &gt;55% guests saying the Experience was *unique* and <em>better than expected.</em></li>
+<li>*very low quality* Experience <strong>is one with </strong>&gt;10 reviews, &lt;4.7 review rating.</li>
+</ul>
+<p>When testing the model trained in such a way the A/B test results (on the right in the figure above) showed that they can leverage machine learning ranking to get more of v*ery high quality* bookings and less of v<em>ery low quality bookings</em>, while keeping the overall bookings neutral.</p>
+<p>In a similar way, they successfully tackled several other secondary objectives:</p>
+<ul>
+<li><strong>Discovering and promoting potential *new* *hits* early</strong> using cold-start signals and promoting them in ranking (this led to <strong>+14% booking gain for *new hits</strong>* and **neutral overall bookings)</li>
+<li><strong>Enforcing diversity</strong> in the <strong>top 8 results</strong> such that they can show the diverse set of categories, which is especially important for low-intent traffic (this led to <strong>+2.3% overall booking gain</strong>).</li>
+<li><strong>Optimize Search without Location for Clickability</strong> For *Low Intent* users that land on their webpage but do not search with specified location they think a different objective should be used. Their first attempt was to choose the *Top 18* from *all locations* based on their ranking model scores and then <strong>re-rank</strong> based on <strong>Click-through-rate</strong> (this led to <strong>+2.2% overall booking gain</strong> compared to scenario where they do not re-rank based on CTR).</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Monitoring and Explaining" duration="10">
+        <p>For any two-sided marketplace it is very important to be able to explain why certain items rank the way they do.</p>
+<p>In Airbnb&#39;s case it is valuable because they can:</p>
+<ul>
+<li>Give hosts concrete feedback on what factors lead to improvement in the ranking and what factors lead to decline.</li>
+<li>Keep track of the general trends that the ranking algorithm is enforcing to make sure it is the behavior we want to have in our marketplace.</li>
+</ul>
+<p>To build out this capability they used <a href="https://superset.incubator.apache.org/" target="_blank">Apache Superset</a> and <a href="https://airflow.apache.org/" target="_blank">Airflow</a> to create two dashboards:</p>
+<ul>
+<li>Dashboard that tracks rankings of specific Experiences in their market over time, as well as values of feature used by the ML model.</li>
+<li>Dashboard that shows overall ranking trends for different groups of Experiences (e.g. how 5-star Experiences rank in their market).</li>
+</ul>
+<p>In the figure below, there is an example of an Experience whose ranking (left panel) improved from position 30 to position 1 (top ranked). To explain why, we can look at the plots that track various statistics of that Experience (right panel), which are either directly used as features in the ML model or used to derive features.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-airbnb-experiences-untitled-8.png" src="img/ed98829f9e02620b.png"></p>
+<p>It can clearly be observed that the ranking improved because number of reviews grew from 0 to 60, while maintaining a 5.0 review rating and &gt;60% users said the Experience was better than expected. In addition, the host lowered the price, which may also have lead to the improvement of ranking.</p>
+<p>In the next figure, there is an example of an Experience whose ranking degraded from position 4 to position 94. Once more, the signals which the ranking model uses as input can tell the story.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-airbnb-experiences-untitled-9.png" src="img/91eb23d5c3e27409.png"></p>
+<p>The Experience started getting bad reviews (avg. rating reduced from 4.87 to 4.82), host increased the price by $20, and overall booking numbers decreased. In addition, in that market the time of day that Experience is held at (early morning) became less and less popular (slight seasonality effect). All these factors combined lead to the ranking decline.</p>
+<p>In addition, to be able to track what kind of ranking behavior they are enforcing it was useful to look at how certain groups of Experiences rank in their markets. In the figure below, there is a snapshot of dashboard where we can track average ranking (lower is better) of different dimensions.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-airbnb-experiences-untitled-10.png" src="img/68050b979d7a04f1.png"></p>
+<p>For example, the left plot shows that Experiences with &gt;50 reviews rank much better than experiences with 10–30 reviews. Looking at the other two plots we can see that on average Experiences with review rating of &gt;4.9 rank the best (much better than ones with lower average rating) and that Experiences for which &gt;55% users say their experience was unique rank much better than non-unique Experiences.</p>
+<p>This type of dashboard is useful for making business decisions and modifications to the ranking algorithm to enforce better behaviors. For example, based on the figure that shows ranking trends of different price range groups (shown below) they noticed that very low price Experiences have too big of an advantage in ranking. They decided to try to reduce that advantage by removing price as one of the signals used by the ranking model.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-airbnb-experiences-untitled-11.png" src="img/87bc90a3449e31bb.png"></p>
+<p>The result of removing the price and retraining the model was that the difference in ranking reduced (after July 1st), without hurting overall bookings. This demonstrates the usefulness of reporting and how ranking can be manipulated using machine learning to achieve desired ranking behavior.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusion" duration="2">
+        <h2 is-upgraded>Summary of Business Impact so far</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-airbnb-experiences-untitled-12.png" src="img/88c54b966487f8f6.png"></p>
+<p>The main take-away is: &#34;Don&#39;t wait until you have big data, you can do quite a bit with small data to help grow and improve your business.&#34;</p>
+<h2 is-upgraded>Next steps</h2>
+<ul>
+<li><strong>Training data construction</strong> (by logging the feature values at the time of scoring instead of reconstructing them based on best guess for that day)</li>
+<li><strong>Loss function</strong> (e.g. by using pairwise loss, where they compare booked Experience with Experience that was ranked higher but not booked, a setup that is far more appropriate for ranking)</li>
+<li><strong>Training labels</strong> (e.g. by using utilities instead of binary labels, i.e. assigning different values to different user actions, such as: 0 for impression, 0.1 for click, 0.2 for click with selected date &amp; time, 1.0 for booking, 1.2 for high quality booking)</li>
+<li><strong>Adding more real-time signals</strong> (e.g. being able to personalize based on immediate user activities, i.e. clicks that happened 10 minutes ago instead of 1 day ago)</li>
+<li><strong>Explicitly asking users about types of activities they wish to do on their trip</strong> (so they can personalize based on declared interest in addition to inferred ones)</li>
+<li><strong>Tackling position bias</strong> that is present in the data they use in training</li>
+<li><strong>Optimizing for additional secondary objectives</strong>, such as helping hosts who host less often than others (e.g. 1–2 a month) and hosts who go on vacation and come back</li>
+<li><strong>Testing different models</strong> beyond GBDT</li>
+<li><strong>Finding more types of supply that work well in certain markets</strong> by leveraging predictions of the ranking model.</li>
+<li><strong>Explore/Exploit framework</strong></li>
+<li><strong>Test human-in-the-loop approach</strong> (e.g. Staff picks)</li>
+</ul>
+<h2 is-upgraded>Links and References</h2>
+<ol type="1">
+<li><a href="https://medium.com/airbnb-engineering/machine-learning-powered-search-ranking-of-airbnb-experiences-110b4b1a0789" target="_blank">Originally published on medium by Mihajlo Grbovic, Senior Machine Learning Scientist @ Airbnb.</a></li>
+<li>Airbnb Experiences Ranking Algorithm Explained - <a href="https://youtu.be/35HfN_C7-2c" target="_blank">Part I</a>, <a href="https://youtu.be/emxPgRbtTFg" target="_blank">Part II</a>, and <a href="https://youtu.be/Ox1BIXSdlYo" target="_blank">Part III</a>.</li>
+<li><a href="https://arxiv.org/pdf/1911.05887.pdf" target="_blank">https://arxiv.org/pdf/1911.05887.pdf</a></li>
+<li><a href="https://digital.hbs.edu/platform-rctom/submission/airbnb-customizing-recommendations-for-every-trip/" target="_blank">https://digital.hbs.edu/platform-rctom/submission/airbnb-customizing-recommendations-for-every-trip/</a></li>
+</ol>
+<h2 is-upgraded>Have a Question?</h2>
+<ul>
+<li><a href="https://form.jotform.com/211377288388469" target="_blank">Fill out this form</a></li>
+<li><a href="https://github.com/recohut/reco-step/issues" target="_blank">Raise issue on Github</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>

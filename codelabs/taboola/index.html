@@ -1,0 +1,117 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Taboola</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="taboola"
+                  title="Taboola"
+                  environment="web"
+                  feedback-link="https://github.com/recohut/reco-step/issues">
+    
+      <google-codelab-step label="Introduction" duration="5">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-taboola-untitled.png" src="img/dd27d028fd6c676a.png"></p>
+<p>Enabling people to discover information at that moment when they&#39;re likely to engage</p>
+<p>As one of the world&#39;s preeminent discovery platforms, Taboola delivers tailored recommendations to more than a billion unique Internet users every month to help them explore what&#39;s interesting and new across publisher sites, mobile apps, and other digital properties. Over the last decade, thousands of publishers and advertisers including CBS Interactive, Euronews, Pandora, and Samsung1 have partnered with Taboola to build audiences, increase engagement, and drive revenue. Taboola&#39;s proprietary deep learning algorithms, powered by one of the largest datasets of content consumption behavior across the open web, match people with content that they truly care about at the moments they are most receptive to new things.</p>
+<p>Taboola delivers content recommendations to online users using an artificial intelligence (AI)-based solution that predicts the preferences of each visitor within the context of each visit. A variety of data are ingested in real time for each website visitor. The AI solution processes this data, taking into account both simple factors, such as time of day and recently viewed content, and more complex factors, such as context and trending topics. The accuracy of the recommendations, coupled with the simplicity and effectiveness of the solution, has driven global success for Taboola, and is helping some of the most innovative and highly visited digital properties increase user engagement, monetize traffic, and acquire quality audiences.</p>
+<h2 is-upgraded>Taboola at scale</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-taboola-untitled-1.png" src="img/fb27bf40fecb6bad.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-taboola-untitled-2.png" src="img/c59fe98cae9c3d45.png"></p>
+<ul>
+<li>Providing 30 billion personalized content recommendations delivered each day</li>
+<li>Delivering real-time recommendations in as little as 50 milliseconds</li>
+<li>Enabling continual training of cutting-edge machine learning models</li>
+<li>Achieving 6x improvement in AI-based inferencing over time</li>
+</ul>
+<h2 is-upgraded>Tech stack</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-taboola-untitled-3.png" src="img/9983ee6dc3252bb4.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Objective" duration="5">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-taboola-untitled-4.png" src="img/474fde4c35c6b1d4.png"></p>
+<p>The goal of a recommender system is to recommend items that the users might find relevant. At Taboola, relevance is expressed via a click: we show a widget containing content recommendations, and the users choose if they want to click on one of the items.</p>
+<p>The probability of the user clicking on an item is called Click Through Rate (CTR). If we knew the CTR of all the items, the problem of which items to recommend would be easy: simply recommend the items with the highest CTR.</p>
+<p>The problem is that we don&#39;t know what the CTR is. We have a model that estimates it, but it&#39;s obviously not perfect. Some of the reasons for the imperfection are the uncertainty types inherent in recommender systems</p>
+<h2 is-upgraded>Challenges</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-taboola-untitled-5.png" src="img/4686083c18883eaa.png"></p>
+<h2 is-upgraded>Requirements</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-taboola-untitled-6.png" src="img/a9626c7acae84ea.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Deep learning model" duration="10">
+        <p>Taboola implemented a neural network that estimates both the probability of an item being relevant to the user, as well as the uncertainty of this prediction.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-taboola-untitled-7.png" src="img/cd76283959efb335.png"></p>
+<p>The model is composed of several modules.</p>
+<h2 is-upgraded>Item module</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-taboola-untitled-8.png" src="img/a958e71caf3c6a20.png"></p>
+<p>The model tries to predict the probability that an item will be clicked, i.e – the CTR (Click Through Rate). To do so, we have a module that gets as input the item&#39;s features such as its title and thumbnail, and outputs a dense representation – a vector of numbers if you will.</p>
+<p>Once the model is trained, this vector will contain the important information extracted out of the item.</p>
+<h2 is-upgraded>Context module</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-taboola-untitled-9.png" src="img/92902f3dcf7778ff.png"></p>
+<p>We said the model predicts the probability of a click on an item, right? But in which context is the item shown?</p>
+<p>Context can mean many things – the publisher, the user, the time of day, etc. This module gets as input the features of the context. It then outputs the dense representation of the context.</p>
+<h2 is-upgraded>Fusion module</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-taboola-untitled-10.png" src="img/e9682ff19414b6c4.png"></p>
+<p>So we have the information extracted out of both the item and the context. For sure, there&#39;s some interaction between the two. For instance, an item about soccer probably will have higher CTR in a sports publisher compared to a finance publisher.</p>
+<p>This module fuses the two representations into one, in a similar fashion to collaborative filtering.</p>
+<h2 is-upgraded>Estimation module</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-taboola-untitled-11.png" src="img/450ca28da2a6596f.png"></p>
+<p>At the end we have a module whose goal is to predict the CTR. In addition, it also estimates uncertainty about the CTR estimation.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusion" duration="2">
+        <p>Congratulations!</p>
+<h2 is-upgraded>Links and References</h2>
+<ol type="1">
+<li><a href="https://www.taboola.com/" target="_blank">https://www.taboola.com/</a></li>
+<li><a href="https://youtu.be/jd_UORQhg2A" target="_blank">https://youtu.be/jd_UORQhg2A</a></li>
+<li><a href="https://www.kaggle.com/c/dmbi-2019-taboola-challenge/overview" target="_blank">https://www.kaggle.com/c/dmbi-2019-taboola-challenge/overview</a></li>
+<li><a href="https://www.delltechnologies.com/asset/en-us/products/ready-solutions/customer-stories-case-studies/dell-taboola-nvidia-case-study.pdf" target="_blank">Dell Nvidia report</a></li>
+<li><a href="https://youtu.be/tq05khL2z7A" target="_blank">https://youtu.be/tq05khL2z7A</a></li>
+<li><a href="https://www.intel.in/content/www/in/en/customer-spotlight/stories/taboola-tensorflow-customer-story.html" target="_blank">Taboola: Optimizing Content Recommendation Engine</a></li>
+<li><a href="https://engineering.taboola.com/recommender-systems-exploring-the-unknown-using-uncertainty/" target="_blank">https://engineering.taboola.com/recommender-systems-exploring-the-unknown-using-uncertainty/</a></li>
+<li><a href="https://engineering.taboola.com/uncertainty-ctr-prediction-one-model-clarify/" target="_blank">https://engineering.taboola.com/uncertainty-ctr-prediction-one-model-clarify/</a></li>
+</ol>
+<h2 is-upgraded>Have a Question?</h2>
+<ul>
+<li><a href="https://form.jotform.com/211377288388469" target="_blank">Fill out this form</a></li>
+<li><a href="https://github.com/recohut/reco-step/issues" target="_blank">Raise issue on Github</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,128 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>OCR in python</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="ocr-in-python"
+                  title="OCR in python"
+                  environment="web"
+                  feedback-link="https://github.com/recohut/reco-step/issues">
+    
+      <google-codelab-step label="Introduction" duration="5">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ocr-in-python-untitled.png" src="img/6b222cb02f2103d4.png"></p>
+<h2 is-upgraded>What you&#39;ll learn?</h2>
+<p>We will learn different ways to perform optical character recognition tasks in python using open-source libraries.</p>
+<h2 is-upgraded>How it will work?</h2>
+<ol type="1">
+<li>Tesseract OCR model</li>
+<li>Image text recognition with KerasOCR</li>
+<li>Image text recognition with EasyOCR</li>
+<li>Arabic OCR to detect and comprehend Arabic language</li>
+</ol>
+<h2 is-upgraded>Who is this for?</h2>
+<ul>
+<li>People who are new in deep learning and computer vision in particular</li>
+<li>People interested in learning OCR and Scene text detection/recognition methods</li>
+</ul>
+<h2 is-upgraded>Important resources</h2>
+<ul>
+<li><a href="https://nbviewer.jupyter.org/gist/sparsh-ai/2d1f533048a3655de625298c3dd32d47" target="_blank">Notebook - TesseractOCR</a></li>
+<li><a href="https://nbviewer.jupyter.org/gist/sparsh-ai/12359606ee4127513c66fc3b4ff18e5b" target="_blank">Notebook - EasyOCR</a></li>
+<li><a href="https://nbviewer.jupyter.org/gist/sparsh-ai/2fcb764619baf5f56cf7122b1b2c527c" target="_blank">Notebook - KerasOCR</a></li>
+<li><a href="https://nbviewer.jupyter.org/gist/sparsh-ai/26df76b78f8cd2018a068b284b7cfe56" target="_blank">Notebook - ArabicOCR</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Tesseract" duration="5">
+        <p>Tesseract is an open source text recognition (OCR) Engine, available under the Apache 2.0 license. It can be used directly, or (for programmers) using an API to extract printed text from images. It supports a wide variety of languages. Tesseract doesn&#39;t have a built-in GUI, but there are several available from the 3rdParty page. Tesseract is compatible with many programming languages and frameworks through wrappers that can be found here. It can be used with the existing layout analysis to recognize text within a large document, or it can be used in conjunction with an external text detector to recognize text from an image of a single text line.</p>
+<p>Tesseract 4.00 includes a new neural network subsystem configured as a text line recognizer. It has its origins in <a href="https://github.com/tmbdev/ocropy" target="_blank">OCRopus&#39; Python-based LSTM</a> implementation but has been redesigned for Tesseract in C++. The neural network system in Tesseract pre-dates TensorFlow but is compatible with it, as there is a network description language called Variable Graph Specification Language (VGSL), that is also available for TensorFlow.</p>
+<p>To recognize an image containing a single character, we typically use a Convolutional Neural Network (CNN). Text of arbitrary length is a sequence of characters, and such problems are solved using RNNs and LSTM is a popular form of RNN. Read this post to learn more about <a href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/" target="_blank">LSTM</a>.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ocr-in-python-untitled-1.png" src="img/fe6fe9991269c8b2.png"></p>
+<p>For this image:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ocr-in-python-untitled-2.png" src="img/ee777b677755c779.png"></p>
+<p>Tesseract detected it like this:</p>
+<pre><code>LANDEYves @LANDEYves - 18h
+
+&#34;Je vais me faire un petit jeGne&#34;
+&#34;Je vais me faire un petit jeune&#34;
+
+De l&#39;importance de I&#39;accent circonf
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="EasyOCR" duration="5">
+        <p>Ready-to-use OCR with 70+ languages supported including Chinese, Japanese, Korean and Thai. EasyOCR is built with Python and Pytorch deep learning library, having a GPU could speed up the whole process of detection. The detection part is using the CRAFT algorithm and the Recognition model is CRNN. It is composed of 3 main components, feature extraction (we are currently using Resnet), sequence labelling (LSTM) and decoding (CTC). EasyOCR doesn&#39;t have much software dependencies, it can directly be used with its API.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ocr-in-python-untitled-3.png" src="img/6eb05c27bc3cbeba.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="KerasOCR" duration="5">
+        <p>This is a slightly polished and packaged version of the Keras CRNN implementation and the published CRAFT text detection model. It provides a high-level API for training a text detection and OCR pipeline and out-of-the-box OCR models, and an end-to-end training pipeline to build new OCR models.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-ocr-in-python-untitled-4.png" src="img/2f01511731aabf8e.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="ArabicOCR" duration="2">
+        <p>It is an OCR system for the Arabic language that converts images of typed text to machine-encoded text. It currently supports only letters (29 letters).  ArabicOCR aims to solve a simpler problem of OCR with images that contain only Arabic characters (check the dataset link below to see a sample of the images).</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusion" duration="2">
+        <p>Congratulations!</p>
+<h2 class="checklist" is-upgraded>What we&#39;ve covered</h2>
+<ol type="1">
+<li>Tesseract OCR model</li>
+<li>Image text recognition with KerasOCR</li>
+<li>Image text recognition with EasyOCR</li>
+<li>Arabic OCR to detect and comprehend Arabic language</li>
+</ol>
+<h2 is-upgraded>Links and References</h2>
+<ol type="1">
+<li><a href="https://nanonets.com/blog/ocr-with-tesseract/" target="_blank">https://nanonets.com/blog/ocr-with-tesseract/</a></li>
+<li><a href="https://github.com/JaidedAI/EasyOCR" target="_blank">https://github.com/JaidedAI/EasyOCR</a></li>
+</ol>
+<h2 is-upgraded>Have a Question?</h2>
+<ul>
+<li><a href="https://form.jotform.com/211377288388469" target="_blank">Fill out this form</a></li>
+<li><a href="https://github.com/recohut/reco-step/issues" target="_blank">Raise issue on Github</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,390 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>How to build a session-based recommender using word2vec</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="session-based-recommender-using-word2vec"
+                  title="How to build a session-based recommender using word2vec"
+                  environment="web"
+                  feedback-link="https://github.com/recohut/reco-step/issues">
+    
+      <google-codelab-step label="Introduction" duration="5">
+        <p>A user&#39;s choice of items not only depends on long-term historical preference, but also on short-term and more recent preferences. Choices almost always have time-sensitive context; for instance, &#34;recently viewed&#34; or &#34;recently purchased&#34; items may actually be more relevant than others. These short-term preferences are embedded in the user&#39;s most recent interactions, but may account for only a small proportion of historical interactions. In addition, a user&#39;s preference towards certain items can tend to be dynamic rather than static; it often evolves over time.</p>
+<p>A key trend over the past few years has been session-based recommendation algorithms that provide recommendations solely based on a user&#39;s interactions in an ongoing session, and which do not require the existence of user profiles or their entire historical preferences. This tutorial explores a simple, yet powerful, NLP-based approach (word2vec) to recommend a next item to a user. While NLP-based approaches are generally employed for linguistic tasks, here we exploit them to learn the structure induced by a user&#39;s behavior or an item&#39;s nature.</p>
+<h2 is-upgraded>What you&#39;ll learn?</h2>
+<ol type="1">
+<li>How to preprocess retail transactional data for sequential recommender modeling</li>
+<li>How to use word2vec to train session-based recommender</li>
+<li>How to use Ray to optimize hyperparameters</li>
+</ol>
+<h2 is-upgraded>Why is this important?</h2>
+<ol type="1">
+<li>Session-based recommendation is an important class and a must-to-know process</li>
+</ol>
+<h2 is-upgraded>How it will work?</h2>
+<p>To train a model for this task, we&#39;ll need to use historical browsing sessions from our other existing users to identify trends between products that will help us learn recommendations.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-session-based-recommendation-using-word2vec-untitled.png" src="img/725543a77d277c76.png"></p>
+<p>We will first load the data and preprocess it to create sessions. We will save this preprocessed data as a pickle file. Then we will train  word2vec model using this dataset and then find the best hyperparameters of this word2vec model using Ray tune.</p>
+<h2 is-upgraded>Who is this for?</h2>
+<ul>
+<li>People who are new in deep learning and sequential modeling</li>
+<li>People looking to build a session-based recommender system</li>
+</ul>
+<h2 is-upgraded>Important resources</h2>
+<ul>
+<li><a href="https://github.com/recohut-admin/reco-nb/blob/dev/_notebooks/2021-06-11-recostep-session-based-recommender-using-word2vec.ipynb" target="_blank">Colab notebook</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Definition" duration="5">
+        <h2 is-upgraded>What is a session?</h2>
+<p>Formally, a session is composed of multiple user interactions that happen together in a continuous period of time—for instance, products purchased in a single transaction. Sessions can occur on the same day, or across several days, weeks, or months.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-session-based-recommendation-using-word2vec-untitled-1.png" src="img/ce65ffdac5db18bf.png"></p>
+<p>Session-based recommendations</p>
+<p>Session-based recommendation tasks are performed based on the user&#39;s anonymous historical behavior sequence and implicit feedback data, such as clicks, browsing, purchasing, etc., rather than rating or comment data. The primary aim is to predict the next behavior based on a sequence of the historical sequence of the session. Session-based recommendation aims to predict which item a user will click next, solely based on the user&#39;s current sequential session data without access to the long-term preference profile.</p>
+<p>The input to these systems are time-ordered logs of recorded user interactions, where the interactions are grouped into sessions. Such a session could, for example, correspond to a listening session on a music service, or a shopping session on an e-commerce site. One particularity of such approaches is that users are anonymous, which is a common problem on websites that deal with first-time users or users that are not logged in. The prediction task in this setting is to predict the next user action, given only the interactions of the ongoing session. Today, session-based recommendation is a highly active research area due to its practical relevance.</p>
+<p>Markov chains is a classic case, which assumes that the next action is based on the previous ones. Many sequential recommendation methods based on the Markov chain (MC) model predict the next item based on the previous one through computing transition probabilities between two consecutive items. FPMC models the sequence behavior between every two adjacent clicks and provides a more accurate prediction for each sequence by factoring the user&#39;s personalized probability transfer matrix. The main problem with Markov methods, however, is that they assume too strongly the independence of more than two consecutive actions, so a great number of important sequential information cannot be well exploited for sessions with more than two actions.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-session-based-recommendation-using-word2vec-untitled-2.png" src="img/f5c39773b4f95052.png"></p>
+<p>A session is a chunk of interactions that take place within a given time frame. It may span a single day, or several days, weeks, or even months. A session usually has a time-limited goal, such as finding a restaurant for dinner tonight, listening to music of a certain style or mood, or looking for a location for one&#39;s next holiday.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-session-based-recommendation-using-word2vec-untitled-3.png" src="img/7c331a4049bc381.png"></p>
+<h2 is-upgraded>Next event prediction (NEP)</h2>
+<p>Given a series of events (e.g. user&#39;s browsing history), the task is to predict the next event.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Data" duration="5">
+        <p>We chose an open domain e-commerce dataset from a UK-based online boutique selling specialty gifts. This dataset was collected between 12/01/2010 and 12/09/2011 and contains purchase histories for 4,372 customers and 3,684 unique products. These purchase histories record transactions for each customer and detail the items that were purchased in each transaction. This is a bit different from a browsing history, as it does not contain the order of items clicked while perusing the website; it only includes the items that were eventually purchased in each transaction. However, the transactions are ordered in time, so we can treat a customer&#39;s full transaction history as a session. Instead of predicting recommendations for what a customer might click on next, we&#39;ll be predicting recommendations for what that customer might actually buy next. Session definitions are flexible, and care must be taken in order to properly interpret the results.</p>
+<p>The dataset is composed of the following columns:</p>
+<ul>
+<li><strong>InvoiceNo</strong>: Invoice number. Nominal, a 6-digit integral number uniquely assigned to each transaction. If this code starts with letter ‘c&#39;, it indicates a cancellation.</li>
+<li><strong>StockCode</strong>: Product (item) code. Nominal, a 5-digit integral number uniquely assigned to each distinct product.</li>
+<li><strong>Description</strong>: Product (item) name. Nominal.</li>
+<li><strong>Quantity</strong>: The quantities of each product (item) per transaction. Numeric.</li>
+<li><strong>InvoiceDate</strong>: Invice Date and time. Numeric, the day and time when each transaction was generated.</li>
+<li><strong>UnitPrice</strong>: Unit price. Numeric, Product price per unit in sterling.</li>
+<li><strong>CustomerID</strong>: Customer number. Nominal, a 5-digit integral number uniquely assigned to each customer.</li>
+<li><strong>Country</strong>: Country name. Nominal, the name of the country where each customer resides.</li>
+</ul>
+<h2 is-upgraded>Snapshot</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-session-based-recommendation-using-word2vec-untitled-4.png" src="img/a7513cd0eeae98da.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="EDA" duration="10">
+        <h2 is-upgraded>Session length</h2>
+<p>We define a session as a customer&#39;s full purchase history (all items purchased in each transaction) over the life of the dataset. Below, we show a boxplot of the session lengths (how many items were purchased by each customer). The median customer purchased 44 products over the course of the dataset, while the average customer purchased 96 products.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-session-based-recommendation-using-word2vec-untitled-5.png" src="img/69899f0ac1a67ac7.png"></p>
+<h2 is-upgraded>Product popularity</h2>
+<p>Another thing to note is the popularity of individual products. Below, we show the log counts of how often each product was purchased. Most products are not very popular and are only purchased a handful of times. On the other hand, a few products are wildly popular and purchased thousands of times.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-session-based-recommendation-using-word2vec-untitled-6.png" src="img/a7d4125954ee77df.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Preprocessing" duration="10">
+        <h2 is-upgraded>Pre-filtering</h2>
+<ul>
+<li>Personally identifying information has already been removed</li>
+<li>We removed entries that did not contain a customer ID number (which is how we define a session)</li>
+<li>We removed sessions that contain fewer than three purchased items. A session with only two, for instance, is just a [query item, ground truth item] pair and does not give us any examples for training</li>
+</ul>
+<pre><code language="language-python" class="language-python">def preprocess_ecomm(df, min_session_count=3):
+
+    df.dropna(inplace=True)
+    item_counts = df.groupby([&#34;CustomerID&#34;]).count()[&#34;StockCode&#34;]
+    df = df[df[&#34;CustomerID&#34;].isin(item_counts[item_counts &gt;= min_session_count].index)].reset_index(drop=True)
+    
+    return df
+</code></pre>
+<h2 is-upgraded>Sequential revealing strategy</h2>
+<p>The effectiveness of an algorithm is measured by its ability to predict items withheld from the session. There are a variety of withholding strategies:</p>
+<ul>
+<li>withholding the last element of each session</li>
+<li>iteratively revealing each interaction in a session</li>
+<li>in cases where each user has multiple sessions, withholding the entire final session</li>
+</ul>
+<p>In this tutorial, we have employed withholding the last element of the session.</p>
+<pre><code language="language-python" class="language-python">def construct_session_sequences(df, sessionID, itemID, save_filename):
+    &#34;&#34;&#34;
+    Given a dataset in pandas df format, construct a list of lists where each sublist
+    represents the interactions relevant to a specific session, for each sessionID. 
+    These sublists are composed of a series of itemIDs (str) and are the core training 
+    data used in the Word2Vec algorithm. 
+    This is performed by first grouping over the SessionID column, then casting to list
+    each group&#39;s series of values in the ItemID column. 
+    INPUTS
+    ------------
+    df:                 pandas dataframe
+    sessionID: str      column name in the df that represents invididual sessions
+    itemID: str         column name in the df that represents the items within a session
+    save_filename: str  output filename 
+  
+    Example:
+    Given a df that looks like 
+    SessionID |   ItemID 
+    ----------------------
+        1     |     111
+        1     |     123
+        1     |     345
+        2     |     045 
+        2     |     334
+        2     |     342
+        2     |     8970
+        2     |     345
+    
+    Retrun a list of lists like this: 
+    sessions = [
+            [&#39;111&#39;, &#39;123&#39;, &#39;345&#39;],
+            [&#39;045&#39;, &#39;334&#39;, &#39;342&#39;, &#39;8970&#39;, &#39;345&#39;],
+        ]
+    &#34;&#34;&#34;
+    grp_by_session = df.groupby([sessionID])
+
+    session_sequences = []
+    for name, group in grp_by_session:
+        session_sequences.append(list(group[itemID].values))
+
+    pickle.dump(session_sequences, open(save_filename, &#34;wb&#34;))
+    return session_sequences
+</code></pre>
+<h2 is-upgraded>Splitting</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-session-based-recommendation-using-word2vec-untitled-7.png" src="img/3e443af855016211.png"></p>
+<p>wherein the first n-1 items highlighted in a green box act as part of the training set, while the item outside is used as ground truth for the recommendations generated.</p>
+<p>For each customer in the Online Retail Data Set, we construct the training set from the first n-1 purchased items. We construct test and validation sets as a series of [query item, ground truth item] pairs. The test and validation sets must be disjoint—that is, each set is composed of pairs with no pairs shared between the two sets (or else we would leak information from our validation into the final test set!).</p>
+<pre><code language="language-python" class="language-python">def train_test_split(session_sequences, test_size: int = 10000, rng=rng):
+    &#34;&#34;&#34;
+    Next Event Prediction (NEP) does not necessarily follow the traditional train/test split. 
+    Instead training is perform on the first n-1 items in a session sequence of n items. 
+    The test set is constructed of (n-1, n) &#34;query&#34; pairs where the n-1 item is used to generate 
+    recommendation predictions and it is checked whether the nth item is included in those recommendations. 
+    Example:
+        Given a session sequence [&#39;045&#39;, &#39;334&#39;, &#39;342&#39;, &#39;8970&#39;, &#39;128&#39;]
+        Training is done on [&#39;045&#39;, &#39;334&#39;, &#39;342&#39;, &#39;8970&#39;]
+        Testing (and validation) is done on [&#39;8970&#39;, &#39;128&#39;]
+    
+    Test and Validation sets are constructed to be disjoint. 
+    &#34;&#34;&#34;
+
+    ## Construct training set
+    # use (1 st, ..., n-1 th) items from each session sequence to form the train set (drop last item)
+    train = [sess[:-1] for sess in session_sequences]
+
+    if test_size &gt; len(train):
+        print(
+            f&#34;Test set cannot be larger than train set. Train set contains {len(train)} sessions.&#34;
+        )
+        return
+
+    ### Construct test and validation sets
+    # sub-sample 10k sessions, and use (n-1 th, n th) pairs of items from session_squences to form the
+    # disjoint validaton and test sets
+    test_validation = [sess[-2:] for sess in session_sequences]
+    index = np.random.choice(range(len(test_validation)), test_size * 2, replace=False)
+    test = np.array(test_validation)[index[:test_size]].tolist()
+    validation = np.array(test_validation)[index[test_size:]].tolist()
+
+    return train, test, validation
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Problem design" duration="5">
+        <p>Given a query item, we&#39;ll generate a handful of recommendations that are the most similar to that item, using cosine similarity. This is the same technique we would use if we wanted to find similar words. Instead of semantic similarity between words, we hope we have learned embeddings that capture the semantic similarity between product IDs that users purchased.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-session-based-recommendation-using-word2vec-untitled-8.png" src="img/8c6725f7f7b0000b.png"></p>
+<p>The query item (the last item in a training sequence) is used to generate K product recommendations</p>
+<p>Armed with a list of recommendations, we can now score our model by checking whether the corresponding ground truth item is in our list of recommendations.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-session-based-recommendation-using-word2vec-untitled-9.png" src="img/ae6780f9eebbe339.png"></p>
+<p>We&#39;ll perform this set of operations for each [query item, ground truth item] pair in our test set, to compute an overall score using Recall@K and MRR@K.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Model" duration="10">
+        <p>There are many baselines for the next event prediction (NEP) task. The simplest and most common are designed to recommend the item that most frequently co-occurs with the last item in the session. Known as &#34;Association Rules,&#34; this heuristic is straightforward, but doesn&#39;t capture the complexity of the user&#39;s session history.</p>
+<pre><code language="language-python" class="language-python">def association_rules_baseline(train_sessions):
+    &#34;&#34;&#34;
+    Constructs a co-occurence matrix that counts how frequently each item 
+    co-occurs with any other item in a given session. This matrix can 
+    then be used to generate a list of recommendations according to the most
+    frequently co-occurring items for the item in question. 
+
+    These recommendations must be evaluated using the &#34;_baseline&#34;  recall/mrr functions in metrics.py
+    &#34;&#34;&#34;
+    comatrix = collections.defaultdict(list)
+    for session in train_sessions:
+        for (x, y) in itertools.permutations(session, 2):
+            comatrix[x].append(y)
+    return comatrix
+</code></pre>
+<p>More recently, deep learning approaches have begun to make waves. Variations of graph neural networks and recurrent neural networks have been applied to the problem with promising results, and currently represent the state of the art in NEP for several use cases. However, while these algorithms capture complexity, they can also be difficult to understand, unintuitive in their recommendations, and not *always* better than comparably simple algorithms (in terms of prediction accuracy).</p>
+<p>There is still another option, though, that sits between simple heuristics and deep learning algorithms. It&#39;s a model that can capture semantic complexity with only a single layer: word2vec.</p>
+<h2 is-upgraded>word2vec</h2>
+<p>Word2vec uses the co-occurrence of words in a sentence to learn embeddings for each word that capture the semantic meaning of that word. At its core, word2vec is a simple, shallow neural network, with a single hidden layer. In its skip-gram version, it takes as input a word, and tries to predict the context of words around it as the output.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-session-based-recommendation-using-word2vec-untitled-10.png" src="img/d555d1be00db51f.png"></p>
+<p>Word2vec versions: Skip-Gram vs Continuous Bag of Words</p>
+<p>Training this shallow network means learning the values of these weight matrices, which gives us the output that is closest to the training data. Once trained, the output layer is usually discarded, and the hidden layer (also known as the embeddings) is used for downstream processes. These embeddings are nothing but vector representations of each word, such that similar words have vector representations that are close together in the embedding space.</p>
+<pre><code language="language-python" class="language-python">def train_w2v(train_data, params:dict, callbacks=None, model_name=None):
+    if model_name: 
+        # Load a model for additional training. 
+        model = Word2Vec.load(model_name)
+    else: 
+        # train model
+        if callbacks:
+            model = Word2Vec(callbacks=callbacks, **params)
+        else:
+            model = Word2Vec(**params)
+        model.build_vocab(train_data)
+
+    model.train(train_data, total_examples=model.corpus_count, epochs=model.epochs, compute_loss=True)
+    vectors = model.wv
+    return vectors
+</code></pre>
+<h2 is-upgraded>How can we use this for NEP?</h2>
+<p>We can treat each session as a sentence, with each item or product in the session representing a &#34;word.&#34; A website&#39;s collection of user browser histories will act as the corpus. Word2vec will crunch over the entire corpus, learning relationships between products in the context of user browsing behavior. The result will be a collection of embeddings: one for each product. The idea is that these learned product embeddings will contain more information than a simple heuristic, and training the word2vec algorithm is typically faster and easier than training more complex, data-hungry deep learning algorithms.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Hyperparameter tuning" duration="10">
+        <p>In the previous section, we simply trained word2vec using the default hyperparameters-but hyperparameters matter! In addition to the learning rate or the embedding size (hyperparameters likely familiar to many), word2vec has several others which have considerable impact on the resulting embeddings. Let&#39;s see how.</p>
+<p>The default word2vec&#39;s parameters in Gensim library were found to produce semantically meaningful representations for words in documents, but we are learning embeddings for products in online sessions. The order of products in online sessions will not have the same structure as words in sentences, so we&#39;ll need to consider adjusting word2vec&#39;s hyperparameters to be more appropriate to the task.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-session-based-recommendation-using-word2vec-untitled-11.png" src="img/ea0b62919128e4c8.png"></p>
+<p>This table shows the main hyperparameters we tuned over. For each one, we show the starting and ending values we tried, along with the step size we used. The total number of trials is computed by multiplying each value in the Configurations column.</p>
+<p>We trained a word2vec model using the best hyperparameters found above, which resulted in a Recall@10 score of 25.18±0.19 on the validation set, and 25.21±.26 for the test set. These scores may not seem immediately impressive, but if we consider that there are more than 3600 different products to recommend, this is far better than random chance!</p>
+<pre><code language="language-python" class="language-python">from ray.tune import Analysis
+from ray.tune.schedulers import ASHAScheduler
+
+# Define the hyperparameter search space for Word2Vec algorithm
+search_space = {
+    &#34;dataset&#34;: &#34;ecomm&#34;,
+    &#34;k&#34;: 10,
+    &#34;size&#34;: tune.grid_search(list(np.arange(10,106, 6))),
+    &#34;window&#34;: tune.grid_search(list(np.arange(1,22, 3))),
+    &#34;ns_exponent&#34;: tune.grid_search(list(np.arange(-1, 1.2, .2))),
+    &#34;alpha&#34;: tune.grid_search([0.001, 0.01, 0.1]),
+    &#34;negative&#34;: tune.grid_search(list(np.arange(1,22, 3))),
+    &#34;iter&#34;: 10,
+    &#34;min_count&#34;: 1,
+    &#34;workers&#34;: 6,
+    &#34;sg&#34;: 1,
+}
+
+use_asha = True
+smoke_test = False
+
+# The ASHA Scheduler will stop underperforming trials in a principled fashion
+asha_scheduler = ASHAScheduler(max_t=100, grace_period=10) if use_asha else None
+
+# Set the stopping critera -- use the smoke-test arg to test the system 
+stopping_criteria = {&#34;training_iteration&#34;: 1 if smoke_test else 9999}
+
+# Perform hyperparamter sweep with Ray Tune
+analysis = tune.run(
+    tune_w2v,
+    name=expt_dir,
+    local_dir=&#34;ray_results&#34;,
+    metric=&#34;recall_at_k&#34;,
+    mode=&#34;max&#34;,
+    scheduler=asha_scheduler,
+    stop=stopping_criteria,
+    num_samples=1,
+    verbose=1,
+    resources_per_trial={
+        &#34;cpu&#34;: 1,
+        &#34;gpu&#34;: 0
+    },
+    config=search_space,
+)
+print(&#34;Best hyperparameters found were: &#34;, analysis.best_config)
+</code></pre>
+<h2 is-upgraded><strong>Hyperparameter Tuning with Ray</strong></h2>
+<p>There are several libraries that make hyperparameter optimization approachable, easy, and <em>scalable</em>. For this cycle, we explored <a href="https://docs.ray.io/en/master/index.html" target="_blank">Ray</a>.</p>
+<p>At its core, Ray is a simple, universal API for building distributed applications. Atop this foundation are a handful of libraries designed to address specific machine learning challenges. <a href="https://docs.ray.io/en/master/tune/index.html" target="_blank">Ray Tune</a> provides several desirable features, including distributed hyperparameter sweep, checkpointing, and state-of-the-art hyperparameter search algorithms—all while supporting most major ML frameworks, such as PyTorch, Tensorflow, and Keras.</p>
+<p>In our experiments, we tuned over the hyperparameters in the table above for the number of trials specified. Each trial was trained for 100 epochs and was evaluated on the validation set using Recall@10. This resulted in the best hyperparameter configuration for the Online Retail Data Set.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Evaluation" duration="10">
+        <h2 is-upgraded>Evaluation metrics</h2>
+<p>For a sequence containing n interactions, we use the first (n-1) items in that sequence as part of the model training set. We randomly sample (n-1th, nth) pairs from these sequences for the validation and test sets. For prediction, we use the last item in the training sequence (the n-1th item) as the query item, and predict the K closest items to the query item using cosine similarity between the vector representations. We can then evaluate with the following metrics:</p>
+<ul>
+<li><strong>Recall at *K* (Recall@</strong><strong><em>K</em></strong><strong>)</strong> defined as the proportion of cases in which the ground truth item is among the top *K* recommendations for all test cases (that is, a test example is assigned a score of 1 if the *n*th item appears in the list, and 0 otherwise).</li>
+<li><strong>Mean Reciprocal Rank at *K* (MRR@</strong><strong><em>K</em></strong><strong>)</strong>, takes the average of the reciprocal ranks of the ground truth items within the top *K* recommendations for all test cases (that is, if the *n*th item was second in the list of recommendations, its reciprocal rank would be 1⁄2). This metric measures and favors higher ranks in the ordered list of recommendation results.</li>
+</ul>
+<p>Accuracy, however, is not the only relevant factor when it comes to recommendations. Depending on the problem, we may want to measure how diverse the recommendations are, or if our algorithm generally tends to recommend most popular items. These additional quality metrics, known as coverage (or diversity) and popularity bias, could help us better understand the potential side-effects of the recommender model.</p>
+<p>We trained a word2vec model using the best hyperparameters found above, which resulted in a Recall@10 score of 25.18±0.19 on the validation set, and 25.21±.26 for the test set. These scores may not seem immediately impressive, but if we consider that there are more than 3600 different products to recommend, this is far better than random chance!</p>
+<h2 is-upgraded>Model comparison</h2>
+<p>Now that we&#39;ve learned the best hyperparameters for our dataset, we can start looking at some model comparisons. We trained models using both our best hyperparameters and the default hyperparameters, each for 100 epochs. The number of epochs is another important parameter, and the default in Gensim&#39;s implementation is five. So we trained another default word2vec model with only five epochs. Finally, we&#39;ve shown the &#34;Association Rules&#34; baseline, a simple heuristic that predicts recommendations based on frequent co-occurrence between items.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-session-based-recommendation-using-word2vec-untitled-12.png" src="img/e5fbeedd83a083ac.png"></p>
+<h2 is-upgraded><strong>Online evaluation</strong></h2>
+<p>Offline evaluations rarely inform us about the quality of recommendations <strong>as perceived by the users</strong>. In one study of e-commerce session-based recommenders, it was observed that offline evaluation metrics often fall short because they tend to reward an algorithm when they predict the exact item that the user clicked or purchased. In real life, though, there are identical products that could potentially make equally good recommendations. To overcome these limitations, we suggest incorporating human feedback on the recommendations from offline evaluations before conducting A/B tests.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusion" duration="2">
+        <p>Recommender systems have become a cornerstone of online life; they help us navigate an overwhelming amount of information. Being able to predict a user&#39;s interests based on an online session is a highly relevant problem in practice. There is not, however, a one-size-fits-all model; each solution will ultimately be unique to the use case, and care must, as always, be taken in the development and assessment of the model, in order to provide recommendations that will help users and businesses alike. Careful development and assessment of any machine learning model is critical, but it is especially true with recommender systems in general, and session-based recommenders in particular. The best approach is to first benchmark several options on offline metrics (such as Recall@K), and then perform online evaluation (through A/B testing, for instance), before settling on a given model—as offline metrics typically cannot be used to properly assess real-world KPIs (like revenue generation or watch time).</p>
+<h2 class="checklist" is-upgraded>What we&#39;ve covered</h2>
+<ul>
+<li>We experimented with an NLP-based algorithm—word2vec—which is known for learning low-dimensional word representations that are contextual in nature.</li>
+<li>We applied it to an e-commerce dataset containing historical purchase transactions, to learn the structure induced by both the user&#39;s behavior and the product&#39;s nature to recommend the next item to be purchased.</li>
+<li>While doing so, we learned that hyperparameter choices are data- and task-dependent, and especially, that they differ from linguistic tasks; what works for language models does not necessarily work for recommendation tasks.</li>
+<li>That said, our experiments indicate that in addition to specific parameters (like negative sampling exponent, the number of negative samples, and context window size), the number of training epochs greatly influences model performance. We recommend that word2vec be trained for as many epochs as computational resources allow, or until performance on a downstream recommendation metric has plateaued.</li>
+<li>We also realized during our experimentation that performing hyperparameter search over just a handful of parameters can be time consuming and computationally expensive; hence, it could be a bottleneck to developing a real-life recommendation solution (with word2vec). While scaling hyperparameter optimization *is* possible through tools like Ray Tune, we envision additional research into algorithmic approaches to solve this problem would pave the way in developing more scalable (and less complex) solutions.</li>
+</ul>
+<h2 is-upgraded>Next steps</h2>
+<ol type="1">
+<li>Explore and run colab notebook to understand the python implementation process</li>
+<li>Learn and implement word2vec algorithm</li>
+<li>Apply the word2vec to build other interesting session-based recommender systems</li>
+</ol>
+<h2 is-upgraded>Links and References</h2>
+<ol type="1">
+<li><a href="https://youtu.be/JoRx6udpnbI" target="_blank">YouTube. Fast Forward Live: Session-based Recommender Systems.</a></li>
+<li><a href="https://session-based-recommenders.fastforwardlabs.com/" target="_blank">Blog. Session-based Recommender Systems.</a></li>
+<li><a href="https://github.com/fastforwardlabs/session_based_recommenders" target="_blank">GitHub. Session-based Recommender Systems.</a></li>
+</ol>
+<h2 is-upgraded>Have a Question?</h2>
+<ul>
+<li><a href="https://form.jotform.com/211377288388469" target="_blank">Fill out this form</a></li>
+<li><a href="https://github.com/recohut/reco-step/issues" target="_blank">Raise issue on Github</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>

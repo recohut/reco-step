@@ -1,0 +1,25 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-21T05:13:49Z",
+  "id": "swiggy-food-recommender",
+  "duration": 65,
+  "title": "Swiggy Food Recommender",
+  "authors": "Sparsh A.",
+  "summary": "Item recommendations are inherently different in the food domain when compared to familiar instances like movie or book recommendations. Customers having watched and rated a movie or book are rarely interested in seeing the same item recommendation again. With food, however, it is observed that many customers prefer sticking to items they previously ordered and liked. They are at the same time also open to suggestions on similar items. Based on prior ordering history, a user profile can be created to glean what items the user orders.",
+  "source": "./swiggy-food-recommender-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "story"
+  ],
+  "tags": [
+    "food"
+  ],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "swiggy-food-recommender"
+}

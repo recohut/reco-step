@@ -1,0 +1,275 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Bandit-based online learning using Thompson sampling</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="bandit-thompson-sampling"
+                  title="Bandit-based online learning using Thompson sampling"
+                  environment="web"
+                  feedback-link="https://github.com/recohut/reco-step/issues">
+    
+      <google-codelab-step label="Introduction" duration="5">
+        <p>The objective of this app is to apply the bandit algorithms to recommendation problems under a simulated environment. Although in practice we will use real data, the complexity of the recommendation problem and associated algorithmic challenges can be realized in this simulated environment.</p>
+<h2 is-upgraded>What you&#39;ll learn?</h2>
+<ul>
+<li>Multi-armed bandit recommender</li>
+<li>Build different bandits from scratch in python</li>
+<li>Simulate and compare performance of bandits</li>
+<li>Build a plotly dash app</li>
+</ul>
+<h2 is-upgraded>Why is this important?</h2>
+<ul>
+<li>Bandits help us to deal with cold-start problem</li>
+<li>Thompson sampling algorithm is powerful method for online learning</li>
+</ul>
+<h2 is-upgraded>How it will work?</h2>
+<ol type="1">
+<li>Build the prototype</li>
+<li>Simulate the bandit agent environment</li>
+<li>Analyze and compare the results</li>
+<li>Build an interactive dash app</li>
+</ol>
+<h2 is-upgraded>Who is this for?</h2>
+<ul>
+<li>People who are new to bandits concept</li>
+<li>People looking to learn more about bandits and thompson sampling based recommender methods</li>
+</ul>
+<h2 is-upgraded>Important resources</h2>
+<ul>
+<li><a href="https://learnforeverlearn.com/bandits/" target="_blank">Simulation</a></li>
+<li><a href="https://colab.research.google.com/github/yfletberliac/rlss-2019/blob/master/labs/MAB.RecoSystems.ipynb" target="_blank">Colab notebook</a></li>
+<li><a href="https://peterroelants.github.io/posts/multi-armed-bandit-implementation/" target="_blank">Blog post</a></li>
+<li><a href="https://dataorigami.net/blogs/napkin-folding/79031811-multi-armed-bandits" target="_blank">Blog post</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Prototype" duration="10">
+        <p>Refer to <a href="https://github.com/sparsh-ai/reco-bandit-private/blob/main/app1/prototype1.ipynb" target="_blank">this</a> notebook for code.</p>
+<h2 is-upgraded>Define the number of arms and their probability of winning</h2>
+<pre><code language="language-python" class="language-python"># Number of bandits
+nb_bandits = 3
+
+# True probability of winning for each bandit
+p_bandits = [0.45, 0.55, 0.60]
+</code></pre>
+<p>We defined 3 bandits and the probability of winning is 45%, 55%, and 60%. We randomly pull an arm by generating a random number and if that number is less than the bandit probability, we call it a success for that arm and return 1 (positive reward), else return 0 (no reward).</p>
+<pre><code language="language-python" class="language-python">def pull(i):
+    &#34;&#34;&#34;Pull arm of bandit with index `i` and return 1 if win, 
+    else return 0.&#34;&#34;&#34;
+    if np.random.rand() &lt; p_bandits[i]:
+        return 1
+    else:
+        return 0
+</code></pre>
+<h2 is-upgraded>Simulate multi-armed bandit process and update posteriors</h2>
+<p>The number of trials and wins will represent the prior for each bandit with the help of the Beta distribution.</p>
+<pre><code language="language-python" class="language-python">trials = [0, 0, 0]  # Number of times we tried each bandit
+wins = [0, 0, 0]  # Number of wins for each bandit
+
+n = 1000
+# Run the trail for `n` steps
+for step in range(1, n+1):
+    # Define the prior based on current observations
+    bandit_priors = [
+        stats.beta(a=1+w, b=1+t-w) for t, w in zip(trials, wins)]
+    # Sample a probability theta for each bandit
+    theta_samples = [ d.rvs(1) for d in bandit_priors]
+    # choose a bandit
+    chosen_bandit = np.argmax(theta_samples)
+    # Pull the bandit
+    x = pull(chosen_bandit)
+    # Update trials and wins (defines the posterior)
+    trials[chosen_bandit] += 1
+    wins[chosen_bandit] += x
+</code></pre>
+<p>Here is the probability densite plot (pdf, in short) of the 3 bandits. As we can see, pdf was uniform at the beginning and started converging to the mean of actual probability as the steps increase.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-bandit-based-online-learning-using-thompson-sampli-untitled.png" src="img/50538ff36964b1d8.png"></p>
+<p>Note: the good thing about beta distribution is that it can take form of both, uniform distribution (at step 1) as well as normal distribution (at step 1000) depending upon the <em>alpha</em> and <em>beta</em> parameters.</p>
+<h2 is-upgraded>Final outcome and number of test needed per bandit</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-bandit-based-online-learning-using-thompson-sampli-untitled-1.png" src="img/bc74ecee5227065a.png"></p>
+<p>For bandit 1, true probability of success is 45% and agent estimated 43% in 43 trials. Similar case for bandit 2. In case of bandit 3, trials are comparatively large because that one is the highest <em>probability of success</em> class and therefore the agent keeps pulling this bandit to maximize the reward.</p>
+<h2 is-upgraded>Step outcome</h2>
+<p>We can also see the agent&#39;s performance on each step/pull.</p>
+<pre><code language="language-python" class="language-python">p_bandits = [0.45, 0.55, 0.60]
+trials = [0, 0, 0]
+wins = [0, 0, 0]
+n = 10
+
+for step in range(1, n+1):
+    # Define the prior based on current observations
+    bandit_priors = [
+        stats.beta(a=1+w, b=1+t-w) for t, w in zip(trials, wins)]
+    # Sample a probability theta for each bandit
+    theta_samples = [
+        d.rvs(1) for d in bandit_priors
+    ]
+    # choose a bandit
+    chosen_bandit = np.argmax(theta_samples)
+    # Pull the bandit
+    x = pull(chosen_bandit)
+    # Update trials and wins (defines the posterior)
+    trials[chosen_bandit] += 1
+    wins[chosen_bandit] += x
+    print(p_bandits,trials,wins)
+</code></pre>
+<p>For instance, here are the first 10 steps outcome:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-bandit-based-online-learning-using-thompson-sampli-untitled-2.png" src="img/d2b56a9346420531.png"></p>
+<p>In each row, first list is the probability of success for each bandit, 2nd list is the total count of pull and 3rd list is the total count of win. At step 1, agent pulled third arm and get a reward of 1. At step 2, agent pulled first arm, and get no reward. Then again pulled third arm and get a reward. In first 10 steps, agent pulled 3rd arm 6 times and got a total reward 5 times out of 6.</p>
+<p>But the good thing about the Thompson sampling algorithm is that even this <em>high reward from the 3rd arm</em> situation will not stop the agent from exploring from time to time. So if we change the actual probabilities from [0.45, 0.55, 0.6] to let&#39;s say [0.9, 0.55, 0.6], the agent will itself identify this change in reward and will start pulling the first arm instead. We will see this live in our app.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Simulator app" duration="10">
+        <p>Use <a href="https://github.com/recohut-admin/reco-nb/blob/dev/_notebooks/2021-06-12-bandit-based-recommender-using-thompson-sampling-app.ipynb" target="_blank">this</a> notebook.</p>
+<h2 is-upgraded>Wrapping the algorithm in a class</h2>
+<p>We wrapped the thompson sampling algorithm in a class where we defined 2 methods: pull - to draw an arm at random, and step - that will internally pull the arms at random and keep updating the bandit posteriors.</p>
+<pre><code language="language-python" class="language-python">class THSimulationAdv():
+    def __init__(self, nb_bandits):
+        self.nb_bandits = nb_bandits
+        self.trials = [0] * self.nb_bandits
+        self.wins = [0] * self.nb_bandits
+    def pull(self, i, p_bandits):
+        if np.random.rand() &lt; p_bandits[i]:
+            return 1
+        else:
+            return 0
+    def step(self, p_bandits):
+        # Define the prior based on current observations
+        bandit_priors = [stats.beta(a=1+w, b=1+t-w) for t, w in zip(self.trials, self.wins)]
+        # Sample a probability theta for each bandit
+        theta_samples = [d.rvs(1) for d in bandit_priors]
+        # choose a bandit
+        chosen_bandit = np.argmax(theta_samples)
+        # Pull the bandit
+        x = self.pull(chosen_bandit, p_bandits)
+        # Update trials and wins (defines the posterior)
+        self.trials[chosen_bandit] += 1
+        self.wins[chosen_bandit] += x
+        return self.trials, self.wins
+</code></pre>
+<h2 is-upgraded>Dash app</h2>
+<p>We are creating the rows and columns design using dash bootstrap library. In layout, we defined a button, a create table method, an interval component and a placeholder for probability update callback.</p>
+<pre><code language="language-python" class="language-python">def create_row(nb=1, wd=1, pb=&#39;0.5&#39;):
+    return dbc.Row(children=[
+        dbc.Col(dbc.Input(id=&#39;bandit{}_prob&#39;.format(str(nb)), type=&#34;number&#34;, min=0, max=1, 
+                          step=0.01, value=pb), width=wd),
+        dbc.Col(dbc.Card(html.Div(id=&#39;bandit{}_hits&#39;.format(str(nb))), color=&#34;success&#34;),width=wd),
+        dbc.Col(dbc.Card(html.Div(id=&#39;bandit{}_miss&#39;.format(str(nb))), color=&#34;danger&#34;),width=wd),
+        dbc.Col(dbc.Card(html.Div(id=&#39;bandit{}_total&#39;.format(str(nb))), color=&#34;light&#34;),width=wd),
+    ], align=&#34;center&#34;, justify=&#34;start&#34;)
+
+def create_table():
+    row_list = [create_row(nb=i) for i in range(1,n_bandits+1)]
+    return html.Div(row_list)
+
+app.layout = html.Div(children=[
+    dbc.Button(&#34;Start Simulation&#34;, color=&#34;primary&#34;),
+    create_table(),
+    dcc.Interval(
+            id=&#39;interval-component&#39;,
+            interval=1000, # in milliseconds
+            n_intervals=0
+        ),
+    html.Div(id=&#39;p_bandits&#39;),
+])
+</code></pre>
+<p>We are defining 2 callbacks: first callback will gets triggered when we change the probability (in the first column of the app), and the second callback will gets triggered on a regular interval. We are using 1000 ms (1 sec) as the interval and you can change it up or down.</p>
+<pre><code language="language-python" class="language-python">p_bandits = [np.random.rand() for i in range(n_bandits)]
+last_update = thsim.step(p_bandits)
+
+input_list = [eval(f&#34;Input(&#39;bandit{i}_prob&#39;, &#39;value&#39;)&#34;) for i in range(1,n_bandits+1)]
+
+@app.callback(
+    Output(&#39;p_bandits&#39;, &#39;children&#39;),
+    input_list)
+def update_probs(*args):
+    global p_bandits
+    p_bandits = [float(prob) for prob in args] 
+    return &#34;&#34;
+
+output_list_hits = [eval(f&#34;Output(&#39;bandit{i}_hits&#39;, &#39;children&#39;)&#34;) for i in range(1,n_bandits+1)]
+output_list_miss = [eval(f&#34;Output(&#39;bandit{i}_miss&#39;, &#39;children&#39;)&#34;) for i in range(1,n_bandits+1)]
+output_list_total = [eval(f&#34;Output(&#39;bandit{i}_total&#39;, &#39;children&#39;)&#34;) for i in range(1,n_bandits+1)]
+output_list = list(itertools.chain(output_list_hits,
+                                   output_list_miss,
+                                   output_list_total)
+                  )
+
+@app.callback(
+    output_list,
+    Input(&#39;interval-component&#39;, &#39;n_intervals&#39;))
+def update_metrics(n):
+    x = thsim.step(p_bandits)
+    totals = x[0]
+    hits = x[1]
+    global last_update
+    hitlist=[]; misslist=[]; totallist=[]
+    for i in range(n_bandits):
+        hit_style = green_button_style if hits[i]!=last_update[1][i] else white_button_style
+        miss_style = red_button_style if (totals[i]-hits[i])!=(last_update[0][i]-last_update[1][i]) else white_button_style
+        hitlist.append(html.Div(hits[i], style=hit_style))
+        misslist.append(html.Div(totals[i]-hits[i], style=miss_style))
+        totallist.append(totals[i])
+    last_update = deepcopy(x)
+    return list(itertools.chain(hitlist,misslist,totallist))
+</code></pre>
+<p>Demo: <a href="https://www.youtube.com/watch?v=ND04S_0fRjs" target="_blank">https://www.youtube.com/watch?v=ND04S_0fRjs</a></p>
+<p>Let&#39;s take the scenario of an e-commerce. There is a customer named Linda and 10 products in our catalog. At the beginning, there is a 50-50 chance of purchasing any product. Now we changed the probability of one of the arm to 0.85 which means if we recommend that product to Linda, there is a 85% probability that she can buy this product. The agent found that information, simply by exploring the environment, and starts recommending that product to Linda.</p>
+<p><em>Preferences change</em>. Now there is another product with 90% chances that Linda can buy if we recommend that. And the probability of old one decreases to 65%. Can our agent find this information by itself? For some steps, it keeps recommending that 7th product but soon realized that reward is not that good now. So the agent started exploring more to see what Linda likes now.</p>
+<p>At this moment, there is a negative reward of 2 for that 3rd product and therefore agent is quite scared to recommend that. But it took the risk and got a reward. Then after some time, it recommended it again and got a reward. Then again, and again, and again. and it started recommending that one. We got the answer: our agent is able to find the information by itself.</p>
+<p>It is important to note here that the agent can not see the ground truth probabilities of success (first column in the video image). In real life, this ground truth can be the probability of purchasing a product, probability of reading a news article, or numerous other choice.  And the agent can play the role of a recommender system whose job is to explore the environment and recommend the items to maximize the reward. In e-commerce, reward can be a view/click/buy/add-to-cart event. In entertainment domain, reward can be a watch/add-to-playlist/like event.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusion" duration="2">
+        <p>Congratulations!</p>
+<h2 is-upgraded>Links and References</h2>
+<ul>
+<li><a href="https://github.com/sparsh-ai/reco-bandit-private/blob/main/app1/prototype1.ipynb" target="_blank">Notebook</a></li>
+<li><a href="https://colab.research.google.com/github/yfletberliac/rlss-2019/blob/master/labs/MAB.RecoSystems.ipynb" target="_blank">Notebook</a></li>
+<li><a href="https://learnforeverlearn.com/bandits/" target="_blank">Simulation</a></li>
+<li><a href="https://peterroelants.github.io/posts/multi-armed-bandit-implementation/" target="_blank">Blog post</a></li>
+<li><a href="https://dataorigami.net/blogs/napkin-folding/79031811-multi-armed-bandits" target="_blank">Blog post</a></li>
+</ul>
+<h2 is-upgraded>Have a Question?</h2>
+<ul>
+<li><a href="https://form.jotform.com/211377288388469" target="_blank">Fill out this form</a></li>
+<li><a href="https://github.com/recohut/reco-step/issues" target="_blank">Raise issue on Github</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>

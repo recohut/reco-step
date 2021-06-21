@@ -1,0 +1,23 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-21T05:13:49Z",
+  "id": "ocr-in-python",
+  "duration": 24,
+  "title": "OCR in python",
+  "authors": "Sparsh A.",
+  "summary": "We will learn different ways to perform optical character recognition tasks in python using open-source libraries.",
+  "source": "./ocr-in-python-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "tutorial"
+  ],
+  "tags": [],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "ocr-in-python"
+}

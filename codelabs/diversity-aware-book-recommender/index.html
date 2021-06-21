@@ -1,0 +1,162 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Diversity Aware Book Recommender</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="diversity-aware-book-recommender"
+                  title="Diversity Aware Book Recommender"
+                  environment="web"
+                  feedback-link="https://github.com/recohut/reco-step/issues">
+    
+      <google-codelab-step label="Introduction" duration="5">
+        <p>How can we build a better recommender system that enables consumer diversity and increases customer lifetime value?</p>
+<p>We can approach this problem through the customer lens. Let&#39;s take Elon Musk as a model world citizen, who publicly stated he loved fantasy books growing up and <strong>Lord of the Rings</strong> having a large impact on him. But if Elon continued to follow the recommendations of today&#39;s most visible machine learning algorithm on Amazon, he would continue down the path of fantasy, fantasy, and more fantasy. Elon has also stated that business books shaped his worldview, with <strong>Zero to One</strong> as his recommendation.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-diversity-aware-book-recommender-untitled.png" src="img/831c3e05937eb235.png"></p>
+<p>The status quo leads to more of the same, so how can we better match the customer&#39;s interests?</p>
+<p><strong>How can we build a recommendation engine that would take an input book like Lord of the Rings and recommend an output book like Zero to One?</strong></p>
+<h2 is-upgraded>Process</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-diversity-aware-book-recommender-untitled-1.png" src="img/282cadbfcf7c9c10.png"></p>
+<h2 is-upgraded>Resources</h2>
+<p><a href="https://github.com/recohut-admin/reco-nb/blob/dev/_notebooks/2021-06-10-recobook-goodreads-book-recommender.ipynb" target="_blank">Notebook</a></p>
+<p><a href="https://github.com/recohut-admin/reco-nb/blob/dev/_notebooks/2021-06-10-recobook-dive-aware-book-recommender.ipynb" target="_blank">Notebook</a></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Gather, explore, and clean data" duration="5">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-diversity-aware-book-recommender-untitled-2.png" src="img/4c9dbcacbe67d834.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Transform data" duration="5">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-diversity-aware-book-recommender-untitled-3.png" src="img/f5b1e55a10bb562c.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Build recommender engine" duration="5">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-diversity-aware-book-recommender-untitled-4.png" src="img/65ed1f027d1f9821.png"></p>
+<p>Now we input Lord of the Rings into the recommendation engine and see the results.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-diversity-aware-book-recommender-untitled-5.png" src="img/53a0138b29618003.png"></p>
+<p>We get a list of the top 10 most similar books to Lord of the Rings based on book tags. The recommendations look nearly identical to Amazon&#39;s website:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-diversity-aware-book-recommender-untitled-6.png" src="img/4d97e36fc6b1901f.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Add diversity" duration="5">
+        <p>In relation to Lord of the Rings, Zero to One is rank 8,592 out of 10,000 books based on similarities. Pretty low. According to the algorithm, these two books are on opposite ends of the spectrum and not similar at all.</p>
+<h2 is-upgraded>Method 1</h2>
+<ol type="1">
+<li>Create a bag-of-word corpus of tags</li>
+<li>Select the most frequent tokens</li>
+<li>Identify synonym tokens</li>
+<li>Get books with tags containing synonym tokens</li>
+<li>Sort the results by averate rating from highest to lowest</li>
+</ol>
+<h2 is-upgraded>Method 2</h2>
+<ol type="1">
+<li>Find similar books based on tags (as usual)</li>
+<li>Remove the books which are in same category to the target book</li>
+</ol>
+<p>For example, Amazon has 5 results to display book recommendations</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-diversity-aware-book-recommender-untitled-7.png" src="img/4d97e36fc6b1901f.png"></p>
+<p>Instead of 5 books with similar book tags to Lord of the Rings, the result should be 5 books with similar book tags, but with a different category to Fantasy, such as Science Fiction. Subsequent results would follow the same logic. This would &#34;diversify&#34; the categories of books the user sees, while maintaining a chain of relevancy. It would display: Fantasy → Science Fiction → Technology → Entrepreneurship → Biographies.</p>
+<p>Within these categories, individual books can be ranked and sorted based on similarities to the initial book or by user ratings. Each slot presents the book within that category with most relevancy to the original book.</p>
+<p>Slot 1: Fantasy</p>
+<p>Slot 2: Science Fiction</p>
+<p>Slot 3: Technology</p>
+<p>Slot 4: Entrepreneurship</p>
+<p>Slot 5: Biographies</p>
+<p>This categorization becomes a sort within a sort to ensure a quality, relevant, and diverse read. This concept could more systematically connect books like Lord of the Rings and Zero to One together, eventually scaling to different product types or industries, such as music.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Design mockups" duration="5">
+        <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-diversity-aware-book-recommender-untitled-8.png" src="img/5f02d2df7e6d2bed.png"></p>
+<p>How might we design this? We could deploy our algorithm to allocate a certain percentage to the exploration of diversity recommendations, such as a split of 70% similarity and 30% diversity recommendations.</p>
+<p>One potential user gave feedback that they would like to see a &#34;diversity switch&#34;. Let&#39;s mockup this potential design.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-diversity-aware-book-recommender-untitled-9.png" src="img/fd1d607a47e71406.png"></p>
+<p>Once the customer switches it on, we can keep 3 books as the usual similarity recommendations and the next 2 as our diversity recommendations.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-diversity-aware-book-recommender-untitled-10.png" src="img/ed2ccf83ebd8069b.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Business value hypothesis" duration="5">
+        <p>What is the potential business value behind this idea? We can start by narrowing down the target customer launch to <a href="http://amazon.com/" target="_blank">Amazon.com</a> USA customers that have in the past 12 months: purchased a book, searched for fantasy books, and bought from multiple book categories. Conservative assumptions:</p>
+<pre><code>USA customers: 112 million
+x book buying customers: 25%
+x searches for fantasy: 25%
+x buys multiple categories: 25%
+= roll out to 1.75 million customersx conversion rate: 10%
+= 175,000 customers convertx increase in average annual spend $40
+= $7 million additional annual revenue
+</code></pre>
+<p>In 2019, the average Amazon customer spend was about $600 per year and Amazon&#39;s annual revenue was $280 billion. This estimate is light in comparison which is good as an initial rollout test. If we increase the scope of the launch we will get a larger potential value. Let&#39;s expand our reach and roll this out to all USA Amazon customer that has purchased a book, with a conservative assumption of 25%:</p>
+<pre><code>USA customers: 112 million
+x book buying customers: 25%
+= roll out to 28 million customersx conversion rate: 10%
+= 2.8 million customers convertx increase in average annual spend $40
+= $112 million additional annual revenue
+</code></pre>
+<p>Finally, if we are more aggressive and assume half of Amazon customers can be book buyers, increase the conversion rate, increase the average annual spend uptick, we get into the billions of additional value:</p>
+<pre><code>USA customers: 112 million
+x book buying customers: 50%
+= roll out to 56 million customersx conversion rate: 20%
+= 28 million customers convertx increase in average annual spend $90
+= $1 billion additional annual revenue
+</code></pre>
+<p>The potential pitfall is that this new recommender system negatively impacts the customer experience and decreases the conversion rate, which becomes a revenue loss. This is why initial customer validation and smaller launch and test plans are a good starting point.</p>
+<p>The business value upside is significant seeing as how 35% ($98 billion) of Amazon&#39;s revenues were generated through recommendation systems. Even a small percentage improvement in the algorithm would amount to millions and billions of additional revenue.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusion" duration="2">
+        <p>Congratulations!</p>
+<h2 is-upgraded>Links and References</h2>
+<ol type="1">
+<li><a href="https://pub.towardsai.net/diversity-recommender-systems-in-machine-learning-and-ai-a56849c5a256" target="_blank">https://pub.towardsai.net/diversity-recommender-systems-in-machine-learning-and-ai-a56849c5a256</a></li>
+<li><a href="https://github.com/allenjiang/Mona-Lisa-AI" target="_blank">https://github.com/allenjiang/Mona-Lisa-AI</a></li>
+</ol>
+<h2 is-upgraded>Have a Question?</h2>
+<ul>
+<li><a href="https://form.jotform.com/211377288388469" target="_blank">Fill out this form</a></li>
+<li><a href="https://github.com/recohut/reco-step/issues" target="_blank">Raise issue on Github</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>

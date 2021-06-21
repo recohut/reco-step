@@ -1,0 +1,330 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>How to capture real-time events with Kafka and MongoDB</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="real-time-streaming-kafka-mongodb"
+                  title="How to capture real-time events with Kafka and MongoDB"
+                  environment="web"
+                  feedback-link="https://github.com/recohut/reco-step/issues">
+    
+      <google-codelab-step label="Introduction" duration="5">
+        <h2 is-upgraded>What you&#39;ll learn?</h2>
+<ul>
+<li>Creating kafka cluster and topic on cloud</li>
+<li>Creating mongodb cluster and database on cloud</li>
+<li>Pre-process movielens data in kafka Json format</li>
+<li>Send and receive data events in kafka in real-time</li>
+<li>Persist the streaming data in NoSQL mongoDB database</li>
+</ul>
+<h2 is-upgraded>Why is this important?</h2>
+<ul>
+<li>Real-time capture of event is very important to serve real-time recommendations</li>
+<li>Everything is on cloud</li>
+<li>Free of cost to start with at least (and to run this experiment obviously)</li>
+</ul>
+<h2 is-upgraded>How it will work?</h2>
+<ol type="1">
+<li>Setup kafka and mongodb clusters</li>
+<li>Configure the connnections in colab notebooks by saving the right credentials</li>
+<li>Load and prepare movielens dataset</li>
+<li>Start Kafka producer, consumer and mongodb listener notebooks</li>
+<li>Send a record from kafka producer to kafka consumer</li>
+<li>Save the received record in mongodb</li>
+<li>Read the record from mongodb stream and convert into pandas dataframe</li>
+</ol>
+<h2 is-upgraded>Who is this for?</h2>
+<ul>
+<li>People who are looking to learn how to stream user behaviour events in real-time</li>
+<li>People who are interested in learning more on kafka and mongodb</li>
+</ul>
+<h2 is-upgraded>Important resources</h2>
+<ul>
+<li><a href="https://github.com/recohut/reco-static/tree/master/poc/kafka_mongodb_streaming" target="_blank">Notebooks</a></li>
+<li><a href="https://youtu.be/AMY-o4ArW7E" target="_blank">Video demo</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Setup Kafka" duration="10">
+        <h2 is-upgraded>Sign-up</h2>
+<p>Go to <a href="https://customer.cloudkarafka.com/signup" target="_blank">this</a> link and signup</p>
+<h2 is-upgraded>Create a team</h2>
+<p>Enter a team name and create the team. Below is the settings that I used:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled.png" src="img/888e4433f636692a.png"></p>
+<h2 is-upgraded>Create an instance</h2>
+<p>Click on <em>Create New Instance</em> button and fill-out the details. For instance, I filled the below ones in my case:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-1.png" src="img/1135e4e6fa925277.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-2.png" src="img/d7e5e2fbbad958c1.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-3.png" src="img/b2e25eaea39d9283.png"></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-4.png" src="img/bf03ffdda94b91f1.png"></p>
+<h2 is-upgraded>Create Kafka topic</h2>
+<p>Click on the kafka instance and you will see something like this:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-5.png" src="img/a3ebe0bb6443f5fc.png"></p>
+<p>We will be needing these details to configure Kafka in our notebook.</p>
+<p>For now, let&#39;s create a topic first. Click on topic tab, from left-side navigation pane.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-6.png" src="img/40412da479476146.png"></p>
+<p>You can use default one also, but for our use case, we are creating a new topic named &#34;-&#34;.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-7.png" src="img/7de35d6f7d78ab16.png"></p>
+<p>Keep this instance detail page open or note down the details safely. We will be needing these details later.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Setup MongoDB" duration="10">
+        <h2 is-upgraded>Sign up</h2>
+<p>Go to <a href="https://account.mongodb.com/account/register?n=%2Fv2%2F6056079edc5be0371e355b11&nextHash=%23clusters" target="_blank">this</a> link and sign-up. I used <em>Sign up with Google</em> option.</p>
+<h2 is-upgraded>Create organization</h2>
+<p>I got this as my welcome page:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-8.png" src="img/f2d7ea1637587ab4.png"></p>
+<p>Click on <em>Create an Organization.</em> Give it a name and click on <em>Next:</em></p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-9.png" src="img/835e4ff405878649.png"></p>
+<p>Click on <em>Create Organization</em>:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-10.png" src="img/51a6b388bbaf3c5.png"></p>
+<h2 is-upgraded>Create a project</h2>
+<p>Click on <em>Create New Project</em>, name it and click on <em>Next</em>:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-11.png" src="img/a9e933eb4c816912.png"></p>
+<p>Then, click on <em>Create Project</em>:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-12.png" src="img/9bec4ee126156e5d.png"></p>
+<h2 is-upgraded>Create a cluster</h2>
+<p>Click on <em>Build a Cluster</em>:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-13.png" src="img/737b28f83d079b9c.png"></p>
+<p>Choose the free version:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-14.png" src="img/8b90ac58632b2018.png"></p>
+<p>Click on <em>Create Cluster</em>:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-15.png" src="img/4112f1671680ab94.png"></p>
+<h2 is-upgraded>Configure user</h2>
+<p>Click on <em>CONNECT</em> button and select <em>Connect from anywhere.</em> A default IP 0.0.0.0 will come and click Ok.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-16.png" src="img/b220111af2a5bd0.png"></p>
+<p>Click on <em>Connect</em> and enter username and password:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-17.png" src="img/33c99b1703f4e1b1.png"></p>
+<p>Also get the connection string that we will use in our python notebook code to connnect:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-18.png" src="img/499e48a2495caf53.png"></p>
+<h2 is-upgraded>Create a database</h2>
+<p>Click on <em>COLLECTIONS</em>, the third button on center-left of this image:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-19.png" src="img/2b478bf046016f17.png"></p>
+<p>Click on <em>Add My Own Data</em> and Create the <em>Database</em>:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-20.png" src="img/1eb865cf101b24f8.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Kafka producer" duration="10">
+        <p>Open <a href="https://nb-dev.recohut.com/kafka/real%20time/2021/06/11/recostep-kafka-producer.html" target="_blank">this</a> (<a href="https://nbviewer.jupyter.org/github/recohut/reco-static/blob/master/poc/kafka_mongodb_streaming/Kafka%20Producer.ipynb" target="_blank">mirror</a>) jupyter notebook in any of your favorite editor. I used Google Colab.</p>
+<h2 is-upgraded>Configure Kafka credentials</h2>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-21.png" src="img/ee1791715c5b2f97.png"></p>
+<p>We need to get these 4 parameters from CloudKerafka account that we created.</p>
+<p>Once configured, we are ready to stream events to the topic server. There are 2 ways to run the stream: We can either send a fixed number of events or run a script endlessly that will ask for the message to be sent via terminal.</p>
+<p>In practical scenarios, we inject a javascript into the user&#39;s browser session that sends the event to a listening server and that server sends those messages to the kafka producer.</p>
+<p>We sent 5 messages to the topic server which would look like this:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-22.png" src="img/e23eda56966fa0c3.png"></p>
+<p>The cloudkarafka manager dashboard would look like this:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-23.png" src="img/53d08a02b221bf44.png"></p>
+<h2 is-upgraded>End-to-end producer script</h2>
+<pre><code language="language-python" class="language-python">%%writefile producer.py
+
+import sys
+import os
+
+from confluent_kafka import Producer
+
+CLOUDKARAFKA_TOPIC = &#39;yx03wajr-demo&#39;
+CLOUDKARAFKA_BROKERS = &#39;dory-01.srvs.cloudkafka.com:9094, \
+dory-02.srvs.cloudkafka.com:9094, \
+dory-03.srvs.cloudkafka.com:9094&#39;
+CLOUDKARAFKA_USERNAME = &#39;yx03wajr&#39;
+CLOUDKARAFKA_PASSWORD = &#39;pHva0afDUXPya6JfKrbM1******&#39;
+
+if __name__ == &#39;__main__&#39;:
+    topic = CLOUDKARAFKA_TOPIC.split(&#34;,&#34;)[0]
+
+    # Consumer configuration
+    # See https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md
+    conf = {
+      &#39;bootstrap.servers&#39;: CLOUDKARAFKA_BROKERS,
+      &#39;session.timeout.ms&#39;: 6000,
+      &#39;default.topic.config&#39;: {&#39;auto.offset.reset&#39;: &#39;smallest&#39;},
+      &#39;security.protocol&#39;: &#39;SASL_SSL&#39;,
+      &#39;sasl.mechanisms&#39;: &#39;SCRAM-SHA-256&#39;,
+      &#39;sasl.username&#39;: CLOUDKARAFKA_USERNAME,
+      &#39;sasl.password&#39;: CLOUDKARAFKA_PASSWORD
+      }
+
+    p = Producer(**conf)
+
+    def delivery_callback(err, msg):
+        if err:
+            sys.stderr.write(&#39;%% Message failed delivery: %s\n&#39; % err)
+        else:
+            sys.stderr.write(&#39;%% Message delivered to %s [%d]\n&#39; %
+                             (msg.topic(), msg.partition()))
+
+    for line in sys.stdin:
+        try:
+            p.produce(topic, line.rstrip(), callback=delivery_callback)
+        except BufferError as e:
+            sys.stderr.write(&#39;%% Local producer queue is full (%d messages awaiting delivery): try again\n&#39; %
+                             len(p))
+        p.poll(0)
+
+    sys.stderr.write(&#39;%% Waiting for %d deliveries\n&#39; % len(p))
+    p.flush()
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Kafka consumer and mongodb" duration="10">
+        <p>Open <a href="https://nb-dev.recohut.com/mongodb/kafka/real%20time/2021/06/11/recostep-kafka-consumer-mongodb.html" target="_blank">this</a> (<a href="https://nbviewer.jupyter.org/github/recohut/reco-static/blob/master/poc/kafka_mongodb_streaming/Kafka%20Producer.ipynb" target="_blank">mirror</a>) jupyter notebook in any of your favorite editor. I used Google Colab.</p>
+<h2 is-upgraded>Configure Kafka credentials</h2>
+<p>Configuration process is same as previous step.</p>
+<p>Once configured, the received messages would look like this:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-24.png" src="img/e52bee3d001e7360.png"></p>
+<p>We are able to successfully receive the messages in real-time.</p>
+<h2 is-upgraded>Configure MongoDB</h2>
+<p>Now, let&#39;s store these messages in a persistent database. We are using MongoDB for that.</p>
+<p>Enter these 4 parameters that we received during mongoDB configuration:</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-25.png" src="img/f7a21ee314e3efb4.png"></p>
+<h2 is-upgraded>End-to-end consumer + mongodb script</h2>
+<pre><code language="language-python" class="language-python">%%writefile consumer.py
+
+import sys
+import os
+
+from confluent_kafka import Consumer, KafkaException, KafkaError
+import pymongo
+
+CLOUDKARAFKA_TOPIC = &#39;yx03wajr-demo&#39;
+CLOUDKARAFKA_BROKERS = &#39;dory-01.srvs.cloudkafka.com:9094, \
+dory-02.srvs.cloudkafka.com:9094, \
+dory-03.srvs.cloudkafka.com:9094&#39;
+CLOUDKARAFKA_USERNAME = &#39;yx03wajr&#39;
+CLOUDKARAFKA_PASSWORD = &#39;pHva0afDUXPya6JfKrbM1j549G*****&#39;
+
+MONGODB_USER = &#39;kafka-demo&#39;
+MONGODB_PASSWORD = &#39;&lt;your-pass&gt;&#39;
+MONGODB_CLUSTER = &#39;cluster0.ca4wh.mongodb.net&#39;
+MONGODB_DATABASE = &#39;movielens&#39;
+
+mongo_uri = f&#34;mongodb+srv://{MONGODB_USER}:{MONGODB_PASSWORD}@{MONGODB_CLUSTER}/{MONGODB_DATABASE}?retryWrites=true&amp;w=majority&#34;
+client = pymongo.MongoClient(mongo_uri)
+mydb = client[MONGODB_DATABASE]
+movies = mydb.movies
+
+if __name__ == &#39;__main__&#39;:
+    topics = CLOUDKARAFKA_TOPIC.split(&#34;,&#34;)
+
+    # Consumer configuration
+    # See https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md
+    conf = {
+        &#39;bootstrap.servers&#39;: CLOUDKARAFKA_BROKERS,
+        &#39;group.id&#39;: &#34;%s-consumer&#34; % CLOUDKARAFKA_USERNAME,
+        &#39;session.timeout.ms&#39;: 6000,
+        &#39;default.topic.config&#39;: {&#39;auto.offset.reset&#39;: &#39;smallest&#39;},
+        &#39;security.protocol&#39;: &#39;SASL_SSL&#39;,
+        &#39;sasl.mechanisms&#39;: &#39;SCRAM-SHA-256&#39;,
+        &#39;sasl.username&#39;: CLOUDKARAFKA_USERNAME,
+        &#39;sasl.password&#39;: CLOUDKARAFKA_PASSWORD
+    }
+
+    c = Consumer(**conf)
+    c.subscribe(topics)
+    try:
+        while True:
+            msg = c.poll(timeout=1.0)
+            if msg is None:
+                continue
+            if msg.error():
+                # Error or event
+                if msg.error().code() == KafkaError._PARTITION_EOF:
+                    # End of partition event
+                    sys.stderr.write(&#39;%% %s [%d] reached end at offset %d\n&#39; %
+                                     (msg.topic(), msg.partition(), msg.offset()))
+                elif msg.error():
+                    # Error
+                    raise KafkaException(msg.error())
+            else:
+                # Proper message
+                sys.stderr.write(&#39;%% %s [%d] at offset %d with key %s:\n&#39; %
+                                 (msg.topic(), msg.partition(), msg.offset(),
+                                  str(msg.key())))
+                print(msg.value())
+                try:
+                  movies.insert_one(eval(msg.value().decode(&#39;utf-8&#39;)))
+                except:
+                  movies.insert_one({&#34;err_flag&#34;:True, &#34;msg&#34;:str(msg.value())})
+
+    except KeyboardInterrupt:
+        sys.stderr.write(&#39;%% Aborted by user\n&#39;)
+
+    # Close down consumer to commit final offsets.
+    c.close()
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="MongoDB listener" duration="5">
+        <p>Open <a href="https://nb-dev.recohut.com/mongodb/real%20time/2021/06/11/recostep-mongodb-listener.html" target="_blank">this</a> (<a href="https://nbviewer.jupyter.org/github/recohut/reco-static/blob/master/poc/kafka_mongodb_streaming/Kafka%20Producer.ipynb" target="_blank">mirror</a>) jupyter notebook in any of your favorite editor. I used Google Colab.</p>
+<p>On every message that we are receiving from Kafka, we are storing it in MongoDB. A more efficient process is to store in batch. Here is the side-by-side notebook snapshot of the entire process. Left is the producer who is sending the JSON to Kafka broker, the center is the consumer who is subscribed to the topic and receiving the messages in real-time. And on the right side, we have a MongoDB listener which is connected to MongoDB, listening to the events and converting them into a pandas data frame.</p>
+<p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-real-time-event-capturing-with-kafka-and-mongodb-untitled-26.png" src="img/5e7f81258b2c33ae.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusion" duration="2">
+        <p>Congratulations! You have successfully completed the first step in building a real-time recommendation system.</p>
+<h2 class="checklist" is-upgraded>What we&#39;ve covered</h2>
+<ul>
+<li>Loaded and preprocessed movielens dataset</li>
+<li>Trained and compared 4 versions of neural net models using tensorflow keras</li>
+</ul>
+<h2 is-upgraded>Next steps</h2>
+<ul>
+<li>Build a recommender model on the data that we received from mongodb stream</li>
+<li>We can create a batch of let&#39;s say 10 records to update the model parameters or keep updating these parameters on every single record</li>
+</ul>
+<h2 is-upgraded>Links and References</h2>
+<ul>
+<li><a href="https://github.com/recohut/reco-static/tree/master/poc/kafka_mongodb_streaming" target="_blank">Notebooks</a></li>
+<li><a href="https://youtu.be/AMY-o4ArW7E" target="_blank">Video demo</a></li>
+</ul>
+<h2 is-upgraded>Have a Question?</h2>
+<ul>
+<li><a href="https://form.jotform.com/211377288388469" target="_blank">Fill out this form</a></li>
+<li><a href="https://github.com/recohut/reco-step/issues" target="_blank">Raise issue on Github</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
