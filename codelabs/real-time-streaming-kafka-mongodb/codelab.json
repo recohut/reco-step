@@ -3,7 +3,7 @@
   "format": "html",
   "prefix": "https://storage.googleapis.com",
   "mainga": "UA-49880327-14",
-  "updated": "2021-06-21T05:13:49Z",
+  "updated": "2021-06-21T05:26:06Z",
   "id": "real-time-streaming-kafka-mongodb",
   "duration": 52,
   "title": "How to capture real-time events with Kafka and MongoDB",

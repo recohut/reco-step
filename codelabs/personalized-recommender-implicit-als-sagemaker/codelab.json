@@ -1,0 +1,27 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-21T05:26:06Z",
+  "id": "personalized-recommender-implicit-als-sagemaker",
+  "duration": 79,
+  "title": "How to build an end-to-end recommender system with Implicit BPR and Amazon SageMaker",
+  "authors": "Sparsh A.",
+  "summary": "In this tutorial, we show you how to improve the personalized ranking of an online retail use case using Implicit BPR, available in AWS Marketplace, and Amazon SageMaker. We further show you how to use SageMaker to collect, analyze, clean, prepare, train, and deploy the model to perform both batch and real-time inferences on the trained model.",
+  "source": "./recommender-system-with-implicit-bpr-and-amazon-sa-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "tutorial"
+  ],
+  "tags": [
+    "als",
+    "implicit",
+    "sagemaker"
+  ],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "personalized-recommender-implicit-als-sagemaker"
+}

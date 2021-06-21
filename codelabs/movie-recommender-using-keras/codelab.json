@@ -1,0 +1,26 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-06-21T05:26:06Z",
+  "id": "movie-recommender-using-keras",
+  "duration": 33,
+  "title": "How to build a movie recommender using Keras",
+  "authors": "Sparsh A.",
+  "summary": "Our task is to predict the rating for a user/movie pair, with the idea that if we had a model that’s good at this task then we could predict how a user would rate movies they haven’t seen yet and recommend movies with the highest predicted rating.",
+  "source": "./how-to-build-a-movie-recommender-using-keras-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "tutorial"
+  ],
+  "tags": [
+    "keras",
+    "movie"
+  ],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "movie-recommender-using-keras"
+}
