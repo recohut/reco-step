@@ -79,7 +79,7 @@
 genre_data= pd.read_csv(&#39;ml-100k/u.genre&#39;,sep=&#39;|&#39;,names=[&#34;movie_type&#34;, &#34;type_id&#34;])
 genre_data.head()
 </code></pre>
-<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     } &lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {     vertical-align: top; }  .dataframe thead th {     text-align: right; } &lt;/code&gt;&lt;/pre&gt; &lt;p&gt;</p>
 <table>
 <tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"><p>movie_type</p>
 </td><td colspan="1" rowspan="1"><p>type_id</p>
@@ -113,7 +113,7 @@ movies_data[&#39;release_date&#39;] = pd.to_datetime(movies_data[&#39;release_da
 movies_data.rename(columns = {&#39;movie_id&#39;:&#39;item_id&#39;}, inplace = True) 
 movies_data
 </code></pre>
-<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     } &lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {     vertical-align: top; }  .dataframe thead th {     text-align: right; } &lt;/code&gt;&lt;/pre&gt; &lt;p&gt;</p>
 <table>
 <tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"><p>item_id</p>
 </td><td colspan="1" rowspan="1"><p>movie_title</p>
@@ -422,7 +422,7 @@ movies_data
 <pre><code language="language-python" class="language-python">duplicated = movies_data[movies_data.duplicated(&#39;movie_title&#39;, False)].sort_values(by = &#39;movie_title&#39;)
 duplicated.head()
 </code></pre>
-<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     } &lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {     vertical-align: top; }  .dataframe thead th {     text-align: right; } &lt;/code&gt;&lt;/pre&gt; &lt;p&gt;</p>
 <table>
 <tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"><p>item_id</p>
 </td><td colspan="1" rowspan="1"><p>movie_title</p>
@@ -579,7 +579,7 @@ duplicated.head()
 <p>We find that there is a record contains NaN for most of its attributes. However, we later on also found that there are users who did rate this item. So we decide not to drop this record.</p>
 <pre><code language="language-python" class="language-python">movies_data[movies_data.release_date.isnull()]
 </code></pre>
-<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     } &lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {     vertical-align: top; }  .dataframe thead th {     text-align: right; } &lt;/code&gt;&lt;/pre&gt; &lt;p&gt;</p>
 <table>
 <tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"><p>item_id</p>
 </td><td colspan="1" rowspan="1"><p>movie_title</p>
@@ -634,7 +634,7 @@ duplicated.head()
 </table>
 <pre><code language="language-python" class="language-python">movies_data[movies_data.index == 266]
 </code></pre>
-<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     } &lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {     vertical-align: top; }  .dataframe thead th {     text-align: right; } &lt;/code&gt;&lt;/pre&gt; &lt;p&gt;</p>
 <table>
 <tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"><p>item_id</p>
 </td><td colspan="1" rowspan="1"><p>movie_title</p>
@@ -764,7 +764,7 @@ column_names = [&#34;user_id&#34;, &#34;age&#34;, &#34;gender&#34;, &#34;occupat
 user_data = pd.read_csv(&#39;ml-100k/u.user&#39;,sep=&#39;|&#39;, names=column_names)
 user_data
 </code></pre>
-<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     } &lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {     vertical-align: top; }  .dataframe thead th {     text-align: right; } &lt;/code&gt;&lt;/pre&gt; &lt;p&gt;</p>
 <table>
 <tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"><p>user_id</p>
 </td><td colspan="1" rowspan="1"><p>age</p>
@@ -846,7 +846,7 @@ occupation_data = occupation_data.reset_index().rename(columns={&#39;index&#39;:
 
 occupation_data.head()
 </code></pre>
-<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     } &lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {     vertical-align: top; }  .dataframe thead th {     text-align: right; } &lt;/code&gt;&lt;/pre&gt; &lt;p&gt;</p>
 <table>
 <tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"><p>occupation_id</p>
 </td><td colspan="1" rowspan="1"><p>occupation</p>
@@ -921,7 +921,7 @@ for zip_code in code_table:
 </code></pre>
 <pre><code language="language-python" class="language-python">user_data.head()
 </code></pre>
-<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     } &lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {     vertical-align: top; }  .dataframe thead th {     text-align: right; } &lt;/code&gt;&lt;/pre&gt; &lt;p&gt;</p>
 <table>
 <tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"><p>user_id</p>
 </td><td colspan="1" rowspan="1"><p>age</p>
@@ -990,7 +990,7 @@ data= pd.read_csv(&#39;ml-100k/u.data&#39;,sep=&#39;\t&#39;, names=[&#34;user_id
 data[&#39;timestamp&#39;] = pd.to_datetime(data[&#39;timestamp&#39;], unit=&#39;s&#39;)
 data.head()
 </code></pre>
-<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     } &lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {     vertical-align: top; }  .dataframe thead th {     text-align: right; } &lt;/code&gt;&lt;/pre&gt; &lt;p&gt;</p>
 <table>
 <tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"><p>user_id</p>
 </td><td colspan="1" rowspan="1"><p>item_id</p>
@@ -1031,7 +1031,7 @@ data.head()
 <p>Because all the 36 items are reviewed by some users, so we conclude that the duplicated items have been both rated by users. Therefore, to remove the duplicates, we need to select one of the duplicated items as the main movie and direct all the ratings towards the other movie to this main one.</p>
 <pre><code language="language-python" class="language-python">data.merge(duplicated.item_id, on = &#39;item_id&#39;)
 </code></pre>
-<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     } &lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {     vertical-align: top; }  .dataframe thead th {     text-align: right; } &lt;/code&gt;&lt;/pre&gt; &lt;p&gt;</p>
 <table>
 <tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"><p>user_id</p>
 </td><td colspan="1" rowspan="1"><p>item_id</p>
@@ -1138,7 +1138,7 @@ to_replace
 data_merged = pd.merge(data_merged,movies_data,on=&#39;item_id&#39;,how=&#39;left&#39;)
 data_merged
 </code></pre>
-<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     } &lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {     vertical-align: top; }  .dataframe thead th {     text-align: right; } &lt;/code&gt;&lt;/pre&gt; &lt;p&gt;</p>
 <table>
 <tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"><p>user_id</p>
 </td><td colspan="1" rowspan="1"><p>item_id</p>
@@ -1560,7 +1560,7 @@ data_1998 = data_merged[data_merged[&#39;timestamp&#39;].dt.year == 1998]
 </code></pre>
 <pre><code language="language-python" class="language-python">data_1997.groupby(&#39;movie_title&#39;).count()[[&#39;item_id&#39;]].nlargest(5, columns = &#39;item_id&#39;).rename(columns={&#34;item_id&#34;: &#39;count&#39;})
 </code></pre>
-<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     } &lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {     vertical-align: top; }  .dataframe thead th {     text-align: right; } &lt;/code&gt;&lt;/pre&gt; &lt;p&gt;</p>
 <table>
 <tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"><p>count</p>
 </td></tr>
@@ -1579,7 +1579,7 @@ data_1998 = data_merged[data_merged[&#39;timestamp&#39;].dt.year == 1998]
 </table>
 <pre><code language="language-python" class="language-python">data_1998.groupby(&#39;movie_title&#39;).count()[[&#39;item_id&#39;]].nlargest(5, columns = &#39;item_id&#39;).rename(columns={&#34;item_id&#34;: &#39;count&#39;})
 </code></pre>
-<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     } &lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {     vertical-align: top; }  .dataframe thead th {     text-align: right; } &lt;/code&gt;&lt;/pre&gt; &lt;p&gt;</p>
 <table>
 <tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"><p>count</p>
 </td></tr>
@@ -1598,7 +1598,7 @@ data_1998 = data_merged[data_merged[&#39;timestamp&#39;].dt.year == 1998]
 </table>
 <pre><code language="language-python" class="language-python">data_merged.groupby(&#39;movie_title&#39;).count()[[&#39;item_id&#39;]].nlargest(5, columns = &#39;item_id&#39;).rename(columns={&#34;item_id&#34;: &#39;count&#39;})
 </code></pre>
-<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     } &lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {     vertical-align: top; }  .dataframe thead th {     text-align: right; } &lt;/code&gt;&lt;/pre&gt; &lt;p&gt;</p>
 <table>
 <tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"><p>count</p>
 </td></tr>
@@ -1657,7 +1657,7 @@ user_features2[&#39;movie&#39;] = data_merged[[&#39;user_id&#39;,&#39;item_id&#3
 </code></pre>
 <pre><code language="language-python" class="language-python">user_features1
 </code></pre>
-<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     } &lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {     vertical-align: top; }  .dataframe thead th {     text-align: right; } &lt;/code&gt;&lt;/pre&gt; &lt;p&gt;</p>
 <table>
 <tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"><p>user_id</p>
 </td><td colspan="1" rowspan="1"><p>age</p>
@@ -1771,7 +1771,7 @@ user_features2[&#39;movie&#39;] = data_merged[[&#39;user_id&#39;,&#39;item_id&#3
 <p>943 rows × 8 columns</p>
 <pre><code language="language-python" class="language-python">user_features2
 </code></pre>
-<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     } &lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {     vertical-align: top; }  .dataframe thead th {     text-align: right; } &lt;/code&gt;&lt;/pre&gt; &lt;p&gt;</p>
 <table>
 <tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"><p>user_id</p>
 </td><td colspan="1" rowspan="1"><p>age</p>
@@ -2179,7 +2179,7 @@ Try using .loc[row_indexer,col_indexer] = value instead
 See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
   isetter(ilocs[0], value)
 </code></pre>
-<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     }      .dataframe tbody tr th {         vertical-align: top;     }      .dataframe thead th {         text-align: right;     } </p>
+<p>     .dataframe tbody tr th:only-of-type {         vertical-align: middle;     } &lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {     vertical-align: top; }  .dataframe thead th {     text-align: right; } &lt;/code&gt;&lt;/pre&gt; &lt;p&gt;</p>
 <table>
 <tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"><p>item_id</p>
 </td><td colspan="1" rowspan="1"><p>unknown</p>
@@ -2474,7 +2474,7 @@ plt.title(&#39;Adjacency matrix&#39;)
       <google-codelab-step label="Conclusion" duration="2">
         <p>Congratulations!</p>
 <h2 class="checklist" is-upgraded>What we&#39;ve covered</h2>
-<ul>
+<ul class="checklist">
 <li>User analysis</li>
 <li>Item analysis</li>
 <li>Graph analysis</li>

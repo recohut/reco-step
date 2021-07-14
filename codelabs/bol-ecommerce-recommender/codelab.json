@@ -1,0 +1,25 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-07-14T14:34:48Z",
+  "id": "bol-ecommerce-recommender",
+  "duration": 23,
+  "title": "Retail Recommendation System on Billions of Interactions at bol.com",
+  "authors": "Sparsh A.",
+  "summary": "Recommender systems are ubiquitous in the modern internet, where they help users find items they might like. We discuss the design of a large-scale recommender system handling billions of interactions on a European e-commerce platform.",
+  "source": "./retail-recommendation-system-on-billions-of-intera-.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "story"
+  ],
+  "tags": [
+    "retail"
+  ],
+  "feedback": "https://github.com/recohut/reco-step/issues",
+  "url": "bol-ecommerce-recommender"
+}

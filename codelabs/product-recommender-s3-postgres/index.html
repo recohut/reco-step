@@ -94,7 +94,8 @@ cos_score_df.columns = np.array(co_matrix.index)
     
       <google-codelab-step label="Offline model validation" duration="2">
         <p>As with most unsupervised learning models, model validation can be tricky. For our dataset we have a diverse set of product categories. Since we are creating a recommender to show similar products we should expect our model to return recommendations that are in the same category as the original base product.</p>
-<p>*For Each Product Category: <strong>Count(Best Recommendation for Each Product in Category)/ Count(Products in Category) = % of Recommendations in Same Category</strong>*</p>
+<p><em>For Each Product Category: </em></p>
+<p><strong><em>Count(Best Recommendation for Each Product in Category)/ Count(Products in Category) = % of Recommendations in Same Category</em></strong></p>
 <p>From here model validation would continue once we promote the first version of our model to production and commence with an AB test. Some parameter tuning considerations as you iterate your model would be having a cosine similarity score threshold or sample size threshold to limit recommendations to ones where we have the highest confidence.</p>
 
 

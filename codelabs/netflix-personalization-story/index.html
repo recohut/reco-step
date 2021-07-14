@@ -46,7 +46,7 @@
     
       <google-codelab-step label="2000: Cinematch" duration="1">
         <p>Netflix introduced a personalized movie recommendation system, using member ratings to predict how much a member would like a movie. The algorithm was called Cinematch, and it&#39;s a collaborative filtering algorithm.</p>
-<p>Here&#39;s an easy way to understand collaborative filtering. Imagine I like *Batman Begins* and <em>Breaking Bad</em>, and you like both, too. Because I like <em>Casino</em>, the algorithm suggests you&#39;ll like <em>Casino</em>. Now, apply this approach across millions of members and titles.</p>
+<p>Here&#39;s an easy way to understand collaborative filtering. Imagine I like <em>Batman Begins</em> and <em>Breaking Bad</em>, and you like both, too. Because I like <em>Casino</em>, the algorithm suggests you&#39;ll like <em>Casino</em>. Now, apply this approach across millions of members and titles.</p>
 
 
       </google-codelab-step>
@@ -124,7 +124,7 @@
     
       <google-codelab-step label="2006: Demographic data" duration="1">
         <p>Netflix collected age and gender data from its members, but when the team used demographics to inform predictions about a member&#39;s movie taste, the algorithms did not improve predictive power. Huh?</p>
-<p>How did Netflix measure predictive power? The proxy metric for the personalization algorithms was RMSE (Root Mean Square Error) — a calculation that measures the delta between the algorithm&#39;s predicted rating and a member&#39;s actual rating. If Netflix predicted you would like *Friends* and <em>Seinfeld</em>, four and five stars respectively, and you rated these shows four and five stars, the prediction was perfect. RMSE is a &#34;down and to the right&#34; metric that improved over time, mainly through improvements in the collaborative filtering algorithm. You can see the improvements in the rough graph below:</p>
+<p>How did Netflix measure predictive power? The proxy metric for the personalization algorithms was RMSE (Root Mean Square Error) — a calculation that measures the delta between the algorithm&#39;s predicted rating and a member&#39;s actual rating. If Netflix predicted you would like <em>Friends</em> and <em>Seinfeld</em>, four and five stars respectively, and you rated these shows four and five stars, the prediction was perfect. RMSE is a &#34;down and to the right&#34; metric that improved over time, mainly through improvements in the collaborative filtering algorithm. You can see the improvements in the rough graph below:</p>
 <p class="image-container"><img alt="img/_markdowns-raw-recostep-prod-a-brief-history-of-netflix-personalization-untitled-6.png" src="img/d8dae5e672be8384.png"></p>
 <p>Unfortunately, age and gender data did not improve predictions — there was no improvement in RMSE. Movie tastes are hard to predict as they are idiosyncratic — they are very peculiar and vary radically from one individual to another. Knowing my age and gender doesn&#39;t help predict my movie tastes. It&#39;s much more helpful to know just a few movies or TV shows I like.</p>
 <p>To see this insight in action today, create a new profile on your Netflix account. Netflix asks for a few titles you like to kickstart the personalization system. That&#39;s all they need to seed the system.</p>
@@ -196,8 +196,8 @@
     
       <google-codelab-step label="2011: Netflix&#39;s movie genome project" duration="1">
         <p>While admiring Pandora&#39;s work and knowing that the more algorithms, the better, Netflix began to develop its own &#34;movie genome&#34; project. They hired 30 &#34;moviecologists&#34; to tag various attributes of movies and TV shows.</p>
-<p>As a reminder, Netflix&#39;s collaborative filtering algorithm predicts you&#39;ll like a movie, but the algorithm can&#39;t provide context for why you&#39;ll like it. The Cinematch collaborative filtering algorithm leads to statements like, &#34;Because you like *Batman Begins* and <em>Breaking Bad</em>, we think you&#39;ll like <em>Sesame Street</em>.&#34; Wait, what?</p>
-<p>Netflix&#39;s new movie genome algorithm is called &#34;Category Interest.&#34; Now, for the first time, Netflix would suggest a movie and give context for why a member might like it. In the example below, Netflix knows I like *Airplane* and <em>Heathers</em>, so suggests *Ferris Bueller&#39;s Day Off* and *The Breakfast Club* because I like &#34;Cult Comedies from the 1980s&#34;:</p>
+<p>As a reminder, Netflix&#39;s collaborative filtering algorithm predicts you&#39;ll like a movie, but the algorithm can&#39;t provide context for why you&#39;ll like it. The Cinematch collaborative filtering algorithm leads to statements like, &#34;Because you like <em>Batman Begins</em> and <em>Breaking Bad</em>, we think you&#39;ll like <em>Sesame Street</em>.&#34; Wait, what?</p>
+<p>Netflix&#39;s new movie genome algorithm is called &#34;Category Interest.&#34; Now, for the first time, Netflix would suggest a movie and give context for why a member might like it. In the example below, Netflix knows I like <em>Airplane</em> and <em>Heathers</em>, so suggests <em>Ferris Bueller&#39;s Day Off</em> and <em>The Breakfast Club</em> because I like &#34;Cult Comedies from the 1980s&#34;:</p>
 <p class="image-container"><img alt="img/_markdowns-raw-recostep-prod-a-brief-history-of-netflix-personalization-untitled-11.png" src="img/a97bdd0b983c401f.png"></p>
 <p>The &#34;Category Interest&#34; algorithm improved Netflix&#39;s watching metrics — the percentage of members who watched at least 40 hours a month — but the team did not execute an A/B test to see if it improved retention.</p>
 
@@ -235,11 +235,11 @@
       <google-codelab-step label="2013: &#34;House of Cards&#34; original content launch" duration="1">
         <p class="image-container"><img alt="img/_markdowns-raw-recostep-prod-a-brief-history-of-netflix-personalization-untitled-12.png" src="img/d35db4b0fa8a0b0.png"></p>
 <p>In 2007, during the DVD era, Netflix&#39;s first original content effort, Red Envelope Studios, failed. Despite this failure, Netflix tried again during the streaming era.</p>
-<p>Knowing that millions of members liked Kevin Spacey and <em>The West Wing</em>, Netflix made an initial $100-million bet on <em>House of Cards</em>, which paid off. Over six seasons, Netflix invested more than $500 million in the series. *House of Cards* was the first of many successful original movies and television series that Netflix invested in.</p>
+<p>Knowing that millions of members liked Kevin Spacey and <em>The West Wing</em>, Netflix made an initial $100-million bet on <em>House of Cards</em>, which paid off. Over six seasons, Netflix invested more than $500 million in the series. <em>House of Cards</em> was the first of many successful original movies and television series that Netflix invested in.</p>
 <p>By this time in Netflix&#39;s history, it&#39;s clear that personalization delights customers in hard-to-copy, margin-enhancing ways. By making movies easier to find, Netflix improves retention, which increases lifetime value (LTV). And Netflix&#39;s personalization technology is tough to copy, especially at scale.</p>
 <p>But there&#39;s another aspect of personalization that improves the company&#39;s margin: the ability for Netflix to &#34;right-size&#34; their content spend. Here are examples of Netflix&#39;s right-sizing with my best estimates on multiple content investments:</p>
 <ul>
-<li>Based on its knowledge of member tastes, Netflix predicts that 100 million members will watch *Stranger Things* and invests $500 million in the series.</li>
+<li>Based on its knowledge of member tastes, Netflix predicts that 100 million members will watch <em>Stranger Things</em> and invests $500 million in the series.</li>
 <li>The data science team predicted 20 million watchers for the quirky adult cartoon <em>Bojack Horseman</em>, so Netflix invests $100 million in this animated TV series.</li>
 <li>Based on a prediction that one million members will watch Everest climbing documentaries, Netflix invests $5 million in this genre.</li>
 </ul>
@@ -283,7 +283,7 @@
     
       <google-codelab-step label="2017: What happens to the five-star system?" duration="1">
         <p>If stars are gone, how do you communicate movie quality? Recall that one of Netflix&#39;s early hypotheses was that, over time, the average ratings of the movies watched would increase, leading to improved retention. While there was evidence that average ratings increased, nothing in the Netflix data sets suggested that higher average ratings improved retention.</p>
-<p>It turns out that movie ratings do not equal movie enjoyment. While you may appreciate that *Schindler&#39;s List* or *Hotel Rwanda* are five-star movies, it doesn&#39;t mean you *enjoy* them more than a three-star movie. Sometimes a &#34;leave your brains at the door&#34; comedy like *Paul Blart: Mall Cop* is all you need. This is the reason that one of Netflix&#39;s first big investments in original content was a four-picture deal with Adam Sandler, the king of sophomoric comedy. My favorite? <em>The Ridiculous Six</em>.</p>
+<p>It turns out that movie ratings do not equal movie enjoyment. While you may appreciate that <em>Schindler&#39;s List</em> or <em>Hotel Rwanda</em> are five-star movies, it doesn&#39;t mean you <em>enjoy</em> them more than a three-star movie. Sometimes a &#34;leave your brains at the door&#34; comedy like <em>Paul Blart: Mall Cop</em> is all you need. This is the reason that one of Netflix&#39;s first big investments in original content was a four-picture deal with Adam Sandler, the king of sophomoric comedy. My favorite? <em>The Ridiculous Six</em>.</p>
 <p class="image-container"><img alt="img/_markdowns-raw-recostep-prod-a-brief-history-of-netflix-personalization-untitled-16.png" src="img/2d6d48c06c7ac233.png"></p>
 <p>This was one of the movies in Adam Sandler&#39;s $250 million-dollar, four-picture original content deal. Sometimes movie enjoyment is all about leaving your brains at the door with a good three-star movie.</p>
 
@@ -292,7 +292,7 @@
     
       <google-codelab-step label="2017: Percentage match" duration="1">
         <p>So, with the loss of star ratings, and the insight that star ratings do not equal movie enjoyment, Netflix changed its system. They switched to a &#34;percentage match&#34; that indicated how much you would enjoy a movie, irrespective of its quality.</p>
-<p>Below, Netflix gives an &#34;80% Match&#34; for me for *The* <em>Irishman</em>. There&#39;s an 80% chance I will enjoy it, which is at the low-end for Netflix suggestions for me.</p>
+<p>Below, Netflix gives an &#34;80% Match&#34; for me for <em>The Irishman</em>. There&#39;s an 80% chance I will enjoy it, which is at the low-end for Netflix suggestions for me.</p>
 <p class="image-container"><img alt="img/_markdowns-raw-recostep-prod-a-brief-history-of-netflix-personalization-untitled-17.png" src="img/18739e9074b2d698.png"></p>
 
 

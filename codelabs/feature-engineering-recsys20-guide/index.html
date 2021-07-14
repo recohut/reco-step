@@ -81,7 +81,8 @@
 <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-feature-engineering-for-recommenders-untitled.png" src="img/af5f2ca1eb8d7bc4.png"></p>
 <p>Dec&#39;19 to Apr&#39;20 data is available in <a href="https://drive.google.com/drive/folders/1Nan8X33H8xrXS5XhCKZmSpClFTCJsSpE" target="_blank">this</a> drive.</p>
 <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-feature-engineering-for-recommenders-untitled-1.png" src="img/6e272a0a23ef00b0.png"></p>
-<p>*<strong>Importance advice</strong>: One piece of advice is to use cuDF instead of pandas. Analyzing the dataset requires calculating different groupby combination multiple times by a data scientist. GPU acceleration can significantly speed up the calculations and enables you to run more comparisons.*</p>
+<p><strong><em>Importance advice</em></strong></p>
+<p><em>: One piece of advice is to use cuDF instead of pandas. Analyzing the dataset requires calculating different groupby combination multiple times by a data scientist. GPU acceleration can significantly speed up the calculations and enables you to run more comparisons.</em></p>
 <h2 is-upgraded>Statistics</h2>
 <p>This dataset contains 285 million users&#39; events from the eCommerce website.</p>
 <h2 is-upgraded>Data split</h2>
@@ -171,7 +172,7 @@ for col in cols:
       </google-codelab-step>
     
       <google-codelab-step label="Feature Cross" duration="10">
-        <p>*Combining Categories (CC)* is a simple, powerful technique, but often undervalued. We will use this strategy in other feature engineering techniques, as well, and will introduce its value in a simple example.</p>
+        <p><em>Combining Categories (CC)</em> is a simple, powerful technique, but often undervalued. We will use this strategy in other feature engineering techniques, as well, and will introduce its value in a simple example.</p>
 <p>In some datasets, categories by itself provide no information to predict the target. But if we combine multiple categories, together, then we can indentify patterns.</p>
 <p>For example, we have the following categories:</p>
 <ul>
@@ -207,7 +208,7 @@ explore_cat(df_train, cats)
       </google-codelab-step>
     
       <google-codelab-step label="Categorify" duration="5">
-        <p>*Categorifying* is required for using categorical features in deep learning models with Embedding layers. An Embedding layer encodes the category into a hidden latent vector with a smaller dimension.</p>
+        <p><em>Categorifying</em> is required for using categorical features in deep learning models with Embedding layers. An Embedding layer encodes the category into a hidden latent vector with a smaller dimension.</p>
 <p>Categorical features can be from datatype String or Integer. The Embedding layer requires that categorical features are continuous, positive Integers from 0 to |C| (number of unique category values).</p>
 <p>Another important reason to Categorify categorical features is to reduce the size of the dataset. Often categorical features are of the data type String and sometimes, they are hashed to protect the user/dataset privacy. For example, we can hash the Integer 0 to an md5 hash.</p>
 <p>Finally, we can prevent overfitting for low frequency categories. Categories with low frequency can be grouped together to an new category called ‘other&#39;. In the previous exercise we learned that it is powerful to combine categorical features together to create a new feature. However, combining categories increases the cardinality of the new feature and the number of observations per category will decrease. Therefore, we can apply a treshhold to group all categories with lower frequency count to the the new category.</p>
@@ -219,7 +220,7 @@ explore_cat(df_train, cats)
       </google-codelab-step>
     
       <google-codelab-step label="Target Encoding" duration="5">
-        <p>*Target Encoding (TE)* calculates the statistics from a target variable grouped by the unique values of one or more categorical features.</p>
+        <p><em>Target Encoding (TE)</em> calculates the statistics from a target variable grouped by the unique values of one or more categorical features.</p>
 <p>For example in a binary classification problem, it calculates the probability that the target is true for each category value - a simple mean.</p>
 <p>Target Encoding creates a new features, which can be used by the model for training. The advantage of Target Encoding is, that it process the categorical features and makes them easier accessible to the model during training and validation.</p>
 <p>Tree-based model requires to create a split for each categorical value (depending on the exact model). Target Encoding saves to create many splits for the model. In particular, when applying Target Encoding to multiple columns, it reduces significantly the number of splits. The model can directly operate on the probablities/averages and creates a split based on them. Another advantage is, that some boosted-tree libraries, such as XGBoost, cannot handle categorical features. The library requires to hot-n encode them. Categorical features with large cardinality (e.g. &gt;100) are inefficient to store as hot-n.</p>
@@ -252,7 +253,7 @@ explore_cat(df_train, cats)
       </google-codelab-step>
     
       <google-codelab-step label="Count Encoding" duration="5">
-        <p>*Count Encoding (CE)* calculates the frequency from one or more categorical features given the training dataset.</p>
+        <p><em>Count Encoding (CE)</em> calculates the frequency from one or more categorical features given the training dataset.</p>
 <p>For example we can consider Count Encoding as the populiarity of an item or activity of an user.</p>
 <p>Count Encoding creates a new feature, which can be used by the model for training. It groups categorical values based on the frequency together.</p>
 <p>For example,</p>
@@ -263,7 +264,7 @@ explore_cat(df_train, cats)
       </google-codelab-step>
     
       <google-codelab-step label="Binning" duration="5">
-        <p>*Binning* maps multiple ordinal categorical or numerical features into groups. It is mainly applied to numerical features:</p>
+        <p><em>Binning</em> maps multiple ordinal categorical or numerical features into groups. It is mainly applied to numerical features:</p>
 <ul>
 <li>prevent overfitting by grouping values together</li>
 <li>enables us to add some expert knowledge into the model</li>
@@ -304,7 +305,7 @@ explore_cat(df_train, cats)
       </google-codelab-step>
     
       <google-codelab-step label="Normalization" duration="5">
-        <p>*Normalization* is required to enable neural networks to leverage numerical features. Tree-based models do not require normalization as they define the split independent of the scale of a feature. Without normalization, neural networks are difficult to train. The image visualizes the loss surface and the gradient updates for non-normalized input (left) and normalized input (right).</p>
+        <p><em>Normalization</em> is required to enable neural networks to leverage numerical features. Tree-based models do not require normalization as they define the split independent of the scale of a feature. Without normalization, neural networks are difficult to train. The image visualizes the loss surface and the gradient updates for non-normalized input (left) and normalized input (right).</p>
 <p>We will first generate some numerical features with the feature engineering that we also covered in previous steps.</p>
 <p>The reason is that different numerical features have different scales. When we combine the features in a hidden layer, the different scales make it more difficult to extract patterns from it.</p>
 <p>Normalization Techniques After we outline the importance for normalizing the numerical input feature, we will discuss different strategy to achieve a normal distributed input feature:</p>
@@ -364,13 +365,13 @@ for i, col in enumerate([&#39;price&#39;, &#39;TE_ts_weekday_ts_hour_cat_2_brand
       <google-codelab-step label="Conclusion" duration="2">
         <p>Congratulations!</p>
 <h2 class="checklist" is-upgraded>What we&#39;ve covered</h2>
-<ol type="1">
+<ul class="checklist">
 <li>ETL the raw data</li>
 <li>Exploratory analysis</li>
 <li>Feature engineering techniques</li>
 <li>Time series feature techniques</li>
 <li>Install and use RapidsAI&#39;s cuDF for faster processing</li>
-</ol>
+</ul>
 <h2 is-upgraded>Links and References</h2>
 <ol type="1">
 <li><a href="https://github.com/rapidsai/deeplearning/tree/main/RecSys2020Tutorial" target="_blank">https://github.com/rapidsai/deeplearning/tree/main/RecSys2020Tutorial</a></li>

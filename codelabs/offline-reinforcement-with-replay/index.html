@@ -161,12 +161,12 @@ logger.info(&#34;Thompson Sampling Simulations results saved Successfully..!!&#3
 <li>63 (~25%) were <em>Fargo</em></li>
 <li>27 (~11%) were <em>Toy Story</em></li>
 </ul>
-<p>After 500 recommendations, *Star Wars* has already accounted for more than 50% of all of the recommendations made by the algorithm; after 1,000 recommendations, its share has surpassed 70%.</p>
+<p>After 500 recommendations, <em>Star Wars</em> has already accounted for more than 50% of all of the recommendations made by the algorithm; after 1,000 recommendations, its share has surpassed 70%.</p>
 <h2 is-upgraded><strong>Bandit and A/B test comparisons</strong></h2>
 <p>The cumulative regret experienced over a course of 20,000 recommendations made by three different algorithms (Thompson Sampling, ε-Greedy and an A/B test) is compared in the following figure. The A/B test had a testing phase of 1,000 recommendations. The ε-Greedy algorithm used a value of 0.05 for the parameter ε. All of the experiments were averaged over 20 iterations.</p>
 <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-offline-reinforcement-learning-with-replay-untitled-7.png" src="img/25ffe89a00a470f7.png"></p>
 <p>Observed regret as a function of number of recommendations made for three different algorithms: Thompson Sampling (black), ε-Greedy (blue) and an A/B test (red).</p>
-<p>The A/B test (red) demonstrates an average performance during the testing period and only after the test has concluded does it show improvement. This makes sense because all ten movies are recommended in equal portions during the testing phase. After the test concludes and *Star Wars* has been identified as the best movie to recommend, it begins to suggest *Star Wars* exclusively and the regret begins to decrease to zero. (It does not immediately drop to zero because we are observing the *cumulative* regret.)</p>
+<p>The A/B test (red) demonstrates an average performance during the testing period and only after the test has concluded does it show improvement. This makes sense because all ten movies are recommended in equal portions during the testing phase. After the test concludes and <em>Star Wars</em> has been identified as the best movie to recommend, it begins to suggest <em>Star Wars</em> exclusively and the regret begins to decrease to zero. (It does not immediately drop to zero because we are observing the <em>cumulative</em> regret.)</p>
 <p>The ε-Greedy results (blue) are significantly better in the short-term than the A/B test, but not as good in the long-term — after ~10,000 recommendations. This is due to the simplistic approach that this particular ε-Greedy algorithm uses to balance exploration and exploitation: the parameter ε specifies the fraction of time that the bandit spends exploring, but that fraction remains constant. As a result, the ε-Greedy bandit will continue to explore at the same rate, even after the best movie has been found, leading to suboptimal performance in the long run. (There are ε-Greedy algorithms that adjust the value of ε over time to account for this, for example, the ε-Decreasing algorithm.)</p>
 <p>The Thompson Sampling results (black) are the best of them all. This bandit performs better than the ε-Greedy bandit because it dynamically adjusts the rate at which it explores — rather than using a constant rate. In the beginning, it explores more often, but over time, it explores less often. As a result, this bandit quickly identifies the best movie and exploits it more frequently after it has been found, leading to high performance in both the short- and long term.</p>
 <h2 is-upgraded>Conclusion</h2>
@@ -261,7 +261,7 @@ Step: 3 - Action: {&#39;t&#39;: 3, &#39;u&#39;: 0, &#39;a&#39;: 5, &#39;ps&#39;:
       <google-codelab-step label="Conclusion" duration="2">
         <p>Congratulations!</p>
 <h2 class="checklist" is-upgraded>What we&#39;ve covered</h2>
-<ul>
+<ul class="checklist">
 <li>Basics of Offline RL Replay method</li>
 <li>Industry examples</li>
 <li>Replay in action on Amazon Electronics and MovieLens dataset</li>

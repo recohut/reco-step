@@ -91,12 +91,19 @@ wget -q https://raw.githubusercontent.com/sparsh-ai/static/main/javascripts/code
 <p>There are different ways to setup git cli in colab. I will follow this process:</p>
 <ol type="1">
 <li>Generate personal access token</li>
-<li>Store this token in <code>creds.py</code> python file in the following format:  <pre><code language="language-python" class="language-python">git_access_token = &#34;xxxxxxxxxxxxxxxxxxxxxxxxxxxxx&#34;
-</code></pre>
-<ol type="1">
-<li>Access this token using the following commands: <code>python<br>import sys<br>sys.path.append("/content/drive/MyDrive")<br>import creds<br>git_access_token = creds.git_access_token<br></code></li>
+<li>Store this token in <code>creds.py</code> python file in the following format:</li>
 </ol>
-</li>
+<pre><code language="language-python" class="language-python">git_access_token = &#34;xxxxxxxxxxxxxxxxxxxxxxxxxxxxx&#34;
+</code></pre>
+<ol type="1" start="3">
+<li>Access this token using the following commands:</li>
+</ol>
+<pre><code language="language-python" class="language-python">import sys
+sys.path.append(&#34;/content/drive/MyDrive&#34;)
+import creds
+git_access_token = creds.git_access_token
+</code></pre>
+<ol type="1" start="4">
 <li>Basic configuration</li>
 </ol>
 <pre><code language="language-python" class="language-python">%cd /content

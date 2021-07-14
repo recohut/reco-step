@@ -75,7 +75,7 @@
 <p>In many situations, MarketCloud&#39;s clients use SalesCore when they are talking to their customers on the phone. The sales negotiation evolves every single minute during the call, and the salesperson needs to adjust the strategy during the interaction with the customer, so the recommendation engine has to be responsive to real-time requests.</p>
 <p>For example, imagine you as a salesperson is on a call with your customer to sell telecommunication devices. The customer tells you what his office looks like, the existing infrastructure at the office such as optic fiber, the type of WiFi network, and so forth. Upon entering this information in SalesCore, you want the platform to give you a suggestion for the products that your customer could feasibly purchase. This response from the platform needs to be in real-time, not 10 minutes later, after the call, or on the following day.</p>
 <h2 is-upgraded><strong>Ability to Turn Recommendations On and Off</strong></h2>
-<p>Responsible AI principles acknowledge that retaining human involvement is important. This can be done through a human-in-command design,<a href="https://learning.oreilly.com/library/view/introducing-mlops/9781492083283/ch10.html#ch01fn8" target="_blank">1</a> by which it should be possible *not* to use the AI. In addition, adoption is likely to be low if users cannot override AI recommendations. Some clients value using their own intuition about which products to recommend to their customers. For this reason, MarketCloud wants to give its clients full control to turn the recommendation engine on and off so that the clients can use the recommendations when they want.</p>
+<p>Responsible AI principles acknowledge that retaining human involvement is important. This can be done through a human-in-command design,<a href="https://learning.oreilly.com/library/view/introducing-mlops/9781492083283/ch10.html#ch01fn8" target="_blank">1</a> by which it should be possible <em>not</em> to use the AI. In addition, adoption is likely to be low if users cannot override AI recommendations. Some clients value using their own intuition about which products to recommend to their customers. For this reason, MarketCloud wants to give its clients full control to turn the recommendation engine on and off so that the clients can use the recommendations when they want.</p>
 <h2 is-upgraded><strong>Pipeline Structure and Deployment Strategy</strong></h2>
 <p>To efficiently build four thousand recommendation engines, MarketCloud decided to make one data pipeline as a prototype and duplicate it four thousand times. This prototype pipeline consists of the necessary data preprocessing steps and a single recommendation engine, built on an example dataset. The algorithms used in the recommendation engines will be the same across all four thousand pipelines, but they will be trained with the specific data associated with each client.</p>
 <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-storycafe-series-part-2-untitled-1.png" src="img/57c8a090089cb682.png"></p>
@@ -154,7 +154,7 @@
 </ul>
 <h2 is-upgraded>Benefits &amp; Results</h2>
 <ul>
-<li>Automatic personalized recommendations applied to Product Detail Pages (*‘También te podría interesar&#39;/‘You may also like&#39;* recommendation box)</li>
+<li>Automatic personalized recommendations applied to Product Detail Pages (<em>‘También te podría interesar&#39;/‘You may also like&#39;</em> recommendation box)</li>
 <li>10% item views attributed to Recombee recommendations</li>
 <li><strong>3x more Conversions</strong> from users who engaged with recommendations</li>
 <li><strong>4x more Interactions</strong> from users who engaged with recommendations</li>
@@ -429,13 +429,13 @@
 <ul>
 <li><strong>&#34;Just For You&#34;</strong> section on the homepage.</li>
 <li><strong>Custom made business rules</strong> for old and expired deals.</li>
-<li><strong>A complex ensemble of</strong> incrementally-trained ML models:  <ul>
+<li><strong>A complex ensemble of</strong> incrementally-trained ML models: <ul>
 <li><strong>Collaborative filtering models</strong> accelerated through sparse locality-sensitive hashing.</li>
 <li><strong>Natural language processing</strong> using deep recurrent neural networks.</li>
 <li><strong>Image processing</strong> using deep convolutional neural networks.</li>
 </ul>
 </li>
-<li>Fully leveraging Recombee technology for <strong>real-time data processing:  </strong><ul>
+<li>Fully leveraging Recombee technology for <strong>real-time data processing:</strong><ul>
 <li>Most models designed for <strong>incremental training and live updates.</strong></li>
 <li><strong>Queued processing</strong> of new incoming data (with constant reprioritization) for near-real-time deep-learning models.</li>
 </ul>

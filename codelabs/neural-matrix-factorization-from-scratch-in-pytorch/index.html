@@ -61,7 +61,7 @@
 			torch.tensor(rating, dtype=torch.float)
 			)
 </code></pre>
-<p>The name of our class is *Rating_Dataset* and it is getting inherited from PyTorch *Dataset<em> base class. The </em><strong>getitem</strong>* method is helping us in 2 ways: 1) It is reinforcing the type to [long, long, float] and returning the tensor version of the tuple for the given index id.</p>
+<p>The name of our class is <em>Rating_Dataset</em> and it is getting inherited from PyTorch <em>Dataset</em> base class. The <strong><em>getitem</em></strong> method is helping us in 2 ways: 1) It is reinforcing the type to [long, long, float] and returning the tensor version of the tuple for the given index id.</p>
 <p>We are also creating a helper dataset class to put all the data processing functions under a single umbrella. This class contains 5 methods:</p>
 <ul>
 <li><em>_reindex</em>: process dataset to reindex userID and itemID, also set rating as binary feedback</li>
@@ -264,7 +264,7 @@ writer.close()
       <google-codelab-step label="Congratulations" duration="2">
         <p>Congratulations! You covered a lot of content and hopefully you have a better understanding of the working of neural matrix factorization model by now.</p>
 <h2 class="checklist" is-upgraded>What we&#39;ve covered</h2>
-<ul>
+<ul class="checklist">
 <li>Create movielens dataset class in Pytorch</li>
 <li>Setting the evaluation criteria</li>
 <li>Architecture of neural matrix factorization model</li>

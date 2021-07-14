@@ -103,7 +103,7 @@
       </google-codelab-step>
     
       <google-codelab-step label="Minkowski Distance" duration="5">
-        <p>So how can we tell if two users have similar taste? One [simple] answer to that is the Minkowski Distance Metric: $d(x,y) = (\sum<em>{i=1}^{k}{|x</em>{i} - y_{i}|^{r}})^{1/r}$, where $x$ and $y$ are two records with $k$ features (ratings, in this case) and r ∈ {1,2,...,∞}.</p>
+        <p>So how can we tell if two users have similar taste? One [simple] answer to that is the Minkowski Distance Metric: $d(x,y) = (\sum_{i=1}^{k}{|x_{i} - y_{i}|^{r}})^{1/r}$, where $x$ and $y$ are two records with $k$ features (ratings, in this case) and r ∈ {1,2,...,∞}.</p>
 <pre><code language="language-python" class="language-python">def minkowski(ratings1, ratings2, r=2):
     &#34;&#34;&#34;
     Compute the Minkowski Distance between two users.
@@ -178,7 +178,7 @@
       <google-codelab-step label="Conclusion" duration="2">
         <p>Congratulations!</p>
 <h2 class="checklist" is-upgraded>What we&#39;ve covered</h2>
-<ul>
+<ul class="checklist">
 <li>Generated a synthetic user-music dataset of given number of users and songs</li>
 </ul>
 <ol type="1">

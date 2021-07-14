@@ -56,7 +56,7 @@
 <h2 is-upgraded>Labels</h2>
 <p>When labeling training data, Airbnb was mainly interested in two labels: experiences that were booked (which were treated as positive labels) and experiences that were clicked but not booked (which were treated as negative labels). In this manner, Airbnb collected a training dataset of 50,000 examples.</p>
 <h2 is-upgraded>Features</h2>
-<p>They decided to rank solely based on *Experience Features.* In total they built 25 features, some of which were:</p>
+<p>They decided to rank solely based on <em>Experience Features.</em> In total they built 25 features, some of which were:</p>
 <ul>
 <li><strong>Experience duration</strong> (e.g. 1h, 2h, 3h, etc.)</li>
 <li><strong>Price</strong> and <strong>Price-per-hour</strong></li>
@@ -110,11 +110,11 @@
 <h2 is-upgraded>Features based on clickstream data</h2>
 <p>Given the user&#39;s short-term search history, we can infer useful information that can help us personalize future searches:</p>
 <ul>
-<li><strong>Infer user interest in certain categories:</strong> For example, if the user is mostly clicking on *Music* Experiences we can infer that the user&#39;s interest is in <em>Music.</em></li>
-<li><strong>Infer the user&#39;s time-of-day availability:</strong> For example, if the user is mostly clicking on *Evening* Experiences we can infer that the user is available at that time of day.</li>
+<li><strong>Infer user interest in certain categories:</strong> For example, if the user is mostly clicking on <em>Music</em> Experiences we can infer that the user&#39;s interest is in <em>Music.</em></li>
+<li><strong>Infer the user&#39;s time-of-day availability:</strong> For example, if the user is mostly clicking on <em>Evening</em> Experiences we can infer that the user is available at that time of day.</li>
 <li><strong>Category Intensity:</strong> Weighted sum of user clicks on Experiences that have that particular category, where the sum is over the last 15 days (d_0 to d_now) and A is the number of actions (in this case clicks) on certain category on day d.</li>
-<li><strong>Category Recency:</strong> Number of days that passed since the user last clicked on an Experience in that category.  Let&#39;s validate the intuition for the 2 engineered features - intensity and recency:  <img alt="img/_markdowns-raw-recostep-stage-airbnb-experiences-untitled-3.png" src="img/4f65f23c49173bf0.png">  Airbnb built the same types of features (intensity &amp; recency) for several different user actions, including wishlisting and booking a certain category.</li>
-<li><strong>Time of Day Personalization:</strong> Different Experiences are held at different times of day (e.g. early morning, evening, etc.). Similar to how we track clicks on different categories, we can also track clicks on different times of day and compute Time of Day Fit between the user&#39;s time-of-day percentages and the Experience&#39;s time of day, as described below:  <img alt="img/_markdowns-raw-recostep-stage-airbnb-experiences-untitled-4.png" src="img/8ea829258b0736d4.png">  As it can be observed, the model learned to use this feature in a way that ranks Experiences held at time of day that the user prefers higher.</li>
+<li><strong>Category Recency:</strong> Number of days that passed since the user last clicked on an Experience in that category.Let&#39;s validate the intuition for the 2 engineered features - intensity and recency:<img alt="img/_markdowns-raw-recostep-stage-airbnb-experiences-untitled-3.png" src="img/4f65f23c49173bf0.png">Airbnb built the same types of features (intensity &amp; recency) for several different user actions, including wishlisting and booking a certain category.</li>
+<li><strong>Time of Day Personalization:</strong> Different Experiences are held at different times of day (e.g. early morning, evening, etc.). Similar to how we track clicks on different categories, we can also track clicks on different times of day and compute Time of Day Fit between the user&#39;s time-of-day percentages and the Experience&#39;s time of day, as described below:<img alt="img/_markdowns-raw-recostep-stage-airbnb-experiences-untitled-4.png" src="img/8ea829258b0736d4.png">As it can be observed, the model learned to use this feature in a way that ranks Experiences held at time of day that the user prefers higher.</li>
 </ul>
 <h2 is-upgraded>Preprocessing</h2>
 <ul>
@@ -150,10 +150,10 @@
 <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-airbnb-experiences-untitled-6.png" src="img/4f0b3ce253c42cc4.png"></p>
 <p>Finally, in the online setting we also know the Country which the user is searching from. We can use the country information to personalize the Experience ranking based on Categories preferred by users from those countries. Airbnb used this information to engineer several personalization features at the Origin — Destination level.</p>
 <h2 is-upgraded>Training</h2>
-<p>To train the model with *Query Features* Airbnb first added them to their historical training data. The inventory at that moment was 16,000 Experiences and they had more than 2 million labeled examples to be used in training with a total of 90 ranking features. As mentioned before, they trained two GBDT models:</p>
+<p>To train the model with <em>Query Features</em> Airbnb first added them to their historical training data. The inventory at that moment was 16,000 Experiences and they had more than 2 million labeled examples to be used in training with a total of 90 ranking features. As mentioned before, they trained two GBDT models:</p>
 <ul>
-<li><strong>Model for logged-in users</strong>*,* which **uses <em>Experience Features</em>, *Query Features,* and <em>User (Personalization) Features</em></li>
-<li><strong>Model for logged-out traffic</strong>, which **uses *Experience &amp; Query Features,* trained using data (clicks &amp; bookings) of logged-in users but not considering <em>Personalization Features</em></li>
+<li><strong>Model for logged-in users</strong>*,* which **uses *Experience Features*, *Query Features,* and *User (Personalization) Features*</li>
+<li><strong>Model for logged-out traffic</strong>, which **uses <em>Experience &amp; Query Features,</em> trained using data (clicks &amp; bookings) of logged-in users but not considering <em>Personalization Features</em></li>
 </ul>
 <p>The advantage of having an online scoring infrastructure is that we can use logged-in model for far more uses than before, because there is no need to pre-compute personalized rankings as we did in Stage 2. Airbnb used the logged-in model whenever personalization signals were available for a particular user id, else the model fall back to using logged-out model.</p>
 <h2 is-upgraded>Online evaluation</h2>
@@ -175,15 +175,15 @@
 <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-airbnb-experiences-untitled-7.png" src="img/9b9f9b46128bbf8c.png"></p>
 <p>This motivated them to experiment with their objective function, where they changed their binary classification (+1 = booked, -1 = click &amp; not booked) to introduce weights in training data for different quality tiers (e.g. highest for very high quality bookings, lowest for very low quality bookings). The quality tiers were defined by their Quality Team via data analysis. For example:</p>
 <ul>
-<li>*very high quality* Experience is one with &gt;50 reviews, &gt;4.95 review rating and &gt;55% guests saying the Experience was *unique* and <em>better than expected.</em></li>
-<li>*very low quality* Experience <strong>is one with </strong>&gt;10 reviews, &lt;4.7 review rating.</li>
+<li><em>very high quality</em> Experience is one with &gt;50 reviews, &gt;4.95 review rating and &gt;55% guests saying the Experience was <em>unique</em> and <em>better than expected.</em></li>
+<li><em>very low quality</em> Experience **is one with **&gt;10 reviews, &lt;4.7 review rating.</li>
 </ul>
-<p>When testing the model trained in such a way the A/B test results (on the right in the figure above) showed that they can leverage machine learning ranking to get more of v*ery high quality* bookings and less of v<em>ery low quality bookings</em>, while keeping the overall bookings neutral.</p>
+<p>When testing the model trained in such a way the A/B test results (on the right in the figure above) showed that they can leverage machine learning ranking to get more of v<em>ery high quality</em> bookings and less of v<em>ery low quality bookings</em>, while keeping the overall bookings neutral.</p>
 <p>In a similar way, they successfully tackled several other secondary objectives:</p>
 <ul>
-<li><strong>Discovering and promoting potential *new* *hits* early</strong> using cold-start signals and promoting them in ranking (this led to <strong>+14% booking gain for *new hits</strong>* and **neutral overall bookings)</li>
+<li><strong>Discovering and promoting potential </strong><strong><em>new hits</em></strong><strong> early</strong> using cold-start signals and promoting them in ranking (this led to <strong>+14% booking gain for </strong><strong><em>new hits</em></strong> and **neutral overall bookings)</li>
 <li><strong>Enforcing diversity</strong> in the <strong>top 8 results</strong> such that they can show the diverse set of categories, which is especially important for low-intent traffic (this led to <strong>+2.3% overall booking gain</strong>).</li>
-<li><strong>Optimize Search without Location for Clickability</strong> For *Low Intent* users that land on their webpage but do not search with specified location they think a different objective should be used. Their first attempt was to choose the *Top 18* from *all locations* based on their ranking model scores and then <strong>re-rank</strong> based on <strong>Click-through-rate</strong> (this led to <strong>+2.2% overall booking gain</strong> compared to scenario where they do not re-rank based on CTR).</li>
+<li><strong>Optimize Search without Location for Clickability</strong> For <em>Low Intent</em> users that land on their webpage but do not search with specified location they think a different objective should be used. Their first attempt was to choose the <em>Top 18</em> from <em>all locations</em> based on their ranking model scores and then <strong>re-rank</strong> based on <strong>Click-through-rate</strong> (this led to <strong>+2.2% overall booking gain</strong> compared to scenario where they do not re-rank based on CTR).</li>
 </ul>
 
 
@@ -203,7 +203,7 @@
 </ul>
 <p>In the figure below, there is an example of an Experience whose ranking (left panel) improved from position 30 to position 1 (top ranked). To explain why, we can look at the plots that track various statistics of that Experience (right panel), which are either directly used as features in the ML model or used to derive features.</p>
 <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-airbnb-experiences-untitled-8.png" src="img/ed98829f9e02620b.png"></p>
-<p>It can clearly be observed that the ranking improved because number of reviews grew from 0 to 60, while maintaining a 5.0 review rating and &gt;60% users said the Experience was better than expected. In addition, the host lowered the price, which may also have lead to the improvement of ranking.</p>
+<p>It can clearly be observed that the ranking improved because number of reviews grew from 0 to 60, while maintaining a 5.0 review rating and &gt;60% users said the Experience was better than expected. In addition, the host lowered the price, which may also have lead to the improvement of ranking.\</p>
 <p>In the next figure, there is an example of an Experience whose ranking degraded from position 4 to position 94. Once more, the signals which the ranking model uses as input can tell the story.</p>
 <p class="image-container"><img alt="img/_markdowns-raw-recostep-stage-airbnb-experiences-untitled-9.png" src="img/91eb23d5c3e27409.png"></p>
 <p>The Experience started getting bad reviews (avg. rating reduced from 4.87 to 4.82), host increased the price by $20, and overall booking numbers decreased. In addition, in that market the time of day that Experience is held at (early morning) became less and less popular (slight seasonality effect). All these factors combined lead to the ranking decline.</p>

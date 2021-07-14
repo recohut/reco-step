@@ -45,15 +45,15 @@
 </ul>
 <h2 is-upgraded>How it will work?</h2>
 <ol type="1">
-<li>Download the Online Retail Data Set from the UCI Machine Learning repository to SageMaker notebook instance. Use SageMaker notebook instance to collect, analyze, cleanse and prepare the downloaded datasets using this sample Jupyter notebook. Refer to the following diagram.  <img alt="img/_markdowns-raw-recostep-prod-recommender-system-with-implicit-bpr-and-amazon-sa-untitled.png" src="img/63b30a84a5e925a.png"></li>
+<li>Download the Online Retail Data Set from the UCI Machine Learning repository to SageMaker notebook instance. Use SageMaker notebook instance to collect, analyze, cleanse and prepare the downloaded datasets using this sample Jupyter notebook. Refer to the following diagram.<img alt="img/_markdowns-raw-recostep-prod-recommender-system-with-implicit-bpr-and-amazon-sa-untitled.png" src="img/63b30a84a5e925a.png"></li>
 <li>Store the final training and testing datasets to Amazon S3.</li>
 <li>Use the Implicit BPR algorithm listing in AWS Marketplace to train the ML model.</li>
 <li>Present the cleanse training and testing datasets to the model training process.</li>
-<li>Optionally, tune the hyperparameters supported by the algorithm based on its specification. Refer to the following diagram.  <img alt="img/_markdowns-raw-recostep-prod-recommender-system-with-implicit-bpr-and-amazon-sa-untitled-1.png" src="img/81aad9e6907d025e.png"></li>
+<li>Optionally, tune the hyperparameters supported by the algorithm based on its specification. Refer to the following diagram.<img alt="img/_markdowns-raw-recostep-prod-recommender-system-with-implicit-bpr-and-amazon-sa-untitled-1.png" src="img/81aad9e6907d025e.png"></li>
 <li>Evaluate and visualize the quality and the performance metrics of the trained model.</li>
 <li>The final trained model artifact is stored in the Amazon S3 bucket.</li>
 <li>Use the SageMaker hosting service to host the trained model to perform both the batch transform and real-time inferences.</li>
-<li>Build request payloads for both a batch and a real-time use case and make an inference request. Both modes facilitate interactive experimentation with the trained model. Refer to the following diagram.  <img alt="img/_markdowns-raw-recostep-prod-recommender-system-with-implicit-bpr-and-amazon-sa-untitled-2.png" src="img/23fb8cffff5b68ef.png"></li>
+<li>Build request payloads for both a batch and a real-time use case and make an inference request. Both modes facilitate interactive experimentation with the trained model. Refer to the following diagram.<img alt="img/_markdowns-raw-recostep-prod-recommender-system-with-implicit-bpr-and-amazon-sa-untitled-2.png" src="img/23fb8cffff5b68ef.png"></li>
 </ol>
 <h2 is-upgraded>Who is this for?</h2>
 <ul>
@@ -204,7 +204,7 @@ batch_request_data_file = BATCH_REQUEST_WORKDIR + &#34;/&#34; + s3_batch_request
     
       <google-codelab-step label="Define utility functions" duration="2">
         <p>Let us define utility functions we can use later to print the purchase information in human readable format.</p>
-<p>This function prints the top  purchased for a given Customer ID from the original data set</p>
+<p>This function prints the top &lt;limit_top_rows&gt; purchased for a given Customer ID&lt;customer_id&gt; from the original data set</p>
 <pre><code language="language-python" class="language-python">def display_original_purchase_history(original_purchase_df, customer_id, limit_top_rows=5):
     original_purchases = original_purchase_df.loc[original_purchase_df[&#34;CustomerID&#34;] == customer_id]
     original_purchases = original_purchases[
@@ -321,7 +321,7 @@ display(online_retail_data.head().style.hide_index())
 print(online_retail_data.shape)
 </code></pre>
 <h2 is-upgraded>Explore, clean, and convert the dataset</h2>
-<p>The *user-item-interaction* data is critical for getting started with the recommender system. Recommender systems use this data to train for use cases such as video-on-demand applications, user click-stream logs, and user purchase history. No matter the use case, the algorithms all share a base of learning on user-item-interaction data, which is defined by two core attributes:</p>
+<p>The <em>user-item-interaction</em> data is critical for getting started with the recommender system. Recommender systems use this data to train for use cases such as video-on-demand applications, user click-stream logs, and user purchase history. No matter the use case, the algorithms all share a base of learning on user-item-interaction data, which is defined by two core attributes:</p>
 <ul>
 <li><strong>user_id –</strong> The user who interacted</li>
 <li><strong>item_id</strong> – The item that the user interacted with</li>
@@ -469,7 +469,7 @@ plt.set_ylabel(&#34;Average precision at k(10)&#34;);
       <google-codelab-step label="Perform a batch/offline inference" duration="15">
         <p>After you build and train your models, you can deploy them to get predictions in one of two ways:</p>
 <ul>
-<li><strong>Batch Transform:</strong> To get the inferences on an entire dataset offline, you run a *batch transform* job on a trained model. A batch transform automatically manages the processing of large datasets within the limits of specified parameters. For instance, consider the product or movie recommendations on a site; rather than generate new predictions each time a user logs on to the website, you may decide to create recommendations for users in batch and then cache these recommendations for easy retrieval when needed.</li>
+<li><strong>Batch Transform:</strong> To get the inferences on an entire dataset offline, you run a <em>batch transform</em> job on a trained model. A batch transform automatically manages the processing of large datasets within the limits of specified parameters. For instance, consider the product or movie recommendations on a site; rather than generate new predictions each time a user logs on to the website, you may decide to create recommendations for users in batch and then cache these recommendations for easy retrieval when needed.</li>
 <li><strong>Real-time:</strong> Many customer use cases require the system to have an HTTPS endpoint to get predictions from your models. For instance, a ride-sharing or a food delivery application where estimated time to delivery is created in real-time whenever a user requests the service. It is not helpful to have those inferences generated ahead of time as a batch and serve to users.</li>
 </ul>
 <p>Many other applications can benefit from online inference, such as self-driving cars, virtual reality, and any consumer-facing mobile or web applications that allow users to query models in real-time with sub second latency. SageMaker has hosting services for model deployment, providing an HTTPS endpoint where your ML model can perform inferences.</p>
@@ -637,7 +637,7 @@ estimator.delete_endpoint()
       <google-codelab-step label="Conclusion" duration="2">
         <p>Congratulations!</p>
 <h2 class="checklist" is-upgraded>What we&#39;ve covered</h2>
-<ul>
+<ul class="checklist">
 <li>Demonstrated how to use Implicit BPR in AWS Marketplace to improve the personalized ranking in any recommender system</li>
 <li>Showed how to subscribe to the model, create the SageMaker notebook instance, train and deploy the model, and experiment with the sample code</li>
 <li>Showed how to perform both batch and real-time inferences on the hosted model using different example users from the original dataset and visualize their inference results ordered by recommendation score to be most relevant to those users</li>
